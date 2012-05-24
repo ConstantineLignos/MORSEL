@@ -1,0 +1,47 @@
+<project name="morsel" default="dist" basedir=".">
+    <description>
+        Build file for MORSEL.
+    </description>
+  <!-- set global properties for this build -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="output"  location="morsel.jar"/>
+
+  <target name="init">
+    <!-- Create the time stamp -->
+    <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+    <mkdir dir="${build}"/>
+  </target>
+
+  <target name="compile" depends="init"
+        description="compile the source " >
+    <!-- Compile the java code from ${src} into ${build} -->
+    <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+      <classpath>
+	<pathelement path="${classpath}"/>
+	<fileset dir="lib">
+	  <include name="*.jar"/>
+	</fileset>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="dist" depends="compile"
+        description="generate the distribution" >
+    <!-- Put everything in ${build} into the .jar file -->
+    <jar jarfile="${output}" basedir="${build}">
+        <manifest>
+            <attribute name="Main-Class" value="edu.upenn.ircs.lignos.morsel.MorphLearner" />
+            <attribute name="Class-Path" value="lib/junit-4.10.jar lib/trove-2.1.0.jar" />
+        </manifest>
+    </jar>
+  </target>
+
+  <target name="clean"
+        description="clean up" >
+    <!-- Delete the ${build} directory and the jar -->
+    <delete dir="${build}"/>
+    <delete file="${output}"/>
+  </target>
+</project>
