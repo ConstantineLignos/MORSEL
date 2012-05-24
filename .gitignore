@@ -8,3 +8,7 @@
 # Eclipse Files #
 .classpath
 .project
+
+# Build directories #
+/bin
+/build
