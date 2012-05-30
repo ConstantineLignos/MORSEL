@@ -37,6 +37,18 @@
         </manifest>
     </jar>
   </target>
+	
+  <target name="test" depends="dist"
+		description="test the distribution" >
+  	<junit fork="yes">
+  		<formatter type="brief" usefile="false"/>
+  		<classpath path="lib/junit-4.10.jar:${output}"/>
+  		<test name="edu.upenn.ircs.lignos.morsel.CorpusLoaderTest"/>
+  		<test name="edu.upenn.ircs.lignos.morsel.compound.CompoundingTest"/>
+  		<test name="edu.upenn.ircs.lignos.morsel.transform.AffixTest"/>
+  		<test name="edu.upenn.ircs.lignos.morsel.transform.TransformTest"/>
+  	</junit>
+  </target>
 
   <target name="clean"
         description="clean up" >
