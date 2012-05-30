@@ -35,7 +35,7 @@ public class CompoundingTest extends TestCase{
 	Lexicon lex;
 	
 	public void setUp() {
-		lex = CorpusLoader.loadWordlist("data/test/compounding_test.txt");
+		lex = CorpusLoader.loadWordlist("data/test/compounding_test_eng.txt");
 	}
 	
 	public void testgetPrefixes() {
@@ -123,7 +123,7 @@ public class CompoundingTest extends TestCase{
 	}
 	
 	public void testinferCompoundsBrown() {
-		lex = CorpusLoader.loadWordlist("data/brown_wordlist.txt");
+		lex = CorpusLoader.loadWordlist("data/test/brown_wordlist.txt");
 		Compounding.breakCompounds(lex, WordSet.UNMODELED, null, null, false, false,
 				false, null);
 		// Check that the analysis of shorthand is now compound
@@ -132,7 +132,7 @@ public class CompoundingTest extends TestCase{
 	
 	public void testinferCompoundsBrownFiller() {
 		// Load the Brown corpus
-		lex = CorpusLoader.loadWordlist("data/brown_wordlist.txt");
+		lex = CorpusLoader.loadWordlist("data/test/brown_wordlist.txt");
 		
 		// Set up bake-baker properly, so that baker is in derived and thus
 		// can have rules applied to it when splitting compounds
@@ -159,8 +159,8 @@ public class CompoundingTest extends TestCase{
 	
 	
 	public void testanalyzeSimplexWords() {
-		// Load the Brown corpus
-		lex = CorpusLoader.loadWordlist("data/test/chanlearner_test_wordlist.txt");
+		// Load a test data set
+		lex = CorpusLoader.loadWordlist("data/test/test_wordlist.txt");
 		
 		// Set up rules to be used for simplex analysis
 		Transform agentive = new Transform(new Affix("", AffixType.SUFFIX), 

@@ -18,24 +18,16 @@
  ******************************************************************************/
 package edu.upenn.ircs.lignos.morsel;
 
-import edu.upenn.ircs.lignos.morsel.lexicon.Lexicon;
-import edu.upenn.ircs.lignos.morsel.lexicon.Word;
-import junit.framework.TestCase;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-public class CorpusLoaderTest extends TestCase {
-	String wordListPath = "data/test/test_wordlist.txt";
-	
-	public void testloadWordlist() {
-		Lexicon lex = CorpusLoader.loadWordlist(wordListPath);
-		assertNotNull(lex.getWord("a"));
-		assertEquals(500, lex.getWord("a").getCount());
-		assertNotNull(lex.getWord("rat"));
-		assertEquals(200, lex.getWord("rat").getCount());
-	}
-	
-	public void testparseWordlistEntry() {
-		assertEquals(new Word("at", 400, true), 
-				CorpusLoader.parseWordlistEntry("400 at"));
-	}
+import edu.upenn.ircs.lignos.morsel.compound.CompoundingTest;
+import edu.upenn.ircs.lignos.morsel.transform.AffixTest;
+import edu.upenn.ircs.lignos.morsel.transform.TransformTest;
 
-}
+@RunWith(Suite.class)
+@SuiteClasses({ CorpusLoaderTest.class, CompoundingTest.class, AffixTest.class,
+	TransformTest.class})
+
+public class AllTests {}

@@ -1,0 +1,17 @@
+100 race
+200 car
+50 racecar
+100 applesauce
+500 apple
+400 apples
+300 sauce
+1 auce
+50 app
+50 sausage
+10 sausagesmarket
+10 sausageymarket
+10 presausagemarket
+100 market
+1000 a
+1 ap
+50 le

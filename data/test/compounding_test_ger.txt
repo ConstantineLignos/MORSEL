@@ -1,0 +1,5 @@
+100 haus
+100 hausen
+100 main
+50 mainhausen
+50 mainhauser
