@@ -776,13 +776,11 @@ public class MorphLearner {
 		WEIGHTED_TRANSFORMS = Boolean.parseBoolean(props.getProperty("weighted_transforms"));
 		WEIGHTED_AFFIXES = Boolean.parseBoolean(props.getProperty("weighted_affixes"));
 		
-		// Compounding agressiveness controls
+		// Compounding aggressiveness controls
 		Compounding.TRANSFORM_RELATIONS = TRANSFORM_RELATIONS = 
 			Boolean.parseBoolean(props.getProperty("transform_relations"));
 		ANALYZE_SIMPLEX_WORDS = 
 			Boolean.parseBoolean(props.getProperty("allow_unmod_simplex_word_analysis"));
-		
-		// TODO- Add in argument checking
 		
 		// Clean up
 		try {

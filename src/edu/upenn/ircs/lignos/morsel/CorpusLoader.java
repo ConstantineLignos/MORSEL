@@ -43,7 +43,7 @@ public class CorpusLoader {
 	 * wordlist, and status is printed to stdout every 50,000 word types that 
 	 * are loaded.
 	 * @param wordListPath The path to the wordlist file.
-	 * @param encoding TODO
+	 * @param encoding Encoding of the wordlist file.
 	 * @param verbose Whether to print information about the lexicon.
 	 * @return A lexicon representing the wordlist.
 	 */
