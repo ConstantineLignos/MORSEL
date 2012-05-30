@@ -612,6 +612,7 @@ public class MorphLearner {
 	}
 	
 	
+	@SuppressWarnings("unused")
 	private void outputTransforms(List<Transform> learnedTransforms) {
 		try {
 			PrintWriter out = new PrintWriter(analysisBase + "_transforms.txt");
