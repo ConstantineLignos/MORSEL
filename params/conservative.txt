@@ -30,10 +30,9 @@ aggr_compounding = false
 
 # Inference flags
 rule_inference_conservative = true
-transform_relations = true
+transform_relations = false
 allow_unmod_simplex_word_analysis = false
 
 # Implementation miscellanea
 transform_optimization = true
-legacy = false
-iteration_analysis = true
+iteration_analysis = false
