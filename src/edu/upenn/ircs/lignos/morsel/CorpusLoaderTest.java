@@ -26,7 +26,7 @@ public class CorpusLoaderTest extends TestCase {
 	String wordListPath = "data/test/test_wordlist.txt";
 	
 	public void testloadWordlist() {
-		Lexicon lex = CorpusLoader.loadWordlist(wordListPath);
+		Lexicon lex = CorpusLoader.loadWordlist(wordListPath, "ISO8859_1", false);
 		assertNotNull(lex.getWord("a"));
 		assertEquals(500, lex.getWord("a").getCount());
 		assertNotNull(lex.getWord("rat"));

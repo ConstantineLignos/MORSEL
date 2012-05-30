@@ -36,6 +36,14 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+
 import edu.upenn.ircs.lignos.morsel.compound.Compounding;
 import edu.upenn.ircs.lignos.morsel.lexicon.Lexicon;
 import edu.upenn.ircs.lignos.morsel.lexicon.Word;
@@ -77,7 +85,12 @@ public class MorphLearner {
 	private boolean WEIGHTED_AFFIXES;
 	private boolean TRANSFORM_RELATIONS;
 	private boolean ANALYZE_SIMPLEX_WORDS;
+	
+	// Output options
 	protected String analysisBase;
+	private boolean outputBaseInf;
+	private boolean outputConflation;
+	private boolean outputCompounds;
 	
 	/**
 	 * Create a new learner using the given paths for I/O.
@@ -85,46 +98,56 @@ public class MorphLearner {
 	 * @param outPath The path for the analysis output
 	 * @param logPath The path for the log
 	 * @param paramPath The path of the parameter file
+	 * @param outputBaseInf Whether to output the examples of base inference
+	 * @param outputConflation Whether to output conflation sets
+	 * @param outputCompounds Whether to output an analysis before compounding
 	 * @throws FileNotFoundException if the corpus or parameter files do not exist.
 	 * @throws UnsupportedEncodingException if the corpus's encoding is not readable.
 	 */
 	public MorphLearner(String corpusPath, String outPath,
-			String logPath, String paramPath) throws FileNotFoundException, 
-			UnsupportedEncodingException {
+			String logPath, String paramPath, String encoding, boolean outputBaseInf, 
+			boolean outputConflation, boolean outputCompounds) 
+			throws FileNotFoundException, UnsupportedEncodingException {
 		this.corpusPath = corpusPath;
-		this.output = new PrintWriter(new OutputStreamWriter(
-				new BufferedOutputStream(new FileOutputStream(outPath)), "ISO8859_1"));
-		
-		// If log is "none", don't redirect
-		if (!"none".equals(logPath)) {
+		this.outputBaseInf = outputBaseInf;
+		this.outputConflation = outputConflation;
+		this.outputCompounds = outputCompounds;
+		try {
+			this.output = new PrintWriter(new OutputStreamWriter(
+				new BufferedOutputStream(new FileOutputStream(outPath)), encoding));
+		}
+		catch (FileNotFoundException e) {
+			throw new FileNotFoundException("Cannot open output file: " + outPath);
+		}
+			
+		// If log is "-", don't redirect
+		if (!"-".equals(logPath)) {
 			this.log = new PrintStream(new BufferedOutputStream(
-					new FileOutputStream(logPath)), true, "ISO8859_1");
+					new FileOutputStream(logPath)), true, encoding);
 			// Redirect output to log
 			System.setOut(new PrintStream(logPath));
 		}
 		
 		System.out.println("Setting parameters from " + paramPath);
-		if (!this.setParams(paramPath))
-			throw new RuntimeException("The parameter file at " + paramPath +
-					" could not be opened.");
+		this.setParams(paramPath);
 		
 		System.out.println("Loading corpus from " + corpusPath);
-		loadCorpus();
+		loadCorpus(encoding);
 		
-		// Shorten the analysis path down to a base
-		// TODO Make this smarter, just find the dot in the file extension
-		analysisBase = outPath.substring(0, outPath.length() - 4);
+		// Shorten the analysis path down to a base for use in 
+		analysisBase = outPath.substring(0, outPath.lastIndexOf('.'));
 	}
 	
 	/**
 	 * Loads the corpus located at corpusPath.
 	 * @throws FileNotFoundException if the file at corpusPath could not be read.
 	 */
-	public void loadCorpus() throws FileNotFoundException {
-		lex = CorpusLoader.loadWordlist(corpusPath);
+	public void loadCorpus(String encoding) throws FileNotFoundException {
+		System.out.println("Loading words...");
+		lex = CorpusLoader.loadWordlist(corpusPath, encoding, true);
 		
 		if (lex == null) {
-			throw new RuntimeException("Corpus could not be loaded.");
+			throw new FileNotFoundException("Cannot open wordlist: " + corpusPath);
 		}
 	}
 	
@@ -255,8 +278,8 @@ public class MorphLearner {
 			
 			// Handle the results of inference
 			if (BASE_INFERENCE) {
-				// Open the output file on the first iteration
-				if (i==0) {
+				// Open the output file on the first iteration if we're outputting
+				if (outputBaseInf && i==0) {
 					try {
 						baseLog = new PrintWriter(analysisBase + "_baseinf.txt");
 					} catch (FileNotFoundException e) {
@@ -292,19 +315,21 @@ public class MorphLearner {
 			// Output the analysis on the first and then every 5th iteration starting with 5
 			// Analyses should be one-indexed, so add one
 			if (ITERATION_ANALYSIS && (i == 0 || (i + 1) % 5 == 0)) {
-				outputIterAnalysis(i + 1);
+				outputIterAnalysis(Integer.toString(i + 1));
 			}
 		} // End of main learning loop
 		
 		// Clean up for base inference logging
-		if (BASE_INFERENCE) {
+		if (baseLog != null) {
 			baseLog.close();
 		}
 		
 		// After learning is complete, perform the last round of compounding
 		if (FINAL_COMPOUNDING) {
-			// Output a zeroeth analysis pre-compounding
-			outputIterAnalysis(0);
+			// Output an analysis pre-compounding
+			if (outputCompounds) {
+				outputIterAnalysis("precompound");
+			}
 			
 			// If ITER_COMPOUNDING was on, pass in the learned rules
 			List<Transform> fillerRules = ITER_COMPOUNDING ? learnedTransforms : null;
@@ -335,7 +360,9 @@ public class MorphLearner {
 		
 		System.out.println("Learning complete. Analyzing...");
 		outputAnalysis(output);
-		outputConflationSets();
+		if (outputConflation) {
+			outputConflationSets();
+		}
 	}
 
 	private String memoryStatus() {
@@ -600,7 +627,7 @@ public class MorphLearner {
 		}
 	}
 
-	private void outputIterAnalysis(int iter) {
+	private void outputIterAnalysis(String iter) {
 		// Output the analysis for the current iteration
 		try {
 			PrintWriter out = new PrintWriter(analysisBase + "_" + iter + ".txt");
@@ -696,25 +723,21 @@ public class MorphLearner {
 		}
 	}
 
-	public boolean setParams(String paramPath) {
+	public boolean setParams(String paramPath) throws FileNotFoundException {
 		// Read in the params as properties
 		Properties props = new Properties();
 		FileInputStream paramFile;
+		
 		try {
 			paramFile = new FileInputStream(paramPath);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-			return false;
+			throw new FileNotFoundException("Cannot open parameter file: " + paramPath);
 		}
+			
 		try {
 			props.load(paramFile);
 		} catch (IOException e) {
-			try {
-				paramFile.close();
-			} catch (IOException e1) {
-				// Ignore it
-			}
-			return false;
+			throw new FileNotFoundException("Problem reading parameter file: " + paramPath);
 		}
 		
 		// Iteration parameters
@@ -771,29 +794,75 @@ public class MorphLearner {
 		return true;
 	}
 
+	/**
+	 * Call the learner on the specified arguments. Exit using standard error codes
+	 * (sysexits.h) if an error is encountered.
+	 * @param args command line arguments
+	 */
 	public static void main(String[] args) {
-		if (args.length != 4) {
-			System.out.println("Usage: MorphLearner corpus outfile logfile paramfile");
-			System.exit(2);
+		// create the command line parser
+		CommandLineParser parser = new PosixParser();
+		// Set up command line arguments
+		Options options = new Options();
+		options.addOption(new Option("h", "help", false, "dislay this help and exit"));
+		Option encodingOption = new Option("e", "encoding", true,
+				"input and output file encoding. Defaults to ISO8859_1.");
+		encodingOption.setArgName("encoding");
+		options.addOption(encodingOption);
+		options.addOption(new Option("b", "base-inf", false,
+				"output the examples of base inference. This does not change whether base inference" +
+				"is used; it simply outputs the examples that used it."));
+		options.addOption(new Option("s", "conflation-sets", false,
+				"output the learner's conflation sets"));
+		options.addOption(new Option("c", "compounds", false,
+				"output the learner's analsyis before final compounding is used"));
+		HelpFormatter formatter = new HelpFormatter();
+		String usage = "MorphLearner [output options] wordlist outfile logfile paramfile";
+		
+		CommandLine line = null;
+		String[] otherArgs = null;
+	    try {
+	        // Parse the command line arguments
+	        line = parser.parse(options, args);
+	        otherArgs = line.getArgs();
+	        if (otherArgs.length != 4) {
+	        	throw new ParseException("Incorrect number of required arguments specified");
+	        }
+	    }
+	    catch(ParseException exp) {
+	        System.out.println(exp.getMessage());
+	        formatter.printHelp(usage, options);
+	        System.exit(64);
+	    }
+
+	    // Handle help
+		if (line.hasOption("help")) {
+			formatter.printHelp(usage, options);
+			System.exit(0);
 		}
 		
+		// Get options
+		String encoding = line.getOptionValue("encoding", "ISO8859_1");
+		boolean outputBaseInf = line.hasOption("base-inf");
+		boolean outputConflation = line.hasOption("conflation-sets");
+		boolean outputCompounds = line.hasOption("compounds");
+		
+		// Setup timing
 		long start;
 		float elapsedSeconds;
-		
-		// Time init
 		start = System.currentTimeMillis();
+
+		// Initialize the learner
 		MorphLearner learner = null;
 		try {
-			learner = new MorphLearner(args[0], args[1], args[2], args[3]);
+			learner = new MorphLearner(otherArgs[0], otherArgs[1], otherArgs[2], otherArgs[3],
+						encoding, outputBaseInf, outputConflation, outputCompounds);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.err.println(e.getMessage());
+			System.exit(66);
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		
-		if (learner == null) {
-			System.err.print("Learner failed to initialize.");
-			return;
+			System.err.println("Unsupported file encoding: " + encoding);
+			System.exit(74);
 		}
 		
 		// Output time stats

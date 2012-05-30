@@ -35,7 +35,7 @@ public class CompoundingTest extends TestCase{
 	Lexicon lex;
 	
 	public void setUp() {
-		lex = CorpusLoader.loadWordlist("data/test/compounding_test_eng.txt");
+		lex = CorpusLoader.loadWordlist("data/test/compounding_test_eng.txt", "ISO8859_1", false);
 	}
 	
 	public void testgetPrefixes() {
@@ -123,7 +123,7 @@ public class CompoundingTest extends TestCase{
 	}
 	
 	public void testinferCompoundsBrown() {
-		lex = CorpusLoader.loadWordlist("data/test/brown_wordlist.txt");
+		lex = CorpusLoader.loadWordlist("data/test/brown_wordlist.txt", "ISO8859_1", false);
 		Compounding.breakCompounds(lex, WordSet.UNMODELED, null, null, false, false,
 				false, null);
 		// Check that the analysis of shorthand is now compound
@@ -132,7 +132,7 @@ public class CompoundingTest extends TestCase{
 	
 	public void testinferCompoundsBrownFiller() {
 		// Load the Brown corpus
-		lex = CorpusLoader.loadWordlist("data/test/brown_wordlist.txt");
+		lex = CorpusLoader.loadWordlist("data/test/brown_wordlist.txt", "ISO8859_1", false);
 		
 		// Set up bake-baker properly, so that baker is in derived and thus
 		// can have rules applied to it when splitting compounds
@@ -160,7 +160,7 @@ public class CompoundingTest extends TestCase{
 	
 	public void testanalyzeSimplexWords() {
 		// Load a test data set
-		lex = CorpusLoader.loadWordlist("data/test/test_wordlist.txt");
+		lex = CorpusLoader.loadWordlist("data/test/test_wordlist.txt", "ISO8859_1", false);
 		
 		// Set up rules to be used for simplex analysis
 		Transform agentive = new Transform(new Affix("", AffixType.SUFFIX), 
@@ -193,7 +193,7 @@ public class CompoundingTest extends TestCase{
 		// Targeted test for buggy analyses such as MAIN HAUSEN = MAIN HAUSEN +(en)
 		// This test looks for the case where an new word is created while 
 		// applying rules in compounding that is already in the lexicon
-		lex = CorpusLoader.loadWordlist("data/test/compounding_test_ger.txt");
+		lex = CorpusLoader.loadWordlist("data/test/compounding_test_ger.txt", "ISO8859_1", false);
 		Transform en = new Transform(new Affix("", AffixType.SUFFIX), 
 				new Affix("en", AffixType.SUFFIX));
 		en.addWordPair(lex.getWord("haus"), lex.getWord("hausen"), false);
@@ -212,7 +212,7 @@ public class CompoundingTest extends TestCase{
 		// Targeted test for buggy analyses such as MAIN HAUSEN = MAIN HAUSEN +(en)
 		// This checks that analyses of words created in compounding are
 		// correct in the simple case.
-		lex = CorpusLoader.loadWordlist("data/test/compounding_test_ger.txt");
+		lex = CorpusLoader.loadWordlist("data/test/compounding_test_ger.txt", "ISO8859_1", false);
 		Transform er = new Transform(new Affix("", AffixType.SUFFIX), 
 				new Affix("er", AffixType.SUFFIX));
 		// Move "haus" to Base so it will be used

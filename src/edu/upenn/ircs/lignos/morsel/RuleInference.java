@@ -120,9 +120,11 @@ public class RuleInference {
 			}
 		}
 		
-		// Put the new words out to the log
-		for (Word newBase : newWords) {
-			out.println(newBase.toDerivedWordsString());
+		// Put the new words out to the log if we're outputting
+		if (out != null) {
+			for (Word newBase : newWords) {
+				out.println(newBase.toDerivedWordsString());
+			}
 		}
 		
 		// Output the results
