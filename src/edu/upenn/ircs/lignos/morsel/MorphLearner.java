@@ -135,7 +135,9 @@ public class MorphLearner {
 		loadCorpus(encoding);
 		
 		// Shorten the analysis path down to a base for use in 
-		analysisBase = outPath.substring(0, outPath.lastIndexOf('.'));
+		analysisBase = outPath.contains(".") ? 
+				outPath.substring(0, outPath.lastIndexOf('.')) :
+				outPath;
 	}
 	
 	/**
