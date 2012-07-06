@@ -23,7 +23,7 @@ weighted_transforms = true
 weighted_affixes = true
 
 # Preprocessing flags
-hyphenation = false
+hyphenation = true
 compounding = true
 iter_compounding = true
 aggr_compounding = true
