@@ -811,13 +811,13 @@ public class MorphLearner {
 		options.addOption(encodingOption);
 		options.addOption(new Option("b", "base-inf", false,
 				"output the examples of base inference. This does not change whether base inference" +
-				"is used; it simply outputs the examples that used it."));
+				" is used; it simply outputs the examples that used it."));
 		options.addOption(new Option("s", "conflation-sets", false,
 				"output the learner's conflation sets"));
 		options.addOption(new Option("c", "compounds", false,
 				"output the learner's analsyis before final compounding is used"));
 		HelpFormatter formatter = new HelpFormatter();
-		String usage = "MorphLearner [output options] wordlist outfile logfile paramfile";
+		String usage = "MorphLearner [options] wordlist outfile logfile paramfile";
 		
 		CommandLine line = null;
 		String[] otherArgs = null;
@@ -825,6 +825,13 @@ public class MorphLearner {
 	        // Parse the command line arguments
 	        line = parser.parse(options, args);
 	        otherArgs = line.getArgs();
+	        
+		    // Handle help
+			if (line.hasOption("help")) {
+				formatter.printHelp(usage, options);
+				System.exit(0);
+			}
+	        
 	        if (otherArgs.length != 4) {
 	        	throw new ParseException("Incorrect number of required arguments specified");
 	        }
@@ -834,12 +841,6 @@ public class MorphLearner {
 	        formatter.printHelp(usage, options);
 	        System.exit(64);
 	    }
-
-	    // Handle help
-		if (line.hasOption("help")) {
-			formatter.printHelp(usage, options);
-			System.exit(0);
-		}
 		
 		// Get options
 		String encoding = line.getOptionValue("encoding", "ISO8859_1");
