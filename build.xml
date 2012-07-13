@@ -5,7 +5,7 @@
   <!-- set global properties for this build -->
   <property name="src" location="src"/>
   <property name="build" location="build"/>
-  <property name="lib" location="lib"/>
+  <property name="lib" location="lib" relative="true"/>
   <property name="output"  location="morsel.jar"/>
 
   <target name="init">
@@ -30,7 +30,7 @@
 
   <target name="dist" depends="compile"
         description="generate the distribution" >
-    <!-- Put everything in ${build} into the .jar file -->
+    <!-- Put everything in ${build} into the .jar file and set the classpath -->
     <jar jarfile="${output}" basedir="${build}">
         <manifest>
             <attribute name="Main-Class" value="edu.upenn.ircs.lignos.morsel.MorphLearner" />
