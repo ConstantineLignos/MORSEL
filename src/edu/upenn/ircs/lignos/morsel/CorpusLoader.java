@@ -54,8 +54,8 @@ public class CorpusLoader {
 			// Open the word list and get each word
 			BufferedReader input = new BufferedReader(new InputStreamReader(new FileInputStream(wordListPath), encoding));
 			String line;
-			int typesLoaded = 0;
-			int tokensLoaded = 0;
+			long typesLoaded = 0;
+			long tokensLoaded = 0;
 			while ((line = input.readLine()) != null) {
 				Word word = parseWordlistEntry(line);
 				if (word != null) {
