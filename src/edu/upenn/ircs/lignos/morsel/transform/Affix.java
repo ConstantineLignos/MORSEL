@@ -209,6 +209,8 @@ public class Affix {
 			case DERIVED: derivedTypeCount++; break;
 			case UNMODELED: unmodTypeCount++; break;
 			// Ignore all other word sets
+			default:
+				break;
 			}
 		}
 	}
