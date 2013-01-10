@@ -54,6 +54,9 @@ and use the conservative parameter set do the following:
 
 `java -jar morsel.jar data/test/brown_wordlist.txt out.txt log.txt params/conservative.txt`
 
+If you're using a data set of any significant size, you'll want to increase Java's maximum heap size, see Java's
+`Xmx` flag.
+
 ## Evaluating MORSEL
 MORSEL was designed for Morpho Challenge, so it's best evaluated using the Morpho Challenge metrics (which you
 can get from their website) or the EMMA metric. I have three requests for people performing evaluations:
@@ -67,7 +70,7 @@ can get from their website) or the EMMA metric. I have three requests for people
 
 ```latex
  @InProceedings{lignos:2010:MC,
-  title={{Learning from Unseen Data}},
+  title={Learning from Unseen Data},
   author={Lignos, Constantine},
   booktitle = {Proceedings of the Morpho Challenge 2010 Workshop},
   year = {2010},
