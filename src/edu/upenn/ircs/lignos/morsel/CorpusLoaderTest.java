@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 
 public class CorpusLoaderTest extends TestCase {
 	String wordListPath = "data/test/test_wordlist.txt";
+	String overflowListPath = "data/test/test_overflowlist.txt";
 	
 	public void testloadWordlist() {
 		Lexicon lex = CorpusLoader.loadWordlist(wordListPath, "ISO8859_1", false);
@@ -31,6 +32,7 @@ public class CorpusLoaderTest extends TestCase {
 		assertEquals(500, lex.getWord("a").getCount());
 		assertNotNull(lex.getWord("rat"));
 		assertEquals(200, lex.getWord("rat").getCount());
+		assertEquals(43295, lex.getTokenCount());
 	}
 	
 	public void testparseWordlistEntry() {
@@ -38,4 +40,12 @@ public class CorpusLoaderTest extends TestCase {
 				CorpusLoader.parseWordlistEntry("400 at"));
 	}
 
+	/**
+	 * Test that counts bigger than MAX_INT do not cause overflow.
+	 */
+	public void testloadWordlistOverflow() {
+		Lexicon lex = CorpusLoader.loadWordlist(overflowListPath, "ISO8859_1", false);
+		assertEquals(2147483648L, lex.getWord("biggerthanmaxint").getCount());
+		assertEquals(2147526943L, lex.getTokenCount());
+	}
 }

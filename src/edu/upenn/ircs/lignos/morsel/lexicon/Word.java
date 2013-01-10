@@ -31,11 +31,11 @@ import java.util.Set;
 
 public class Word {
 	// These are set by the main learner, but defaults are provided here
-	public static float FREQ_THRESHOLD = .000001F;
+	public static double FREQ_THRESHOLD = .000001F;
 	public static int COUNT_THRESHOLD = 1;
 	
-	private int count;
-	private float freq;
+	private long count;
+	private double freq;
 	private WordSet set;
 	private Word base;
 	private Word root;
@@ -51,7 +51,7 @@ public class Word {
 	private boolean compound;
 	protected String text;
 	
-	public Word(String text, int count, boolean analyze) {
+	public Word(String text, long count, boolean analyze) {
 		this.text = text;
 		this.count = count;
 		this.freq = -1.0F; // Indicator that it has not been computed
@@ -119,7 +119,7 @@ public class Word {
 	
 	public boolean shouldAnalyze() {return analyze;}
 	
-	public int getCount() {return count;}
+	public long getCount() {return count;}
 	
 	public WordSet getSet() {return set;}
 
@@ -190,15 +190,15 @@ public class Word {
 		}
 	}
 
-	public void setFrequency(int tokenCount) {
-		freq = ((float) count)/tokenCount;
+	public void setFrequency(long tokenCount) {
+		freq = ((double) count)/tokenCount;
 	}
 	
 	public boolean isFrequent() {
 		return count > COUNT_THRESHOLD && freq > FREQ_THRESHOLD;
 	}
 
-	public void addCount(int count) {
+	public void addCount(long count) {
 		// Increment the token count by the specified amount
 		this.count += count;
 	}

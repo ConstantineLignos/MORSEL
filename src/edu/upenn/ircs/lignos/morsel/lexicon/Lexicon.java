@@ -41,7 +41,7 @@ public class Lexicon {
 	private Map<String, Word> lex;
 	private Map<String, Affix> prefixes;
 	private Map<String, Affix> suffixes;
-	private int tokenCount;
+	private long tokenCount;
 	
 	private Set<Word> base;
 	private Set<Word> derived;
@@ -53,7 +53,7 @@ public class Lexicon {
 		
 		prefixes = new THashMap<String, Affix>();
 		suffixes = new THashMap<String, Affix>();
-		tokenCount = 0;
+		tokenCount = 0L;
 		
 		base = new THashSet<Word>();
 		derived = new THashSet<Word>();
@@ -64,6 +64,8 @@ public class Lexicon {
 	public String getStatus() {
 		return "Types: " + lex.size() + " Tokens: " + tokenCount;
 	}
+	
+	public long getTokenCount() { return tokenCount; }
 	
 	public boolean addWord(Word word) {
 		// Add the word to the lexicon. If a word was already there, return false
@@ -281,79 +283,91 @@ public class Lexicon {
 	public static class TypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
-			return ((Affix) affix1).getTypeCount() - ((Affix) affix2).getTypeCount();
+			return Long.compare(
+					((Affix) affix1).getTypeCount(),
+					((Affix) affix2).getTypeCount());
 		}
 	}
 	
 	public static class WeightedTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
-			return ((Affix) affix1).getWeightedTypeCount() - 
-				((Affix) affix2).getWeightedTypeCount();
+			return Long.compare(
+					((Affix) affix1).getWeightedTypeCount(),
+					((Affix) affix2).getWeightedTypeCount());
 		}
 	}
 
 	public static class AllTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
-			return (((Affix) affix1).getBaseTypeCount() + 
-					((Affix) affix1).getUnmodTypeCount() +
-					((Affix) affix1).getDerivedTypeCount() ) - 
-				   (((Affix) affix2).getBaseTypeCount() + 
-				    ((Affix) affix2).getUnmodTypeCount() +
-				    ((Affix) affix2).getDerivedTypeCount());
+			return Long.compare(
+					(((Affix) affix1).getBaseTypeCount() +
+					 ((Affix) affix1).getUnmodTypeCount() +
+					 ((Affix) affix1).getDerivedTypeCount()),
+					(((Affix) affix2).getBaseTypeCount() +
+					 ((Affix) affix2).getUnmodTypeCount() +
+					 ((Affix) affix2).getDerivedTypeCount()));
 		}
 	}
 	
 	public static class WeightedAllTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
-			return (((Affix) affix1).getWeightedBaseTypeCount() + 
-					((Affix) affix1).getWeightedUnmodTypeCount() +
-					((Affix) affix1).getWeightedDerivedTypeCount() ) - 
-				   (((Affix) affix2).getWeightedBaseTypeCount() + 
-				    ((Affix) affix2).getWeightedUnmodTypeCount() +
-				    ((Affix) affix2).getWeightedDerivedTypeCount());
+			return Long.compare(
+					(((Affix) affix1).getWeightedBaseTypeCount() +
+					 ((Affix) affix1).getWeightedUnmodTypeCount() +
+					 ((Affix) affix1).getWeightedDerivedTypeCount()),
+				    (((Affix) affix2).getWeightedBaseTypeCount() +
+				     ((Affix) affix2).getWeightedUnmodTypeCount() +
+				     ((Affix) affix2).getWeightedDerivedTypeCount()));
 		}
 	}
 	
 	public static class BaseUnmodTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
-			return (((Affix) affix1).getBaseTypeCount() + ((Affix) affix1).getUnmodTypeCount()) - 
-			(((Affix) affix2).getBaseTypeCount() + ((Affix) affix2).getUnmodTypeCount());
+			return Long.compare(
+					(((Affix) affix1).getBaseTypeCount() + ((Affix) affix1).getUnmodTypeCount()),
+					(((Affix) affix2).getBaseTypeCount() + ((Affix) affix2).getUnmodTypeCount()));
 		}
 	}
 	
 	public static class UnmodTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
-			return ((Affix) affix1).getUnmodTypeCount() - ((Affix) affix2).getUnmodTypeCount();
+			return Long.compare(
+					((Affix) affix1).getUnmodTypeCount(),
+					((Affix) affix2).getUnmodTypeCount());
 		}
 	}
 	
 	public static class WeightedBaseUnmodTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
-			return (((Affix) affix1).getWeightedBaseTypeCount() + 
-					((Affix) affix1).getWeightedUnmodTypeCount()) - 
-			(((Affix) affix2).getWeightedBaseTypeCount() + 
-					((Affix) affix2).getWeightedUnmodTypeCount());
+			return Long.compare(
+					(((Affix) affix1).getWeightedBaseTypeCount() +
+					 ((Affix) affix1).getWeightedUnmodTypeCount()),
+					(((Affix) affix2).getWeightedBaseTypeCount() +
+					 ((Affix) affix2).getWeightedUnmodTypeCount()));
 		}
 	}
 	
 	public static class WeightedUnmodTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
-			return ((Affix) affix1).getWeightedUnmodTypeCount() - 
-				((Affix) affix2).getWeightedUnmodTypeCount();
+			return Long.compare(
+					((Affix) affix1).getWeightedUnmodTypeCount(),
+					((Affix) affix2).getWeightedUnmodTypeCount());
 		}
 	}
 	
 	public static class TokenCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
-			return ((Affix) affix1).getTokenCount() - ((Affix) affix2).getTokenCount();
+			return Long.compare(
+					((Affix) affix1).getTokenCount(),
+					((Affix) affix2).getTokenCount());
 		}
 	}
 

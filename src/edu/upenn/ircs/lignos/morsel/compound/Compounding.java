@@ -300,8 +300,8 @@ public class Compounding {
 					// or the count of the original word if this is a duplicate.
 					// This word will be added to the lexicon later if the hypothesized
 					// compound is accepted
-					int count = duplicate ? dupeWord.getCount() : 
-						lex.getWord(prefix).getCount()/2;
+					long count = duplicate ? dupeWord.getCount() : 
+						lex.getWord(prefix).getCount() / 2;
 					Word prefixWord = new Word(result.derivedText, 
 							count , false);
 					
@@ -660,7 +660,7 @@ public class Compounding {
 			public int compare(AnalysisResult h1, AnalysisResult h2) {
 				// Try to differentiate by base first
 				if (h1.base.getCount() != h2.base.getCount())
-					return Integer.signum(h1.base.getCount() - h2.base.getCount());
+					return Long.compare(h1.base.getCount(), h2.base.getCount());
 				else {
 					// Differentiate by score of transforms
 					return Double.compare(h1.scoreTransforms(), h2.scoreTransforms());

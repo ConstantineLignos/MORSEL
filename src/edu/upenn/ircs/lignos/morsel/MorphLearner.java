@@ -72,7 +72,7 @@ public class MorphLearner {
 	private int TYPE_THRESHOLD;
 	private int STEM_LENGTH;
 	private double OVERLAP_THRESHOLD;
-	private float PRECISION_THRESHOLD;
+	private double PRECISION_THRESHOLD;
 	private int WINDOW_SIZE;
 	private boolean HYPHENATION;
 	private boolean FINAL_COMPOUNDING;
@@ -483,7 +483,7 @@ public class MorphLearner {
 			}
 			
 			// Check that the segmentation precision is acceptable
-			float segPrecision = Transform.calcSegPrecision(bestTransform);
+			double segPrecision = Transform.calcSegPrecision(bestTransform);
 			System.out.println("Seg. Precision: " + segPrecision);
 			if(segPrecision < PRECISION_THRESHOLD) {
 				System.out.println("Seg. Precision too low");
@@ -748,7 +748,7 @@ public class MorphLearner {
 		WINDOW_SIZE = Integer.parseInt(props.getProperty("window_size"));
 		
 		// Word scoring parameters
-		Word.FREQ_THRESHOLD =  Float.parseFloat(props.getProperty("frequent_prob_threshold"));
+		Word.FREQ_THRESHOLD =  Double.parseDouble(props.getProperty("frequent_prob_threshold"));
 		Word.COUNT_THRESHOLD = Integer.parseInt(props.getProperty("frequent_type_threshold"));
 		
 		// Transform scoring parameters
@@ -759,8 +759,8 @@ public class MorphLearner {
 		// Transform selection parameters
 		TYPE_THRESHOLD = Integer.parseInt(props.getProperty("type_threshold"));
 	 	STEM_LENGTH = Integer.parseInt(props.getProperty("overlap_stem_length"));
-		OVERLAP_THRESHOLD =  Float.parseFloat(props.getProperty("overlap_threshold"));
-		PRECISION_THRESHOLD = Float.parseFloat(props.getProperty("precision_threshold"));
+		OVERLAP_THRESHOLD =  Double.parseDouble(props.getProperty("overlap_threshold"));
+		PRECISION_THRESHOLD = Double.parseDouble(props.getProperty("precision_threshold"));
 				
 		// Preprocessing flags
 		HYPHENATION = Boolean.parseBoolean(props.getProperty("hyphenation"));
@@ -884,24 +884,24 @@ public class MorphLearner {
 	public static class WeightedTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object transform1, Object transform2) {
-			return ((Transform) transform1).getWeightedTypeCount() - 
-			((Transform) transform2).getWeightedTypeCount();
+			return Long.compare(((Transform) transform1).getWeightedTypeCount(), 
+			((Transform) transform2).getWeightedTypeCount());
 		}
 	}
 	
 	public static class TypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object transform1, Object transform2) {
-			return ((Transform) transform1).getTypeCount() - 
-			((Transform) transform2).getTypeCount();
+			return Long.compare(((Transform) transform1).getTypeCount(), 
+			((Transform) transform2).getTypeCount());
 		}
 	}
 	
 	public static class TokenCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object transform1, Object transform2) {
-			return ((Transform) transform1).getTokenCount() - 
-			((Transform) transform2).getTokenCount();
+			return Long.compare(((Transform) transform1).getTokenCount(),
+			((Transform) transform2).getTokenCount());
 		}
 	}
 }

@@ -37,16 +37,16 @@ public class Affix {
 	
 	private String text;
 	private AffixType type;
-	private int typeCount = 0;
-	private int freqTypeCount = -1;
-	private int tokenCount = 0;
+	private long typeCount = 0L;
+	private long freqTypeCount = -1L;
+	private long tokenCount = 0L;
 	private Set<Word> wordSet;
 	private int length;
 	private int weight;
 	// Set to -1 so it is clear when the counting functions have never been called
-	private int baseTypeCount = -1;
-	private int derivedTypeCount = -1;
-	private int unmodTypeCount = -1;
+	private long baseTypeCount = -1L;
+	private long derivedTypeCount = -1L;
+	private long unmodTypeCount = -1L;
 	
 	/**
 	 * Create an affix, setting its counts to zero and making an empty wordset.
@@ -61,7 +61,7 @@ public class Affix {
 		baseTypeCount = -1;
 		derivedTypeCount = -1;
 		unmodTypeCount = -1;
-		tokenCount = 0;
+		tokenCount = 0L;
 		wordSet = new THashSet<Word>();
 		
 		length = text.length();
@@ -88,7 +88,7 @@ public class Affix {
 	 * 
 	 * @return the type count of the affix
 	 */
-	public int getTypeCount() {return typeCount;}
+	public long getTypeCount() {return typeCount;}
 	
 	/**
 	 * Returns the number of frequent word types (as given by Word.isFrequent() 
@@ -96,7 +96,7 @@ public class Affix {
 	 * 
 	 * @return the number of frequent word types for the affix
 	 */
-	public int getFreqTypeCount() {return freqTypeCount;}
+	public long getFreqTypeCount() {return freqTypeCount;}
 	
 	/**
 	 * Returns the number of word types that contain the affix multiplied by the
@@ -104,14 +104,14 @@ public class Affix {
 	 * 
 	 * @return the weighted type count of the affix
 	 */
-	public int getWeightedTypeCount() {return weight * typeCount;}
+	public long getWeightedTypeCount() {return weight * typeCount;}
 
 	/**
 	 * Returns the number of word types in the Base set that contain the affix.
 	 * 
 	 * @return the Base type count of the affix
 	 */
-	public int getBaseTypeCount() {return baseTypeCount;}
+	public long getBaseTypeCount() {return baseTypeCount;}
 	
 	/**
 	 * Returns the number of word types in the Base set that contain the affix, 
@@ -119,7 +119,7 @@ public class Affix {
 	 * 
 	 * @return the weighted Base type count of the affix
 	 */
-	public int getWeightedBaseTypeCount() {return weight * baseTypeCount;}
+	public long getWeightedBaseTypeCount() {return weight * baseTypeCount;}
 
 	/**
 	 * Returns the number of word types in the Derived set that contain the 
@@ -127,7 +127,7 @@ public class Affix {
 	 * 
 	 * @return the Derived type count of the affix
 	 */
-	public int getDerivedTypeCount() {return derivedTypeCount;}
+	public long getDerivedTypeCount() {return derivedTypeCount;}
 
 	/**
 	 * Returns the number of word types in the Derived set that contain the 
@@ -135,7 +135,7 @@ public class Affix {
 	 * 
 	 * @return the weighted Derived type count of the affix
 	 */
-	public int getWeightedDerivedTypeCount() {return weight * derivedTypeCount;}
+	public long getWeightedDerivedTypeCount() {return weight * derivedTypeCount;}
 	
 	/**
 	 * Returns the number of word types in the Unmodeled set that contain the 
@@ -143,7 +143,7 @@ public class Affix {
 	 * 
 	 * @return the Unmodeled type count of the affix
 	 */
-	public int getUnmodTypeCount() {return unmodTypeCount;}
+	public long getUnmodTypeCount() {return unmodTypeCount;}
 	
 	/**
 	 * Returns the number of word types in the Unmodeled set that contain the 
@@ -151,14 +151,14 @@ public class Affix {
 	 * 
 	 * @return the weighted Unmodeled type count of the affix
 	 */
-	public int getWeightedUnmodTypeCount() {return weight * unmodTypeCount;}
+	public long getWeightedUnmodTypeCount() {return weight * unmodTypeCount;}
 
 	/**
 	 * Returns the number of word tokens that contain the affix.
 	 * 
 	 * @return the token count of the affix
 	 */
-	public int getTokenCount() {return tokenCount;}
+	public long getTokenCount() {return tokenCount;}
 
 	/**
 	 * Returns the AffixType of the affix (e.g. prefix, suffix).
@@ -247,7 +247,7 @@ public class Affix {
 	 * 
 	 * @param amount the amount to increment by
 	 */
-	public void incTokenCount (int amount) {this.tokenCount += amount;}
+	public void incTokenCount (long amount) {this.tokenCount += amount;}
 	
 	/**
 	 * Return all the affix strings in a word of the specified AffixType.

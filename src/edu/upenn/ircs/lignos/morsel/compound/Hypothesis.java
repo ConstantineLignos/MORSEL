@@ -135,11 +135,11 @@ public class Hypothesis {
 		 */
 		public int compare(Hypothesis h1, Hypothesis h2) {
 			// Intentionally 2 - 1 to get a descending sort
-			return (int) (h2.getScore() - h1.getScore());
+			return Double.compare(h2.getScore(), h1.getScore());
 		}
 	}
 	
-	private static int scoreWord(Word word) {
+	private static long scoreWord(Word word) {
 		return word.getCount();
 	}
 }

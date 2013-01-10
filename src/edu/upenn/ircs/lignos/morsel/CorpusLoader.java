@@ -109,7 +109,7 @@ public class CorpusLoader {
 		
 		// Parse the second item as a count
 		try {
-			int count = Integer.parseInt(parts[0]);
+			long count = Long.parseLong(parts[0]);
 			return new Word(parts[1], count, true);
 		}
 		catch (NumberFormatException e) {

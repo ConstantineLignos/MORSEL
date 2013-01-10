@@ -35,7 +35,7 @@ public class Transform {
 	private Affix affix2;
 	private AffixType affixType;
 	private int typeCount = 0;
-	private int tokenCount = 0;
+	private long tokenCount = 0L;
 	private int normalPairCount = 0;
 	private int accomPairCount = 0; // Pairs of words formed by an accomodation
 	private Set<WordPair> derivationPairs;
@@ -144,7 +144,7 @@ public class Transform {
 		return typeCount * Math.max(length(), 1);
 	}
 
-	public int getTokenCount() {return tokenCount;}
+	public long getTokenCount() {return tokenCount;}
 
 	public Set<WordPair> getWordPairs() {return derivationPairs;}
 
@@ -435,10 +435,10 @@ public class Transform {
 		}
 	}
 	
-	public static float calcSegPrecision(Transform trans) {
+	public static double calcSegPrecision(Transform trans) {
 		// Segmentation precision is the number of type count of the transform
 		// divided by the type count of affix2
-		return trans.typeCount / (float) trans.affix2.getFreqTypeCount();
+		return trans.typeCount / (double) trans.affix2.getFreqTypeCount();
 	}
 	
 	public boolean equals(Object other) {
