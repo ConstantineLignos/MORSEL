@@ -251,7 +251,7 @@ public class MorphLearner {
 				break;
 			}
 			
-			System.out.println("Selected " + bestTransform.toVerboseString());
+			System.out.println("Selected " + bestTransform.toString());
 	
 			// Re-evaluate the best transform
 			if (REEVAL) {
