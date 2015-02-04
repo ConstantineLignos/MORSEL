@@ -3,33 +3,45 @@ MORSEL
 
 *MORphological Sparsity Embiggens Learning: A simple, unsupervised morphological learning model*
 
-MORSEL is an unsupervised morphology learner created for Morpho Challenge 2010. Its input is a wordlist with
-frequency information for each word, and its output is a morphological analysis for each word. Crucially, it
-isn't a segmenter; it's a morphological analyzer. Its goal is to learn the morphological grammar of the language
-and report what morphemes are present in each word.
+MORSEL is an unsupervised morphology learner created for Morpho
+Challenge 2010. Its input is a wordlist with frequency information for
+each word, and its output is a morphological analysis for each
+word. Crucially, it isn't a segmenter; it's a morphological
+analyzer. Its goal is to learn the morphological grammar of the
+language and report what morphemes are present in each word.
 
 Using MORSEL
 ============
-MORSEL is distributed under the GPLv3. You are welcome to use it for performing evaluations, for bootstrapping
-a supervised learner, or for any other purpose you can think of as long as you comply with the license. Please
-get in touch with me (http://lignos.org/) if you're using it; while the documentation should
-be adequate it's always good to hear what applications other people have in mind for this system. I ask that
-if you use it you cite my Morpho Challenge 2010 paper (BibTeX information below).
+
+MORSEL is distributed under the GPLv3. You are welcome to use it for
+performing evaluations, for bootstrapping a supervised learner, or for
+any other purpose you can think of as long as you comply with the
+license. Please get in touch with me (http://lignos.org/) if you're
+using it; while the documentation should be adequate it's always good
+to hear what applications other people have in mind for this system. I
+ask that if you use it you cite my Morpho Challenge 2010 paper (BibTeX
+information below).
 
 ## Dependencies
+
 - Java JDK 1.6 or newer (tested with 1.6, 1.7, and 1.8)
 - ant (tested with 1.8.2 and 1.9.4)
 
 ## Building
-Once you've got the dependencies installed, you can simply run ant in the root of the repository and it will compile
-all source and create morsel.jar. The jar depends on the other jars in lib/ (cli, junit, and trove), so if you move 
-the jar you'll need to move lib/ along with it.
+
+Once you've got the dependencies installed, you can simply run `ant`
+in the root of the repository and it will compile all source and
+create `morsel.jar`. The jar depends on the other jars in `/lib`
+(Apache CLI, JUnit, and GNU Trove), so if you move the jar you'll need
+to move `/lib` along with it.
 
 ## Taking it for a spin
 You run MORSEL by running the jar and providing:
-* A wordlist formatted with a word and its frequency on each line separated by whitespace, i.e., `69971 the`. 
-  See data/test/brown_wordlist.txt for an example.
-* An output file where the morphological analyses will be stored. The output will look like this:
+* A wordlist formatted with a word and its frequency on each line
+  separated by whitespace, i.e., `69971 the`.  See
+  `data/test/brown_wordlist.txt` for an example.
+* An output file where the morphological analyses will be stored. The
+  output will look like this:
 
 ```text
 accelerate      ACCELERATE
@@ -38,20 +50,25 @@ accelerating    ACCELERATE +(ing)
 acceleration    ACCELERATE +(ion)
 accelerations   ACCELERATE +(ion) +(s)
 ```
-
-* A log file to record what the learner is doing while it learns. If you'd like it to write to standard out, just enter 
-  `-` for the log file.
-* A parameter file to configure the segmenter. There are two files in the params folder corresponding to the 
-  parameters used for the Morpho Challenge 2010 evaluation. Both settings (aggressive and conservative) produced state 
-  of the art results for English in Morpho Challenge 2010, and aggressive produced state of the art results for Finnish.
-  I've done the best that I can to document these parameters between the param files and the code, but if you want
-  to try changing them I'd recommend getting in touch.
-  * The rest of the command-line parameters are documented by running `java -jar morsel.jar --help`. With the exception of
-  encoding, unless you are interested in the algorithm's internals and want more debug output there isn't much to see here.
-  Almost everything you want to set is set via the parameter file, not command-line arguments.
+* A log file to record what the learner is doing while it learns. If
+  you'd like it to write to standard out, just enter `-` for the log
+  file.
+* A parameter file to configure the segmenter. There are two files in
+  the params folder corresponding to the parameters used for the
+  Morpho Challenge 2010 evaluation. Both settings (aggressive and
+  conservative) produced state of the art results for English in
+  Morpho Challenge 2010, and aggressive produced state of the art
+  results for Finnish.
+* The rest of the command-line parameters are documented by running
+  `java -jar morsel.jar --help`. With the exception of encoding,
+  unless you are interested in the algorithm's internals and want more
+  debug output there isn't much to see here.  Almost everything you
+  want to set is set via the parameter file, not command-line
+  arguments.
   
-For example, if you want to run on the Brown corpus wordlist, write the analysis to out.txt, write the log to log.txt,
-and use the conservative parameter set do the following:
+For example, if you want to run on the Brown corpus wordlist, write
+the analysis to `out.txt`, write the log to `log.txt`, and use the
+conservative parameter set do the following:
 
 `java -jar morsel.jar data/test/brown_wordlist.txt out.txt log.txt params/conservative.txt`
 
@@ -59,14 +76,20 @@ If you're using a data set of any significant size, you'll want to increase Java
 `Xmx` flag.
 
 ## Evaluating MORSEL
-MORSEL was designed for Morpho Challenge, so it's best evaluated using the Morpho Challenge metrics (which you
-can get from their website) or the EMMA metric. I have three requests for people performing evaluations:
-* MORSEL is a rule-based system for affixal morphology. It is not designed for templatic morphology (e.g., Arabic,
-  Hebrew), so please don't bother evaluating it in those languages. It can be adapted to work in these languages
-  in theory, but it's a fair amount of work.
-* MORSEL is a morphological analyzer. If you are evaluating it in a segmentation task, you'll have to adapt its
-  output as a segmentation, which will distort its performance. If you evaluate in this manner, please make it clear 
-  how you adapted it and that the segmentation is derived from MORSEL's output.
+
+MORSEL was designed for Morpho Challenge, so it's best evaluated using
+the Morpho Challenge metrics (which you can get from their website) or
+the EMMA metric. I have three requests for people performing
+evaluations:
+* MORSEL is a rule-based system for affixal morphology. It is not
+  designed for templatic morphology (e.g., Arabic, Hebrew), so please
+  don't bother evaluating it in those languages. It can be adapted to
+  work in these languages in theory, but it's a fair amount of work.
+* MORSEL is a morphological analyzer. If you are evaluating it in a
+  segmentation task, you'll have to adapt its output as a
+  segmentation, which will distort its performance. If you evaluate in
+  this manner, please make it clear how you adapted it and that the
+  segmentation is derived from MORSEL's output.
 * Please cite the following paper:
 
 ```latex
@@ -106,7 +129,7 @@ Some relevant facts about the design of MORSEL:
 
 ## Parameter files
 
-MORSEL's behavior is largely specified via the parameter file specific
+MORSEL's behavior is largely specified via the parameter file specified
 on the command line. Here is a description of the parameters used. For
 sensible defaults, see `params/conservative.txt`. Some of these
 parameters are difficult to understand without understanding the
@@ -137,7 +160,7 @@ Word scoring parameters:
   is useful for excluding extremely rare items. For example, setting
   this to one excludes all hapax legomena (words only seen once) from
   the transform selection process.
-* `frequent_prob_threshold`: similar to `frequent_type_threshold`,
+* `frequent_prob_threshold`: Similar to `frequent_type_threshold`,
   expect the cutoff is specified as a normalized frequency rather than
   a raw count.
 
@@ -165,10 +188,10 @@ Transform selection parameters:
   handful of words. (In the final selected parameters, this was set
   to two, effectively disabling any filtering.)
 * `overlap_stem_length`: The length of the stem to be used in the
-  *stem overlap* calculation. While this parameter is set, the stem
-  overlap filter never comes into play in any well-behaved data set.
+  *stem overlap* calculation.
 * `overlap_threshold`: The threshold for *overlap ratio* above which a
-  transform is rejected.
+  transform is rejected. While this parameter is set, the stem
+  overlap filter never comes into play in any well-behaved data set.
 * `precision_threshold`: The minimum required *segmentation precision*
   for a transform to be accepted.
 
@@ -221,7 +244,7 @@ MORSEL depends on:
 
 Because Maven was not yet widely adopted by researchers when MORSEL
 was first developed, JAR files for the dependencies are located in the
-/lib folder. The JAR built by MORSEL (`morsel.jar`) will look for
+`/lib` folder. The JAR built by MORSEL (`morsel.jar`) will look for
 these dependencies in the same directory.
 
 ## Building
@@ -234,6 +257,8 @@ test`. `ant clean` cleans all compilation output, including the JAR.
 The JAR manifest is set such that the main class
 `edu.upenn.ircs.lignos.morsel.MorphLearner` is run when the jar is
 executed. This is the the only main function in MORSEL.
+
+Enjoy!
 
 Constantine Lignos  
 Institute for Research in Cognitive Science  
