@@ -46,8 +46,9 @@ accelerations   ACCELERATE +(ion) +(s)
   of the art results for English in Morpho Challenge 2010, and aggressive produced state of the art results for Finnish.
   I've done the best that I can to document these parameters between the param files and the code, but if you want
   to try changing them I'd recommend getting in touch.
-* The rest of the parameters are documented by running `java -jar morsel.jar --help`. With the exception of encoding,
-  unless you are interested in the algorithm's internals there isn't much to see here.
+  * The rest of the command-line parameters are documented by running `java -jar morsel.jar --help`. With the exception of
+  encoding, unless you are interested in the algorithm's internals and want more debug output there isn't much to see here.
+  Almost everything you want to set is set via the parameter file, not command-line arguments.
   
 For example, if you want to run on the Brown corpus wordlist, write the analysis to out.txt, write the log to log.txt,
 and use the conservative parameter set do the following:
@@ -81,6 +82,145 @@ can get from their website) or the EMMA metric. I have three requests for people
   editor={Kurimo, Mikko and Virpioja, Sami and Turunen, Ville T.}
 }
 ```
+
+Design
+=====
+
+## Overview
+
+Some relevant facts about the design of MORSEL:
+* MORSEL is single-threaded. It would be trivial to parallelize the
+  transform scoring process that happens each iteration of learning,
+  but as MORSEL already runs quite quickly I stuck with the simplicity
+  of a serial implementation.
+* MORSEL uses GNU Trove for high performance hash maps and
+  sets. Because it does not an additional object for every entry in
+  the hash table, using Trove can result in almost 50% lower memory
+  usage on large data sets in addition to some speed improvements.
+* MORSEL uses a fairly large amount of memory in order to speed
+  learning. It keeps all words and a large set of hypothesized
+  transforms in memory at once. You may need up to 16GB of memory to
+  run MORSEL on the Morpho Challenge 2010 Finnish data set. Small data
+  sets take much less memory; running on the Brown Corpus only uses
+  about 256MB of RAM.
+
+## Parameter files
+
+MORSEL's behavior is largely specified via the parameter file specific
+on the command line. Here is a description of the parameters used. For
+sensible defaults, see `params/conservative.txt`.
+
+Learning iteration parameters:
+* `max_iter`: The maximum number of transforms that will be learned
+  from the corpus. Usually, learning stops well before this is reached
+  because other stopping criteria are met.
+* `top_affixes`: The number of affixes considered in each learning
+iteration as part of a transform.
+* `window_size`: The number of transforms that can be vetted in a
+  single iteration. If this number of transforms is reached, learning
+  stops.
+
+Word scoring parameters:
+*`frequent_type_threshold`: The frequency a word needs to be above
+  to be counted towards the number of types a transform covers. This
+  is useful for excluding extremely rare items. For example, setting
+  this to one excludes all hapax legomena (words only seen once) from
+  the transform selection process.
+* `frequent_prob_threshold`: similar to `frequent_type_threshold`,
+  expect the cutoff is specified as a normalized frequency rather than
+  a raw count.
+
+Transform scoring parameters:
+* `reeval`: Whether words identified originally as bases can later
+  become derived forms. For example, when set to `true`, after the
+  pairs (*bake*, *bakes*) and (*baker*, *bakers*) are identified
+  through the transform (*$*, *s*), when
+  the transform (*e*, *er*) is learned *baker* will change from being a
+  base form to a derived one, allowing it to be related to both *bake*
+  and *bakers*.
+* `score_reeval`: Whether pairs that require `reeval` to be identified
+  should be counted when transforms are scored.
+* `doubling`: Whether to allow doubling and de-doubling of characters
+  at the point of morpheme concatenation. For example, when doubling
+  is set to `true`, *pin* + *-ing* can be *pinning*, and *bake* +
+  *-ed* can be *baked*. This allows for some flexibility regarding
+  orthographic conventionst that the learner does not explicitly
+  identify.
+
+Transform selection parameters:
+*`type_threshold`: The minimum number of word pairs
+  a transform needs to model in order to be considered valid. This can
+  be used to prevent the learning of transforms that only apply to a
+  handful of words. (In the final selected parameters, this was set
+  to two, effectively disabling any filtering.)
+* `overlap_stem_length`: The length of the stem to be used in the
+  *stem overlap* calculation. While this parameter is set, the stem
+  overlap filter never comes into play in any well-behaved data set.
+* `overlap_threshold`: The threshold for *overlap ratio* above which a
+  transform is rejected.
+* `precision_threshold`: The minimum required *segmentation precision*
+  for a transform to be accepted.
+
+Weighting parameters:
+* `weighted_transforms`: Whether the score of transforms should be
+  weighted by the number of characters they add to a word. Setting to
+  `true` allows for rarer but more substantial transforms to outscore
+  shorter but more frequent ones.
+* `weighted_affixes`: Whether the score of affixes should be weighted
+  by their length.  Setting to `true` allows for rarer but longer
+  affixes to outscore shorter but more frequent ones.
+
+Pre-processing parameters:
+* `hyphenation`: Whether to always split words on hyphens.
+* `compounding`: Whether to split compounds at the end of learning.
+* `iter_compounding`: Whether to split compounds at the end of every iteration.
+* `aggr_compounding`: Whether to use the learned transforms to make
+  transform splitting more aggressive.
+
+Word/transform Inference parameters:
+* `rule_inference_conservative`: Whether to use the transforms learned
+    to infer missing bases.
+
+Experimental features (features that appear to be implemented
+correctly but do not improve performance):
+* `transform_relations`: Whether to filter potential analyses by
+whether the transforms in the analysis have appeared together in
+previous analyses.
+* `allow_unmod_simplex_word_analysis`: Whether to attempt to
+  aggressively segment unmodeled words using the learned transforms.
+
+Implementation-internal parameters:
+* `transform_optimization`: Whether to dramatically improve
+performance by keeping persistent data structures across
+iterations. You want this set to `true` unless you're debugging
+unexpected behavior.
+* `iteration_analysis`: Whether to output the analysis of the lexicon
+  at every single iteration. Generates a large amount of output but is
+  useful for examining the learning trajectory.
+
+
+## External libraries
+
+MORSEL depends on:
+* Apache Commons CLI library for parsing command-line arguments
+* junit for unit testing
+* GNU trove for hash maps and sets
+
+Because Maven was not yet widely adopted by researchers when MORSEL
+was first developed, JAR files for the dependencies are located in the
+/lib folder. The JAR built by MORSEL (`morsel.jar`) will look for
+these dependencies in the same directory.
+
+## Building
+
+The ant buildfile `build.xml` specifies how MORSEL should be
+built. Just running `ant` will perform compilation (`compile` target)
+and packaging the JAR (`dist` target). To run unit tests, run `ant
+test`. `ant clean` cleans all compilation output, including the JAR.
+
+The JAR manifest is set such that the main class
+`edu.upenn.ircs.lignos.morsel.MorphLearner` is run when the jar is
+executed. This is the the only main function in MORSEL.
 
 Constantine Lignos  
 Institute for Research in Cognitive Science  
