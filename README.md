@@ -12,13 +12,13 @@ Using MORSEL
 ============
 MORSEL is distributed under the GPLv3. You are welcome to use it for performing evaluations, for bootstrapping
 a supervised learner, or for any other purpose you can think of as long as you comply with the license. Please
-get in touch with me (http://www.seas.upenn.edu/~lignos/) if you're using it; while the documentation should
+get in touch with me (http://lignos.org/) if you're using it; while the documentation should
 be adequate it's always good to hear what applications other people have in mind for this system. I ask that
 if you use it you cite my Morpho Challenge 2010 paper (BibTeX information below).
 
 ## Dependencies
-- Java JDK 1.6 (newer versions will almost certainly work but have never been tested)
-- ant (tested with 1.8.2)
+- Java JDK 1.6 or newer (tested with 1.6, 1.7, and 1.8)
+- ant (tested with 1.8.2 and 1.9.4)
 
 ## Building
 Once you've got the dependencies installed, you can simply run ant in the root of the repository and it will compile
