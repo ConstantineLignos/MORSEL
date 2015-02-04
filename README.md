@@ -94,7 +94,7 @@ Some relevant facts about the design of MORSEL:
   but as MORSEL already runs quite quickly I stuck with the simplicity
   of a serial implementation.
 * MORSEL uses GNU Trove for high performance hash maps and
-  sets. Because it does not an additional object for every entry in
+  sets. Because it does not create an additional object for every entry in
   the hash table, using Trove can result in almost 50% lower memory
   usage on large data sets in addition to some speed improvements.
 * MORSEL uses a fairly large amount of memory in order to speed
@@ -121,7 +121,7 @@ iteration as part of a transform.
   stops.
 
 Word scoring parameters:
-*`frequent_type_threshold`: The frequency a word needs to be above
+* `frequent_type_threshold`: The frequency a word needs to be above
   to be counted towards the number of types a transform covers. This
   is useful for excluding extremely rare items. For example, setting
   this to one excludes all hapax legomena (words only seen once) from
@@ -148,7 +148,7 @@ Transform scoring parameters:
   identify.
 
 Transform selection parameters:
-*`type_threshold`: The minimum number of word pairs
+* `type_threshold`: The minimum number of word pairs
   a transform needs to model in order to be considered valid. This can
   be used to prevent the learning of transforms that only apply to a
   handful of words. (In the final selected parameters, this was set
@@ -172,14 +172,16 @@ Weighting parameters:
 
 Pre-processing parameters:
 * `hyphenation`: Whether to always split words on hyphens.
-* `compounding`: Whether to split compounds at the end of learning.
-* `iter_compounding`: Whether to split compounds at the end of every iteration.
+* `compounding`: Whether to split compounds at the end of learning
+  (basic compounding).
+* `iter_compounding`: Whether to split compounds at the end of every
+  iteration (iterative compounding).
 * `aggr_compounding`: Whether to use the learned transforms to make
-  transform splitting more aggressive.
+  transform splitting more aggressive (aggressive compounding).
 
 Word/transform Inference parameters:
 * `rule_inference_conservative`: Whether to use the transforms learned
-    to infer missing bases.
+    to infer missing bases (base inference).
 
 Experimental features (features that appear to be implemented
 correctly but do not improve performance):
