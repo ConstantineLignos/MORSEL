@@ -112,13 +112,13 @@ sensible defaults, see `params/conservative.txt`. Some of these
 parameters are difficult to understand without understanding the
 learning algorithm. I recommend you look at the following papers:
 
-[A rule-based unsupervised morphology learning framework](http://lignos.org/papers/Lignos_etal_MC2009.pdf) 
-Constantine Lignos, Erwin Chan, Mitchell P. Marcus, and Charles Yang 
+[A rule-based unsupervised morphology learning framework](http://lignos.org/papers/Lignos_etal_MC2009.pdf)  
+Constantine Lignos, Erwin Chan, Mitchell P. Marcus, and Charles Yang  
 Working Notes of the 10th Workshop of the Cross-Language Evaluation
 Forum (CLEF), 2009.
 
-[Learning from unseen data](http://lignos.org/papers/mc_2010_lignos.pdf) 
-Constantine Lignos 
+[Learning from unseen data](http://lignos.org/papers/mc_2010_lignos.pdf)  
+Constantine Lignos  
 Proceedings of the Morpho Challenge 2010 Workshop, 35-38, 2010.
 
 Learning iteration parameters:
