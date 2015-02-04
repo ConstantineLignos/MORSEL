@@ -8,7 +8,13 @@
 # Eclipse Files #
 .classpath
 .project
+.settings/
+.checkstyle
 
 # Build directories #
 /bin
 /build
+
+# Output
+log.txt
+out.txt
