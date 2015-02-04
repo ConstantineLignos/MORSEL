@@ -22,10 +22,17 @@ import edu.upenn.ircs.lignos.morsel.lexicon.Lexicon;
 import edu.upenn.ircs.lignos.morsel.lexicon.Word;
 import junit.framework.TestCase;
 
+/**
+ * Test basic wordlist loading capabilities.
+ *
+ */
 public class CorpusLoaderTest extends TestCase {
 	String wordListPath = "data/test/test_wordlist.txt";
 	String overflowListPath = "data/test/test_overflowlist.txt";
 	
+	/**
+	 * Test that entries are added to the lexicon when processing a wordlist.
+	 */
 	public void testloadWordlist() {
 		Lexicon lex = CorpusLoader.loadWordlist(wordListPath, "ISO8859_1", false);
 		assertNotNull(lex.getWord("a"));
@@ -35,6 +42,9 @@ public class CorpusLoaderTest extends TestCase {
 		assertEquals(43295, lex.getTokenCount());
 	}
 	
+	/**
+	 * Test parsing a single line into a Word object.
+	 */
 	public void testparseWordlistEntry() {
 		assertEquals(new Word("at", 400, true), 
 				CorpusLoader.parseWordlistEntry("400 at"));

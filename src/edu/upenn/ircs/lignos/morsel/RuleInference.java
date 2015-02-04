@@ -29,14 +29,27 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Allow inference of unseen forms using learned transforms.
+ *
+ */
 public class RuleInference {
 	private Set<String> inferredBases;
 	
+	/**
+	 * Create an new inference instance with an empty set of inferred bases.
+	 */
 	public RuleInference() {
 		inferredBases = new THashSet<String>();
 	}
 	
-	public Collection<Word> inferBases(Lexicon lex, Transform transform) {
+	/**
+	 * Infer new bases using the given lexicon and transforms
+	 * @param lex the lexicon
+	 * @param transform the learned transforms
+	 * @return a Set of inferred words
+	 */
+	private Collection<Word> inferBases(Lexicon lex, Transform transform) {
 		// Go over each unmodeled word with affix2 of the transform. If
 		// its hypothesized base is not word, infer it
 		Set<Word> newWords = new THashSet<Word>();
@@ -68,10 +81,19 @@ public class RuleInference {
 		return newWords;
 	}
 
+	/**
+	 * Infer the bases from the latest transform and then process them.
+	 * @param lex the lexicon
+	 * @param learnedTransforms the learned transforms
+	 * @param hypTransforms the hypothesized transforms
+	 * @param reEval as used by scoreWord
+	 * @param doubling as used by scoreWord
+	 * @param optimization as used by moveTransformPairs
+	 * @param out
+	 */
 	public void conservInference(Lexicon lex, List<Transform> learnedTransforms,
 			List<Transform> hypTransforms, boolean reEval, boolean doubling, 
 			boolean optimization, PrintWriter out) {
-		// Infer the bases from the latest transform and then process them
 		int newBaseCount = 0;
 		int newPairCount = 0;
 		

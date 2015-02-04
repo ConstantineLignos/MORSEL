@@ -29,6 +29,10 @@ import edu.upenn.ircs.lignos.morsel.transform.TransformRelation;
 import gnu.trove.THashMap;
 import gnu.trove.THashSet;
 
+/**
+ * Enable inferring sequential relationships between learned transforms.
+ *
+ */
 public class TransformInference {
 	private static final int MIN_COUNT = 1;
 	private Map<Transform, TransformRelation> relations;
@@ -71,6 +75,9 @@ public class TransformInference {
 	}
 
 
+	/**
+	 * Add any observed relationship between transforms to the good relations map.
+	 */
 	private void markGoodRelations() {
 		// For now, just any seen relationship
 		for (Entry<Transform, TransformRelation> e1 : relations.entrySet()) {

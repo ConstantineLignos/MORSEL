@@ -94,10 +94,11 @@ public class MorphLearner {
 	
 	/**
 	 * Create a new learner using the given paths for I/O.
-	 * @param corpusPath The path of the input corpus
-	 * @param outPath The path for the analysis output
-	 * @param logPath The path for the log
-	 * @param paramPath The path of the parameter file
+	 * @param corpusPath the path of the input corpus
+	 * @param outPath the path for the analysis output
+	 * @param logPath the path for the log
+	 * @param paramPath the path of the parameter file
+	 * @param encoding the encoding of the input corpus file
 	 * @param outputBaseInf Whether to output the examples of base inference
 	 * @param outputConflation Whether to output conflation sets
 	 * @param outputCompounds Whether to output an analysis before compounding
@@ -142,6 +143,7 @@ public class MorphLearner {
 	
 	/**
 	 * Loads the corpus located at corpusPath.
+	 * @param encoding the encoding of the corpus
 	 * @throws FileNotFoundException if the file at corpusPath could not be read.
 	 */
 	public void loadCorpus(String encoding) throws FileNotFoundException {
@@ -513,7 +515,7 @@ public class MorphLearner {
 			return true;
 		}
 		
-		// Is inverse of already learned?
+		// Is inverse of it already learned?
 		if (learnedTransforms.contains(new Transform(bestTransform.getAffix2(), 
 				bestTransform.getAffix1()))) {
 			System.out.println("Conflict: Inverse of transform already learned.");
