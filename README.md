@@ -108,7 +108,18 @@ Some relevant facts about the design of MORSEL:
 
 MORSEL's behavior is largely specified via the parameter file specific
 on the command line. Here is a description of the parameters used. For
-sensible defaults, see `params/conservative.txt`.
+sensible defaults, see `params/conservative.txt`. Some of these
+parameters are difficult to understand without understanding the
+learning algorithm. I recommend you look at the following papers:
+
+[A rule-based unsupervised morphology learning framework](http://lignos.org/papers/Lignos_etal_MC2009.pdf) 
+Constantine Lignos, Erwin Chan, Mitchell P. Marcus, and Charles Yang 
+Working Notes of the 10th Workshop of the Cross-Language Evaluation
+Forum (CLEF), 2009.
+
+[Learning from unseen data](http://lignos.org/papers/mc_2010_lignos.pdf) 
+Constantine Lignos 
+Proceedings of the Morpho Challenge 2010 Workshop, 35-38, 2010.
 
 Learning iteration parameters:
 * `max_iter`: The maximum number of transforms that will be learned
