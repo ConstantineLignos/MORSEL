@@ -56,14 +56,23 @@ import edu.upenn.ircs.lignos.morsel.transform.WordPair;
 import gnu.trove.THashMap;
 import gnu.trove.THashSet;
 
+/**
+ * Main class for the MORSEL unsupervised morphology learning
+ * system. Provides main method and core learning loop.
+ *
+ */
 public class MorphLearner {
 	// I/O Variables
 	String corpusPath;
 	PrintWriter output;
 	PrintStream log;
 	
-	// Learning data
+	/** The lexicon being learned over */
 	Lexicon lex;
+	/* The following parameters are documented in the README. See the
+	 * implementation of setParams for the mapping between the names
+	 * of these members and the official parameter names.
+	 */
 	private int MAX_ITER;
 	private int TOP_AFFIXES;
 	private boolean REEVAL;
@@ -716,6 +725,11 @@ public class MorphLearner {
 		return transforms;
 	}
 
+	/**
+	 * Sort transforms in-place according to the previously set sorting method.
+	 * Depends on the WEIGHTED_TRANSFORMS member for the sorting method.
+	 * @param transforms the transforms to be sorted
+	 */
 	public void sortTransforms(List<Transform> transforms) {
 		if (WEIGHTED_TRANSFORMS) {
 			Collections.sort(transforms, 
@@ -727,6 +741,14 @@ public class MorphLearner {
 		}
 	}
 
+	/**
+	 * Read in the properties at the specified path to set the parameters for learning.
+	 * The mapping between the names of the MorphLearner members and the official parameter
+	 * names used in the README is given in the implementation of this method.
+	 * @param paramPath the path for the properties file
+	 * @return true if the parameter file was successfully read
+	 * @throws FileNotFoundException if the properties file cannot be read
+	 */
 	public boolean setParams(String paramPath) throws FileNotFoundException {
 		// Read in the params as properties
 		Properties props = new Properties();
@@ -882,7 +904,11 @@ public class MorphLearner {
 		elapsedSeconds = (System.currentTimeMillis() - start)/1000F;
 		System.out.println("\nLearning time: " + elapsedSeconds + "s");
 	}
-	
+
+	/**
+	 * Compare transforms by their weighted type count
+	 *
+	 */
 	public static class WeightedTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object transform1, Object transform2) {
@@ -890,7 +916,11 @@ public class MorphLearner {
 			((Transform) transform2).getWeightedTypeCount());
 		}
 	}
-	
+
+	/**
+	 * Compare transforms by their type count
+	 *
+	 */
 	public static class TypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object transform1, Object transform2) {
@@ -898,7 +928,11 @@ public class MorphLearner {
 			((Transform) transform2).getTypeCount());
 		}
 	}
-	
+
+	/**
+	 * Compare transforms by their token count
+	 *
+	 */
 	public static class TokenCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object transform1, Object transform2) {

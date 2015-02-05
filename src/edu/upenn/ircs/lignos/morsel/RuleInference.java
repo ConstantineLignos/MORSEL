@@ -89,7 +89,7 @@ public class RuleInference {
 	 * @param reEval as used by scoreWord
 	 * @param doubling as used by scoreWord
 	 * @param optimization as used by moveTransformPairs
-	 * @param out
+	 * @param out the destination for any printing to the log
 	 */
 	public void conservInference(Lexicon lex, List<Transform> learnedTransforms,
 			List<Transform> hypTransforms, boolean reEval, boolean doubling, 
