@@ -29,6 +29,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * A Transform is the rule representation learned, representing a rewrite rule for a prefix
+ * or suffix from characters (or null) to other characters (or null).
+ *
+ */
 public class Transform {
 	private static final int N_SAMPLES = 3;
 	private Affix affix1;
@@ -44,6 +49,11 @@ public class Transform {
 	private int length;
 	private int hash;
 	
+	/**
+	 * Create a transform from affixes
+	 * @param affix1 the target affix
+	 * @param affix2 the output affix
+	 */
 	public Transform(Affix affix1, Affix affix2) {
 		this.affix1 = affix1;
 		this.affix2 = affix2;
@@ -65,6 +75,12 @@ public class Transform {
 		hash = (affix1.getText() + affix2.getText() + affixType.ordinal()).hashCode();
 	}
 	
+	/**
+	 * Add a word pair to those covered by this transform
+	 * @param base the base form
+	 * @param derived the derived form
+	 * @param isAccomodated whether the pair required orthographic accommodation
+	 */
 	public void addWordPair(Word base, Word derived, boolean isAccomodated) {
 		WordPair pair = new WordPair(base, derived, isAccomodated);
 		
@@ -95,6 +111,14 @@ public class Transform {
 		derived.addTransformPair(tPair);
 	}
 	
+	/**
+	 * Remove a word pair from those covered by this transform. The caller is
+	 * responsible for removing the transform from the word's own data
+	 * structure. WordPairs should never be removed after learning, so we do not
+	 * remove from unmovedDerivationPairs.
+	 * 
+	 * @param pair the word pair to remove
+	 */
 	public void removeWordPair(WordPair pair) {
 		Word base = pair.getBase();
 		Word derived = pair.getDerived();
@@ -117,47 +141,98 @@ public class Transform {
 				normalPairCount--;
 			}
 		}
-		
-		// The caller is responsible for removing the transform from the word.
-		// WordPairs should never be removed after learning, so we do not
-		// remove from unmovedDerivationPairs.
 	}
 	
+	/**
+	 * @return the length of the transform
+	 */
 	public int length() {return length;}
 		
+	/**
+	 * @return whether the transform has been learned
+	 */
 	public boolean isLearned() {return learned;}
 	
+	/**
+	 * Mark the the transform as learned
+	 */
 	public void markLearned() {
 		learned = true;
 		// As an optimization we lazily allocate this
 		unmovedDerivationPairs = new THashSet<WordPair>();	
 	}
 	
+	/**
+	 * @return the target affix
+	 */
 	public Affix getAffix1() {return affix1;}
 
+	/**
+	 * @return the output affix
+	 */
 	public Affix getAffix2() {return affix2;}
 
+	/**
+	 * @return the type count of the affix
+	 */
 	public int getTypeCount() {return typeCount;}
 	
+	/**
+	 * @return the weighted type count of the affix
+	 */
 	public int getWeightedTypeCount() {
 		// If the length is zero, count it as one
 		return typeCount * Math.max(length(), 1);
 	}
 
+	/**
+	 * @return the token count of the affix
+	 */
 	public long getTokenCount() {return tokenCount;}
 
+	/**
+	 * @return the word pairs covered by the transform
+	 */
 	public Set<WordPair> getWordPairs() {return derivationPairs;}
 
+	/**
+	 * @return the count of normal (non-accommodated) word pairs covered by the transform
+	 */
 	public int getNormalPairCount() {return normalPairCount;}
 
+	/**
+	 * @return the count of accomodated (non-normal) word pairs covered by the transform
+	 */
 	public int getAccomPairCount() {return accomPairCount;}
 
+	/**
+	 * @return the affix type (prefix or suffix) of this transform
+	 */
 	public AffixType getAffixType() {return affixType;}
 
+	/**
+	 * @return a Set of the derivation pairs that have yet to be moved
+	 */
 	public Set<WordPair> getUnmovedDerivationPairs() {return unmovedDerivationPairs;}
 
+	/**
+	 * Clear the set of derivation pairs that have yet to be moved
+	 */
 	public void resetUnmoved() {unmovedDerivationPairs = new THashSet<WordPair>();}
 
+	/**
+	 * Score a transform by counting all the words it covers. Any words it
+	 * covers are added to the transform's word pairs but are not moved yet.
+	 * 
+	 * @param trans
+	 *            the transform to score
+	 * @param lex
+	 *            the lexicon
+	 * @param reEval
+	 *            as used by scoreWord
+	 * @param doubling
+	 *            as used by scoreWord
+	 */
 	public static void scoreTransform(Transform trans, Lexicon lex, 
 			boolean reEval, boolean doubling) {
 		// Get the words from the first affix of the transform
@@ -169,6 +244,16 @@ public class Transform {
 		}
 	}
 	
+	/**
+	 * Evaluate whether a word participates in a transform, adding it to the transform
+	 * if it does.
+	 * @param trans the transform
+	 * @param base the word to test
+	 * @param lex the lexicon
+	 * @param reEval whether derived forms may be used as bases for new transforms
+	 * @param doubling whether orthographic accommodation can be performed
+	 * @return whether the word participates in the transform
+	 */
 	public static boolean scoreWord(Transform trans, Word base, Lexicon lex,
 			boolean reEval, boolean doubling) {
 
@@ -227,6 +312,14 @@ public class Transform {
 		return false;
 	}
 	
+	/**
+	 * Determine whether the set of a word allows it to be a base. If reEval is true,
+	 * anything can be a base. Otherwise, derived forms are not allowed to be bases.
+	 * 
+	 * @param set the word set
+	 * @param reEval whether to allow derived forms to serve as bases
+	 * @return whether the set allows for the word to be a base 
+	 */
 	private static boolean isLegalBaseSet(WordSet set, boolean reEval) {
 		if (reEval) {
 			// Anything can be a base
@@ -238,6 +331,15 @@ public class Transform {
 		}
 	}
 	
+	/**
+	 * Determine whether the combination of two word sets allows for the creation of a
+	 * word pair. This prevents strange connections, for example an unmodeled serving
+	 * as the base for a base form.
+	 * @param baseSet the word set of the base
+	 * @param derivedSet the word set of the derived form
+	 * @param reEval whether to allow base and derived forms to become derived
+	 * @return whether the a transform between the two word sets is legal
+	 */
 	private static boolean isLegalPairSets(WordSet baseSet, WordSet derivedSet, 
 			boolean reEval) {
 		// reEval false, legal pairs: (B, U) and (U, U)
@@ -270,6 +372,12 @@ public class Transform {
 		}
 	}
 	
+	/**
+	 * Remove the affix from a Word object to create the stem.
+	 * @param word the word
+	 * @param affix the affix
+	 * @return the stem
+	 */
 	public static String makeStem(Word word, Affix affix) {
 		int affixLen = affix.length();
 		if (affix.getType() == AffixType.PREFIX) { 
@@ -283,6 +391,12 @@ public class Transform {
 		}
 	}
 	
+	/**
+	 * Remove the affix from a string to create the stem.
+	 * @param word the word
+	 * @param affix the affix
+	 * @return the stem
+	 */
 	public static String makeStem(String word, Affix affix) {
 		int affixLen = affix.length();
 		if (affix.getType() == AffixType.PREFIX) { 
@@ -297,6 +411,17 @@ public class Transform {
 	}
 	
 	
+	/**
+	 * Generate the derived form given a stem and the affix to add.
+	 * If doubling is requested, the last character of the stem
+	 * is repeated. If undoubling is requested, the last character
+	 * of the stem is deleted.
+	 * @param stem the stem
+	 * @param affix the affix
+	 * @param doubling whether to apply doubling
+	 * @param undoubling whether to apply undoubling
+	 * @return the derived form
+	 */
 	public static String makeDerived(String stem, Affix affix, boolean doubling,
 			boolean undoubling) {
 		
@@ -325,6 +450,11 @@ public class Transform {
 		}
 	}
 	
+	/**
+	 * Create a sorted string representation of all of the word pairs covered by the
+	 * transform
+	 * @return a string of all of the word pairs, each pair joined by a space
+	 */
 	public String getPairsText() {
 		List<String> pairs = new LinkedList<String>();
 		for (WordPair pair: derivationPairs) {
@@ -334,6 +464,12 @@ public class Transform {
 		return Util.join(pairs, " ");
 	}
 	
+	/**
+	 * Sample N_SAMPLES pairs from the transform for display. The arbitrary
+	 * ordering of the underlying derivationPairs data structure is used for
+	 * the effect of a "random" sample while remaining deterministic.
+	 * @return a string given the total number of pairs and N_SAMPLES example pairs 
+	 */
 	public String getSamplePairs() {
 		int n = 0;
 		List<String> pairs = new LinkedList<String>();
@@ -355,6 +491,9 @@ public class Transform {
 		}
 	}
 	
+	/**
+	 * @return a verbose representation of the transform statistics with sample pairs
+	 */
 	public String toVerboseString() {
 		return(toString() + '\n' + "Weighted Types: " + getWeightedTypeCount() + 
 				", Types: " + typeCount + ", Tokens: " + 
@@ -363,6 +502,9 @@ public class Transform {
 				"\nSamples: " + getSamplePairs());
 	}
 	
+	/**
+	 * @return a verbose representation of the transform statistics with all word pairs
+	 */
 	public String toDumpString() {
 		StringBuilder out = new StringBuilder(toString() + '\n' + "Weighted Types: " + 
 				getWeightedTypeCount() + ", Types: " + typeCount + ", Tokens: " + 
@@ -375,6 +517,13 @@ public class Transform {
 		return out.toString();
 	}
 
+	/**
+	 * Generate the analysis string representation of the transform. These are
+	 * of the form:
+	 * +(affix2) if affix2 is not null
+	 * -(affix1) if affix2 is null
+	 * @return the analysis string for the transform
+	 */
 	public String analyze() {
 		StringBuilder analysis = new StringBuilder();
 
@@ -411,6 +560,12 @@ public class Transform {
         return analysis.toString();
 	}
 
+	/**
+	 * Generate the hash table key for this transform. It
+	 * is of the form t:affix1,affix2 where t is 'p' for prefix
+	 * and 's' for suffix transforms.
+	 * @return the hash table key for the transform
+	 */
 	public String toKey() {
 		String transType;
 		switch (affixType) {
@@ -422,6 +577,12 @@ public class Transform {
 		return transType + ':' + affix1 + ',' + affix2;
 	}
 	
+	/**
+	 * Generate the base of a word by reversing the transform
+	 * @param w the word
+	 * @param trans the transform
+	 * @return the string representation of the base
+	 */
 	public static String inferBase(Word w, Transform trans) {
 		// "Undo" the transform on word w
 		switch (trans.getAffixType()) {
@@ -435,6 +596,13 @@ public class Transform {
 		}
 	}
 	
+	/**
+	 * Compute the segmentation precision for a transform. This is defined as
+	 * the number of types covered by the transform divided by the total number
+	 * of types containing affix2. 
+	 * @param trans the transform
+	 * @return the segmentation precision of the transform
+	 */
 	public static double calcSegPrecision(Transform trans) {
 		// Segmentation precision is the number of type count of the transform
 		// divided by the type count of affix2

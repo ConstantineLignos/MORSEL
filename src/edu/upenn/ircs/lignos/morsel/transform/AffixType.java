@@ -23,7 +23,9 @@ package edu.upenn.ircs.lignos.morsel.transform;
  * as prefix or suffix. 
  *
  */
-
 public enum AffixType {
-	PREFIX, SUFFIX
+	/** Prefix */
+	PREFIX,
+	/** Suffix */
+	SUFFIX
 }

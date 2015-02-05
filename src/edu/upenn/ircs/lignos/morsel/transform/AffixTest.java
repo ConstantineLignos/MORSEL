@@ -24,44 +24,69 @@ import edu.upenn.ircs.lignos.morsel.lexicon.Word;
 
 import junit.framework.TestCase;
 
+/**
+ * Test basic functions of the affix class
+ *
+ */
 public class AffixTest extends TestCase{
 
+	/**
+	 * Test getAffixes for suffixes of a long word
+	 */
 	public void testBasicSuffixes() {
 		Word w = new Word("hamburger", 1, true);
 		String[] expected = {"", "urger", "rger", "ger", "er", "r"};
 		assertTrue(Arrays.equals(expected, Affix.getAffixes(w, AffixType.SUFFIX)));
 	}
 		
+	/**
+	 * Test getAffixes for suffixes of a short word
+	 */
 	public void testShortSuffixes() {
 		Word w = new Word("ha", 1, true);
 		String[] expected = {};
 		assertTrue(Arrays.equals(expected, Affix.getAffixes(w, AffixType.SUFFIX)));
 	}
 	
+	/**
+	 * Test getAffixes for suffixes of a word of the minimum stem length
+	 */
 	public void testOnlyNullSuffix() {
 		Word w = new Word("ham", 1, true);
 		String[] expected = {""};
 		assertTrue(Arrays.equals(expected, Affix.getAffixes(w, AffixType.SUFFIX)));
 	}
 	
+	/**
+	 * Test getAffixes for prefixes of a long word
+	 */
 	public void testBasicPrefixes() {
 		Word w = new Word("hamburger", 1, true);
 		String[] expected = {"", "h", "ha", "ham", "hamb", "hambu"};
 		assertTrue(Arrays.equals(expected, Affix.getAffixes(w, AffixType.PREFIX)));
 	}
 		
+	/**
+	 * Test getAffixes for prefixes of a short word
+	 */
 	public void testShortPrefixes() {
 		Word w = new Word("ha", 1, true);
 		String[] expected = {};
 		assertTrue(Arrays.equals(expected, Affix.getAffixes(w, AffixType.PREFIX)));
 	}
 	
+	/**
+	 * Test getAffixes for prefixes of a word of the minimum stem length
+	 */
 	public void testOnlyNullPrefix() {
 		Word w = new Word("ham", 1, true);
 		String[] expected = {""};
 		assertTrue(Arrays.equals(expected, Affix.getAffixes(w, AffixType.PREFIX)));
 	}
 	
+	/**
+	 * Test the pair exclusion criteria for combinations of prefixes
+	 */
 	public void testisBadAffixPairPrefix() {
 		Affix dePrefix = new Affix("de", AffixType.PREFIX);
 		Affix unPrefix = new Affix("un", AffixType.PREFIX);
@@ -83,7 +108,10 @@ public class AffixTest extends TestCase{
 		assertFalse(Affix.isBadAffixPair(iPrefix, dePrefix, AffixType.PREFIX));
 		assertTrue(Affix.isBadAffixPair(bePrefix, abePrefix, AffixType.PREFIX));
 	}
-	
+
+	/**
+	 * Test the pair exclusion criteria for combinations of suffixes
+	 */
 	public void testisBadAffixPairSuffix() {
 		Affix edSuffix = new Affix("ed", AffixType.SUFFIX);
 		Affix eSuffix = new Affix("e", AffixType.SUFFIX);
@@ -108,6 +136,9 @@ public class AffixTest extends TestCase{
 		assertTrue(Affix.isBadAffixPair(leSuffix, lysSuffix, AffixType.SUFFIX));
 	}
 	
+	/**
+	 * Test hasAffix for prefixes and suffixes
+	 */
 	public void testhasAffixBasic() {
 		// Note that it checks for min stem length, so short things are always
 		// false
@@ -138,6 +169,9 @@ public class AffixTest extends TestCase{
 		assertTrue(Affix.hasAffix("eaaa", ePrefix));
 	}
 	
+	/**
+	 * Test hasAffix in cases where the affix can be longer than the string
+	 */
 	public void testhasAffixBounds() {
 		// Test cases where the affixes push word boundaries
 		Affix bePrefix = new Affix("be", AffixType.PREFIX);

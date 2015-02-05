@@ -20,12 +20,22 @@ package edu.upenn.ircs.lignos.morsel.transform;
 
 import edu.upenn.ircs.lignos.morsel.lexicon.Word;
 
+/**
+ * Represent two related words
+ *
+ */
 public class WordPair {
 	private Word base;
 	private Word derived;
 	private boolean accomodated;
 	private int hash;
 	
+	/**
+	 * Creat a WordPair from based and derived words and whether they were accommodated
+	 * @param base the base
+	 * @param derived the derived word
+	 * @param accomodated whether orthographic accommodation was used to produce the pair
+	 */
 	public WordPair(Word base, Word derived, boolean accomodated) {
 		this.base = base;
 		this.derived = derived;
@@ -34,12 +44,20 @@ public class WordPair {
 		hash = (base.getText() + derived.getText() + (accomodated ? 'a' : 'n')).hashCode();
 	}
 
+	/**
+	 * @return the base of the pair
+	 */
 	public Word getBase() {return base;}
 
+	/**
+	 * @return the derived form of the pair
+	 */
 	public Word getDerived() {return derived;}
 	
+	/**
+	 * @return whether orthographic accommodation was used to create the pair
+	 */
 	public boolean isAccomodated() {return accomodated;}
-	
 	
 	public boolean equals(Object other) {
 		if (other == null || !(other instanceof WordPair))
