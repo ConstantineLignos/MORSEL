@@ -37,6 +37,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * The representation of all words in the language being learned.
+ *
+ */
 public class Lexicon {
 	private Map<String, Word> lex;
 	private Map<String, Affix> prefixes;
@@ -48,6 +52,9 @@ public class Lexicon {
 	private Set<Word> unmod;
 	private boolean validSetCounts;
 	
+	/**
+	 * Create a new empty lexicon.
+	 */
 	public Lexicon() {
 		lex = new THashMap<String, Word>();
 		
@@ -61,12 +68,23 @@ public class Lexicon {
 		validSetCounts = false;
 	}
 	
+	/**
+	 * @return a string representation of the size of the lexicon
+	 */
 	public String getStatus() {
 		return "Types: " + lex.size() + " Tokens: " + tokenCount;
 	}
 	
+	/**
+	 * @return the total token count of all items in the lexicon
+	 */
 	public long getTokenCount() { return tokenCount; }
 	
+	/**
+	 * Add a word to the lexicon.
+	 * @param word the word to add
+	 * @return true if the word was successfully added, false if it was already present
+	 */
 	public boolean addWord(Word word) {
 		// Add the word to the lexicon. If a word was already there, return false
 		if (lex.put(word.getKey(), word) != null) {
@@ -85,6 +103,9 @@ public class Lexicon {
 		return true;
 	}
 	
+	/**
+	 * Update all data structures that depend on the frequency of words in the lexicon
+	 */
 	public void updateFrequencies() {
 		// Set the frequencies on all words
 		for (Word w: lex.values()) {
@@ -102,6 +123,11 @@ public class Lexicon {
 		}
 	}
 	
+	/**
+	 * Return the requested set of words
+	 * @param set the set to return
+	 * @return the specified set of words
+	 */
 	public Set<Word> getSetWords(WordSet set) {
 		// Return the right set
 		switch (set) {
@@ -112,14 +138,25 @@ public class Lexicon {
 		}
 	}
 	
+	/**
+	 * @return all words in the lexicon
+	 */
 	public Collection<Word> getWords() {
 		return lex.values();
 	}
 	
+	/**
+	 * @return the key set for all words in the lexicon
+	 */
 	public Set<String> getWordKeys() {
 		return lex.keySet();
 	}
 	
+	/**
+	 * Add all affixes of a given word to the word and affix counts
+	 * @param word the word
+	 * @param type the type of affixes to count
+	 */
 	private void addAffixes(Word word, AffixType type) {
 		// Get the prefixes and count them
 		String[] wordAffixes = Affix.getAffixes(word, type);
@@ -154,10 +191,21 @@ public class Lexicon {
 
 	}
 	
+	/**
+	 * Returns true if the specified word is in the lexicon.
+	 * @param word the word
+	 * @return true if the word is in the lexicon
+	 */
 	public boolean contains(Word word) {
 		return lex.containsKey(word.getKey());
 	}
 	
+	/**
+	 * Return true if there is a word matching the specified text in the specified set
+	 * @param wordText the text of the word
+	 * @param set the set to check
+	 * @return true if the word is in the specified set
+	 */
 	public boolean isWordInSet(String wordText, WordSet set) {
 		Word word = lex.get(wordText);
 		// If the word was found, return whether the set was correct,
@@ -165,10 +213,20 @@ public class Lexicon {
 		return word != null ? word.getSet() == set: false;
 	}
 	
+	/**
+	 * Return true if a word is in the specified set
+	 * @param word the word
+	 * @param set the set
+	 * @return true if the word is in the specified set
+	 */
 	public boolean isWordInSet(Word word, WordSet set) {
 		return word.getSet() == set;
 	}
 
+	/**
+	 * Update counts for all affix types of which affixes are common
+	 * in each word set.
+	 */
 	private void countAffixWordSets() {
 		// Count prefixes
 		for (Affix a: prefixes.values()) {
@@ -183,6 +241,11 @@ public class Lexicon {
 		validSetCounts = true;
 	}
 	
+	/**
+	 * Return the affix map for the specified affix type
+	 * @param type an affix type
+	 * @return the affix map for the specific type
+	 */
 	private Map<String, Affix> getAffixMap(AffixType type) {
 		switch (type) {
 		case PREFIX: return prefixes;
@@ -191,10 +254,27 @@ public class Lexicon {
 		}
 	}
 
+	/**
+	 * The word sets that affix counts are computed over
+	 *
+	 */
 	public static enum AffixSet {
-		ALL, UNMOD, BASEUNMOD
+		/** All words */
+		ALL,
+		/** Unmodeled words */
+		UNMOD,
+		/** Unmodeled and base words */
+		BASEUNMOD
 	}
 	
+	/**
+	 * Return the n most frequent affixes in the specified set
+	 * @param n the number of affixes
+	 * @param type the type of affixes 
+	 * @param set the set of affixes to compute counts over
+	 * @param weighted whether to weight the count of frequencies
+	 * @return a List of the n most frequent affixes in the specified set
+	 */
 	public List<Affix> topAffixes(int n, AffixType type, AffixSet set, boolean weighted) {
 		// Make sure the counts are up to date before doing anything. Counting
 		// will automatically reset the flag
@@ -237,6 +317,12 @@ public class Lexicon {
 	
 	
 	
+	/**
+	 * Return the top n unmodeled affixes
+	 * @param n the number of affixes
+	 * @param type the type of affixes
+	 * @return the top n unmodeled affixes
+	 */
 	public List<Affix> topUnmodAffixes(int n, AffixType type) {
 		// Make sure the counts are up to date before doing anything. Counting
 		// will automatically reset the flag
@@ -251,35 +337,10 @@ public class Lexicon {
 		return Util.truncateCollection(orderedAffixes, n);
 	}
 	
-	public List<Affix> getSortedAffixes() {
-		List<Affix> orderedAffixes = Util.concatCollections(prefixes.values(), 
-				suffixes.values());
-		Collections.sort(orderedAffixes,
-				Collections.reverseOrder(new WeightedTypeCountComparator()));
-		return orderedAffixes;
-	}
-	
-	public List<Affix> getSortedPrefixes() {
-		List<Affix> orderedPrefixes = new ArrayList<Affix>(prefixes.values());
-		Collections.sort(orderedPrefixes, 
-				Collections.reverseOrder(new WeightedTypeCountComparator()));
-		return orderedPrefixes;
-	}
-	
-	public List<Affix> getSortedSuffixes() {
-		List<Affix> orderedSuffixes = new ArrayList<Affix>(suffixes.values());
-		Collections.sort(orderedSuffixes, 
-				Collections.reverseOrder(new WeightedTypeCountComparator()));
-		return orderedSuffixes;
-	}
-	
-	public void dumpAffixes() {
-		List<Affix> orderedAffixes = getSortedAffixes();
-		for (Affix affix: orderedAffixes) {
-			System.out.println(affix);
-		}
-	}
-	
+	/**
+	 * Compare affixes based on type count
+	 *
+	 */
 	public static class TypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
@@ -289,6 +350,10 @@ public class Lexicon {
 		}
 	}
 	
+	/**
+	 * Compare affixes based on weighted type count
+	 *
+	 */
 	public static class WeightedTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
@@ -298,6 +363,10 @@ public class Lexicon {
 		}
 	}
 
+	/**
+	 * Compare affixes based on type count
+	 *
+	 */
 	public static class AllTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
@@ -310,7 +379,11 @@ public class Lexicon {
 					 ((Affix) affix2).getDerivedTypeCount()));
 		}
 	}
-	
+
+	/**
+	 * Compare affixes based on weighted type count
+	 *
+	 */
 	public static class WeightedAllTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
@@ -324,6 +397,10 @@ public class Lexicon {
 		}
 	}
 	
+	/**
+	 * Compare affixes based on base and unmodeled type count
+	 *
+	 */
 	public static class BaseUnmodTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
@@ -333,6 +410,10 @@ public class Lexicon {
 		}
 	}
 	
+	/**
+	 * Compare affixes based on unmodeled type count
+	 *
+	 */
 	public static class UnmodTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
@@ -342,6 +423,10 @@ public class Lexicon {
 		}
 	}
 	
+	/**
+	 * Compare affixes based on weighted base and unmodeled type count
+	 *
+	 */
 	public static class WeightedBaseUnmodTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
@@ -353,6 +438,10 @@ public class Lexicon {
 		}
 	}
 	
+	/**
+	 * Compare affixes based on weighted unmodeled type count
+	 *
+	 */
 	public static class WeightedUnmodTypeCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
@@ -362,6 +451,10 @@ public class Lexicon {
 		}
 	}
 	
+	/**
+	 * Compare affixes based on token count
+	 *
+	 */
 	public static class TokenCountComparator implements Comparator<Object> {
 		@Override
 		public int compare(Object affix1, Object affix2) {
@@ -371,10 +464,19 @@ public class Lexicon {
 		}
 	}
 
+	/**
+	 * @param word the word
+	 * @return the specified word from the lexicon
+	 */
 	public Word getWord(String word) {
 		return lex.get(word);
 	}
 	
+	/**
+	 * Move a word between word sets
+	 * @param word the wod
+	 * @param set the destination set
+	 */
 	public void moveWord(Word word, WordSet set) {
 		// Take it out of its old set
 		switch (word.getSet()) {
@@ -396,6 +498,14 @@ public class Lexicon {
 		}
 	}
 
+	/**
+	 * Move pairs of words between sets based on the transform learned
+	 * @param learnedTransform the learned transforms
+	 * @param hypTransforms other transforms being tracked
+	 * @param opt whether to optimize performance by maintaining other transforms
+	 * @param reEval as used by scoreWord
+	 * @param doubling as used by scoreWord
+	 */
 	public void moveTransformPairs(Transform learnedTransform, 
 			List<Transform> hypTransforms, boolean opt, boolean reEval, 
 			boolean doubling) {
@@ -410,6 +520,15 @@ public class Lexicon {
 				pairs);
 	}
 
+	/**
+	 * Move pairs of words between sets based on the transform learned
+	 * @param derivingTransform the transform that derived the words
+	 * @param hypTransforms other transforms being tracked
+	 * @param opt whether to optimize performance by maintaining other transforms
+	 * @param reEval as used by scoreWord
+	 * @param doubling as used by scoreWord
+	 * @param pairs the pairs of words to operate on
+	 */
 	public void moveWordPairs(Transform derivingTransform,
 			List<Transform> hypTransforms, boolean opt, boolean reEval,
 			boolean doubling, Set<WordPair> pairs) {
@@ -529,6 +648,13 @@ public class Lexicon {
 		scoreWordsTransforms(unmodBaseWords, hypTransforms, reEval, doubling);
 	}
 	
+	/**
+	 * Score transforms by the words they may apply to
+	 * @param words the words to check
+	 * @param transforms the transforms to check
+	 * @param reEval whether to allow words to change word sets
+	 * @param doubling as used by scoreWord
+	 */
 	public void scoreWordsTransforms(Collection<Word> words,
 			Collection<Transform> transforms, boolean reEval, boolean doubling) {
 		// Score each word for each transform
@@ -542,6 +668,10 @@ public class Lexicon {
 		}
 	}
 
+	/**
+	 * Remove words from transform scoring.
+	 * @param newDerivedWords words to remove from scoring
+	 */
 	private void removeWordsTransforms(Collection<Word> newDerivedWords) {
 		for (Word movedWord: newDerivedWords) {
 			// Remove a word entirely from transform scoring
@@ -570,6 +700,9 @@ public class Lexicon {
 		}
 	}
 
+	/**
+	 * Add new entries to the lexicon based on which existing forms are hyphenated.
+	 */
 	public void processHyphenation() {
 		// Loop over all words and process any hyphenated ones		
 		// Copy the values of the lexicon so we can modify it as we iterate

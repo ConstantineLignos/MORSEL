@@ -23,7 +23,13 @@ package edu.upenn.ircs.lignos.morsel.lexicon;
  * These sets represent the status of the word in the learner's representation.
  *
  */
-
 public enum WordSet {
-	UNMODELED, BASE, DERIVED, COMPOUND
+	/** Words that are unanalyzed */
+	UNMODELED,
+	/** Words that are the bases of transforms */
+	BASE,
+	/** Words derived by transforms */
+	DERIVED,
+	/** Words derived by compounding */
+	COMPOUND
 }
