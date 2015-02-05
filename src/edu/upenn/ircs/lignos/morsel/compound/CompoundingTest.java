@@ -31,6 +31,10 @@ import edu.upenn.ircs.lignos.morsel.transform.Transform;
 
 import junit.framework.TestCase;
 
+/**
+ * Test Compounding and Hypothesis
+ *
+ */
 public class CompoundingTest extends TestCase{
 	Lexicon lex;
 	
@@ -38,6 +42,9 @@ public class CompoundingTest extends TestCase{
 		lex = CorpusLoader.loadWordlist("data/test/compounding_test_eng.txt", "ISO8859_1", false);
 	}
 	
+	/**
+	 * Test getPrefixes without filler
+	 */
 	public void testgetPrefixes() {
 		// Set the min compound length to zero
 		Compounding.MIN_COMPOUND_LENGTH = 0;
@@ -85,6 +92,9 @@ public class CompoundingTest extends TestCase{
 		assertEquals(3, result.size());
 	}
 	
+	/**
+	 * Test getPrefixes with filler
+	 */
 	public void testgetPrefixesFiller() {
 		Transform plural = new Transform(new Affix("", AffixType.SUFFIX), 
 				new Affix("s", AffixType.SUFFIX));
@@ -114,6 +124,9 @@ public class CompoundingTest extends TestCase{
 		
 	}
 	
+	/**
+	 * Do an end-to-end compounding test on a small lexicon without filler
+	 */
 	public void testinferCompoundsQuick() {
 		Compounding.breakCompounds(lex, WordSet.UNMODELED, null, null, false, false,
 				false, null);
@@ -122,6 +135,9 @@ public class CompoundingTest extends TestCase{
 		assertEquals("APPLE SAUCE", lex.getWord("applesauce").analyze());
 	}
 	
+	/**
+	 * Do an end-to-end compounding test on the Brown corpus without filler
+	 */
 	public void testinferCompoundsBrown() {
 		lex = CorpusLoader.loadWordlist("data/test/brown_wordlist.txt", "ISO8859_1", false);
 		Compounding.breakCompounds(lex, WordSet.UNMODELED, null, null, false, false,
@@ -130,6 +146,9 @@ public class CompoundingTest extends TestCase{
 		assertEquals("SHORT HAND", lex.getWord("shorthand").analyze());
 	}
 	
+	/**
+	 * Do an end-to-end compounding test on the Brown corpus using filler
+	 */
 	public void testinferCompoundsBrownFiller() {
 		// Load the Brown corpus
 		lex = CorpusLoader.loadWordlist("data/test/brown_wordlist.txt", "ISO8859_1", false);
@@ -158,6 +177,9 @@ public class CompoundingTest extends TestCase{
 	}
 	
 	
+	/**
+	 * Test the simplex word analysis feature
+	 */
 	public void testanalyzeSimplexWords() {
 		// Load a test data set
 		lex = CorpusLoader.loadWordlist("data/test/test_wordlist.txt", "ISO8859_1", false);
@@ -189,6 +211,9 @@ public class CompoundingTest extends TestCase{
 	}
 	
 	
+	/**
+	 * Regression test for repeated morphemes in a compounding analysis
+	 */
 	public void testdoubleRuleEnding1() {
 		// Targeted test for buggy analyses such as MAIN HAUSEN = MAIN HAUSEN +(en)
 		// This test looks for the case where an new word is created while 
@@ -208,6 +233,9 @@ public class CompoundingTest extends TestCase{
 		assertEquals("MAIN HAUS +(en)", result);
 	}
 	
+	/**
+	 * Regression test for repeated morphemes in a compounding analysis
+	 */
 	public void testdoubleRuleEnding2() {
 		// Targeted test for buggy analyses such as MAIN HAUSEN = MAIN HAUSEN +(en)
 		// This checks that analyses of words created in compounding are

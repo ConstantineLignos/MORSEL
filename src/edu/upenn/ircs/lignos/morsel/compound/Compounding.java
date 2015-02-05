@@ -37,9 +37,16 @@ import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+/**
+ * Suppor the analysis of compound words
+ *
+ */
 public class Compounding {
+	/** The set of transform relations to take into account */
 	public static boolean TRANSFORM_RELATIONS;
+	/** The minimum length of a compound word */
 	static int MIN_COMPOUND_LENGTH = 4;
+	/** The beam size in the search for compounds */
 	static int BEAM_SIZE = 200;
 	
 	/**
@@ -53,6 +60,7 @@ public class Compounding {
 	 * @param opt whether optimization is on
 	 * @param reEval whether transform reevaluation is on
 	 * @param doubling whether doubling is on
+	 * @param transInf the inferred relationships between transforms
 	 * @return the number of compounds that were broken
 	 */
 	public static int breakCompounds(Lexicon lex, WordSet set, 
@@ -166,6 +174,8 @@ public class Compounding {
 	 * @param word the word to break
 	 * @param filler the filler elements that can be inserted between words
 	 * @param lex the learner's lexicon
+	 * @param transInf the inferred relationships between transforms
+	 * @param doubling as used by scoreWord
 	 * @return the best hypothesis for breaking the word, null if the word 
 	 * should not be broken
 	 */
@@ -387,6 +397,7 @@ public class Compounding {
 		 * @param prefix the text to attempt to add filler to
 		 * @param fullWord the text that the prefix is from
 		 * @param prefixWord the Word object corresponding to the prefix
+		 * @param doubling as used by scorewWord
 		 * @return a list of FillerResults representing all legal combinations
 		 * of the prefix and fillers
 		 */
@@ -442,6 +453,17 @@ public class Compounding {
 		}
 	}
 	
+	/**
+	 * Perform simplex word analysis. This is an experimental feature which tries
+	 * to segment words without using base/derived pairs, just by splitting a word
+	 * into morphemes if it remains unmodeled at the end of learning.
+	 * @param lex the lexicon
+	 * @param set the word set to examine
+	 * @param learnedTransforms the learned transforms
+	 * @param doubling as used by scoreWord
+	 * @param transInf the inferred relationships between transforms
+	 * @return the number of words analyzed
+	 */
 	public static int analyzeSimplexWords(Lexicon lex, WordSet set, 
 			Collection<Transform> learnedTransforms, boolean doubling, 
 			TransformInference transInf) {

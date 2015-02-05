@@ -27,36 +27,62 @@ import edu.upenn.ircs.lignos.morsel.compound.Compounding.Filler;
 import edu.upenn.ircs.lignos.morsel.lexicon.Lexicon;
 import edu.upenn.ircs.lignos.morsel.lexicon.Word;
 
+/**
+ * Represents a hypothesis in beam search for compounding
+ *
+ */
 public class Hypothesis {
-	List<Word> words; // Words used in the compound, in order
-	String remainingText; // Text remaining after those words
+	/** Words used in the compound, in order */
+	List<Word> words;
+	/** Text remaining after those words */
+	String remainingText;
 
+	/**
+	 * Create a empty hypothesis with the specified remaining text
+	 * @param remainingText the remaining text to be analyzed
+	 */
 	public Hypothesis(String remainingText) {
 		this.remainingText = remainingText;
 		words = new LinkedList<Word>();
 	}
 
+	/**
+	 * Create a partial hypothesis with the specified remaining text
+	 * and hypothesized words
+	 * @param remainingText the remaining text to be analyzed
+	 * @param hypWords the hypothesized words that precede the remainingText
+	 */
 	public Hypothesis(String remainingText, List<Word> hypWords) {
 		this.remainingText = remainingText;
 		words = new LinkedList<Word>(hypWords);
 	}
 
+	/**
+	 * Add a new word to the CompoundingHypothesis and reduce the text by it
+	 * @param newWord the new word
+	 */
 	private void add(Word newWord) {
-		// Add a new word to the CompoundingHypothesis and reduce the text by it
 		words.add(newWord);
 		remainingText = remainingText.substring(newWord.length());
 	}
 
+	/**
+	 * Return a new CompoundingHypothesis that extends the current one by a word
+	 * @param newWord the new word
+	 * @return the new hypothesis including the new word
+	 */
 	private Hypothesis extend(Word newWord) {
-		// Return a new CompoundingHypothesis that extends the current one by a word
 		Hypothesis newHyp = new Hypothesis(remainingText, words);
 		newHyp.add(newWord);
 		return newHyp;
 	}
 
+	/**
+	 * Return the score of the hypothesis. The score of is the geometric mean of
+	 * the scores of its words
+	 * @return the score
+	 */
 	public double getScore() {
-		// The score of a hypothesis is the geometric mean of the scores
-		// of its words
 		// Multiply out the scores of each word
 		double prod = 1;
 		for (Word word : words) {
@@ -67,11 +93,22 @@ public class Hypothesis {
 		return Math.pow(prod, 1.0/(double) words.size());
 	}
 
+	/**
+	 * Return whether the hypothesis is a complete analysis of the text
+	 * @return true if the remaining text is empty
+	 */
 	public boolean isComplete() {
-		// Returns true if the remaining text is empty
 		return remainingText.isEmpty();
 	}
 
+	/**
+	 * Extend the hypothesis by all possible descendant hypotheses
+	 * @param lex the lexcion
+	 * @param filler the fillers that can be used between words
+	 * @param transInf the rules for combining transforms
+	 * @param doubling as used by scoreWord
+	 * @return a List of the new hypotheses
+	 */
 	public List<Hypothesis> extendAll(Lexicon lex, Filler filler, 
 			TransformInference transInf, boolean doubling) {
 		// Extend the hypothesis by one word, if possible
@@ -104,6 +141,13 @@ public class Hypothesis {
 		return out.toString();
 	}
 	
+	/**
+	 * Pick the best hypothesis for a word. The best hypothesis is the one with the
+	 * highest score that also has a higher score than the original word.
+	 * @param completeHyps the complete hypotheses
+	 * @param word the word to split
+	 * @return the best hypothesis for splitting the word
+	 */
 	public static Hypothesis pickHypothesis(
 			List<Hypothesis> completeHyps, Word word) {
 		// Pick the best compounding hypothesis or the hypothesis that this
