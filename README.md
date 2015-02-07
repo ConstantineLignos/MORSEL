@@ -146,10 +146,11 @@ Proceedings of the Morpho Challenge 2010 Workshop, 35-38, 2010.
 
 Learning iteration parameters:
 * `max_iter`: The maximum number of transforms that will be learned
-  from the corpus. Usually, learning stops well before this is reached
-  because other stopping criteria are met.
+  from the corpus. One transform is learned per iteration. Usually,
+  learning stops well before this is reached because other stopping
+  criteria are met.
 * `top_affixes`: The number of affixes considered in each learning
-iteration as part of a transform.
+  iteration as part of a transform.
 * `window_size`: The number of transforms that can be vetted in a
   single iteration. If this number of transforms is reached, learning
   stops.
@@ -178,7 +179,7 @@ Transform scoring parameters:
   at the point of morpheme concatenation. For example, when doubling
   is set to `true`, *pin* + *-ing* can be *pinning*, and *bake* +
   *-ed* can be *baked*. This allows for some flexibility regarding
-  orthographic conventionst that the learner does not explicitly
+  orthographic conventions that the learner does not explicitly
   identify.
 
 Transform selection parameters:
