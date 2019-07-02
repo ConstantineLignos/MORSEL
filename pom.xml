@@ -18,8 +18,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.10</version>
-            <!-- TODO: Restrict scope to test after refactoring test code out of main -->
-            <!-- <scope>test</scope> -->
+            <scope>test</scope>
         </dependency>
 
         <dependency>
