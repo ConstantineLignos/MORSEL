@@ -60,7 +60,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>edu.upenn.ircs.lignos.morsel.MorphLearner</mainClass>
+                            <mainClass>org.lignos.morsel.MorphLearner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

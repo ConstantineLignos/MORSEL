@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel.transform;
+package org.lignos.morsel.transform;
 
 /**
  * Represent a combination of a word pair and the transform that

@@ -16,15 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel;
+package org.lignos.morsel;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import edu.upenn.ircs.lignos.morsel.lexicon.Lexicon;
-import edu.upenn.ircs.lignos.morsel.lexicon.Word;
+import org.lignos.morsel.lexicon.Lexicon;
+import org.lignos.morsel.lexicon.Word;
 
 /**
  * The CorpusLoader class provides static methods for creating a lexicon from

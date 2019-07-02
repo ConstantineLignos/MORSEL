@@ -16,18 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel.compound;
+package org.lignos.morsel.compound;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.upenn.ircs.lignos.morsel.CorpusLoader;
-import edu.upenn.ircs.lignos.morsel.lexicon.Lexicon;
-import edu.upenn.ircs.lignos.morsel.lexicon.Word;
-import edu.upenn.ircs.lignos.morsel.lexicon.WordSet;
-import edu.upenn.ircs.lignos.morsel.transform.Affix;
-import edu.upenn.ircs.lignos.morsel.transform.AffixType;
-import edu.upenn.ircs.lignos.morsel.transform.Transform;
+import org.lignos.morsel.CorpusLoader;
+import org.lignos.morsel.lexicon.Lexicon;
+import org.lignos.morsel.lexicon.Word;
+import org.lignos.morsel.lexicon.WordSet;
+import org.lignos.morsel.transform.Affix;
+import org.lignos.morsel.transform.AffixType;
+import org.lignos.morsel.transform.Transform;
 
 import junit.framework.TestCase;
 
@@ -96,7 +96,7 @@ public class CompoundingTest extends TestCase{
 	 * Test getPrefixes with filler
 	 */
 	public void testgetPrefixesFiller() {
-		Transform plural = new Transform(new Affix("", AffixType.SUFFIX), 
+		Transform plural = new Transform(new Affix("", AffixType.SUFFIX),
 				new Affix("s", AffixType.SUFFIX));
 		Transform weird = new Transform(new Affix("e", AffixType.SUFFIX), 
 				new Affix("ey", AffixType.SUFFIX));

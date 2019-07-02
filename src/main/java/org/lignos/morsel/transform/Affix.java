@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel.transform;
+package org.lignos.morsel.transform;
 
-import edu.upenn.ircs.lignos.morsel.lexicon.Word;
+import org.lignos.morsel.lexicon.Word;
 import gnu.trove.THashSet;
 
 import java.util.LinkedList;

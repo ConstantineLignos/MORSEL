@@ -256,7 +256,7 @@ and packaging the JAR (`dist` target). To run unit tests, run `ant
 test`. `ant clean` cleans all compilation output, including the JAR.
 
 The JAR manifest is set such that the main class
-`edu.upenn.ircs.lignos.morsel.MorphLearner` is run when the jar is
+`org.lignos.morsel.MorphLearner` is run when the jar is
 executed. This is the the only main function in MORSEL.
 
 Enjoy!

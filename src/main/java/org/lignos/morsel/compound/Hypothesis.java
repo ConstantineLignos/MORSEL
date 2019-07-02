@@ -16,16 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel.compound;
+package org.lignos.morsel.compound;
 
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.upenn.ircs.lignos.morsel.TransformInference;
-import edu.upenn.ircs.lignos.morsel.compound.Compounding.Filler;
-import edu.upenn.ircs.lignos.morsel.lexicon.Lexicon;
-import edu.upenn.ircs.lignos.morsel.lexicon.Word;
+import org.lignos.morsel.TransformInference;
+import org.lignos.morsel.lexicon.Lexicon;
+import org.lignos.morsel.lexicon.Word;
 
 /**
  * Represents a hypothesis in beam search for compounding
@@ -109,7 +108,7 @@ public class Hypothesis {
 	 * @param doubling as used by scoreWord
 	 * @return a List of the new hypotheses
 	 */
-	public List<Hypothesis> extendAll(Lexicon lex, Filler filler, 
+	public List<Hypothesis> extendAll(Lexicon lex, Compounding.Filler filler,
 			TransformInference transInf, boolean doubling) {
 		// Extend the hypothesis by one word, if possible
 		List<Hypothesis> extended = new LinkedList<Hypothesis>();

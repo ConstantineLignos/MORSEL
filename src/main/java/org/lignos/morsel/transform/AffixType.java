@@ -16,37 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel.transform;
-
-import junit.framework.TestCase;
+package org.lignos.morsel.transform;
 
 /**
- * Test the Transform representation.
+ * The AffixType enumeration gives the possible forms an affix can take, such
+ * as prefix or suffix. 
  *
  */
-public class TransformTest extends TestCase {
-
-	/**
-	 * Test making a derived form without accommodation.
-	 */
-	public void testmakeDerivedBasic() {
-		Affix edAffix = new Affix("ed", AffixType.SUFFIX);
-		assertEquals("pined", Transform.makeDerived("pin", edAffix, false, false));
-	}
-	
-	/**
-	 * Test making a derived form with doubling.
-	 */
-	public void testmakeDerivedDoubled() {
-		Affix edAffix = new Affix("ed", AffixType.SUFFIX);
-		assertEquals("pinned", Transform.makeDerived("pin", edAffix, true, false));
-	}
-	
-	/**
-	 * Test making a derived form with undoubling.
-	 */
-	public void testmakeDerivedUndoubled() {
-		Affix edAffix = new Affix("ed", AffixType.SUFFIX);
-		assertEquals("caned", Transform.makeDerived("cane", edAffix, false, true));
-	}
+public enum AffixType {
+	/** Prefix */
+	PREFIX,
+	/** Suffix */
+	SUFFIX
 }

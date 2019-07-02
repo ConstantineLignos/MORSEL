@@ -16,16 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel.transform;
+package org.lignos.morsel.lexicon;
 
 /**
- * The AffixType enumeration gives the possible forms an affix can take, such
- * as prefix or suffix. 
+ * The WordSet enumeration gives the sets words can belong to in the learner.
+ * These sets represent the status of the word in the learner's representation.
  *
  */
-public enum AffixType {
-	/** Prefix */
-	PREFIX,
-	/** Suffix */
-	SUFFIX
+public enum WordSet {
+	/** Words that are unanalyzed */
+	UNMODELED,
+	/** Words that are the bases of transforms */
+	BASE,
+	/** Words derived by transforms */
+	DERIVED,
+	/** Words derived by compounding */
+	COMPOUND
 }

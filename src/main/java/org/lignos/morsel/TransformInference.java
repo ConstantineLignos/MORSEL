@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel;
+package org.lignos.morsel;
 
 import java.util.Map;
 import java.util.Map.Entry;
 
-import edu.upenn.ircs.lignos.morsel.lexicon.Lexicon;
-import edu.upenn.ircs.lignos.morsel.lexicon.Word;
-import edu.upenn.ircs.lignos.morsel.lexicon.WordSet;
-import edu.upenn.ircs.lignos.morsel.transform.Transform;
-import edu.upenn.ircs.lignos.morsel.transform.TransformRelation;
+import org.lignos.morsel.lexicon.Lexicon;
+import org.lignos.morsel.lexicon.Word;
+import org.lignos.morsel.lexicon.WordSet;
+import org.lignos.morsel.transform.Transform;
+import org.lignos.morsel.transform.TransformRelation;
 import gnu.trove.THashMap;
 import gnu.trove.THashSet;
 

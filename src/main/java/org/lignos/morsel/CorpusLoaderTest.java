@@ -16,10 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel;
+package org.lignos.morsel;
 
-import edu.upenn.ircs.lignos.morsel.lexicon.Lexicon;
-import edu.upenn.ircs.lignos.morsel.lexicon.Word;
+import org.lignos.morsel.lexicon.Lexicon;
+import org.lignos.morsel.lexicon.Word;
 import junit.framework.TestCase;
 
 /**
@@ -46,7 +46,7 @@ public class CorpusLoaderTest extends TestCase {
 	 * Test parsing a single line into a Word object.
 	 */
 	public void testparseWordlistEntry() {
-		assertEquals(new Word("at", 400, true), 
+		assertEquals(new Word("at", 400, true),
 				CorpusLoader.parseWordlistEntry("400 at"));
 	}
 

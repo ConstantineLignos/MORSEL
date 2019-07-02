@@ -16,15 +16,15 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel.compound;
+package org.lignos.morsel.compound;
 
-import edu.upenn.ircs.lignos.morsel.TransformInference;
-import edu.upenn.ircs.lignos.morsel.lexicon.Lexicon;
-import edu.upenn.ircs.lignos.morsel.lexicon.Word;
-import edu.upenn.ircs.lignos.morsel.lexicon.WordSet;
-import edu.upenn.ircs.lignos.morsel.transform.Affix;
-import edu.upenn.ircs.lignos.morsel.transform.Transform;
-import edu.upenn.ircs.lignos.morsel.transform.WordPair;
+import org.lignos.morsel.TransformInference;
+import org.lignos.morsel.lexicon.Lexicon;
+import org.lignos.morsel.lexicon.Word;
+import org.lignos.morsel.lexicon.WordSet;
+import org.lignos.morsel.transform.Affix;
+import org.lignos.morsel.transform.Transform;
+import org.lignos.morsel.transform.WordPair;
 import gnu.trove.THashMap;
 import gnu.trove.THashSet;
 
@@ -63,9 +63,9 @@ public class Compounding {
 	 * @param transInf the inferred relationships between transforms
 	 * @return the number of compounds that were broken
 	 */
-	public static int breakCompounds(Lexicon lex, WordSet set, 
-			Collection<Transform> learnedTransforms, List<Transform> hypTransforms, 
-			boolean opt, boolean reEval, boolean doubling, TransformInference transInf) {
+	public static int breakCompounds(Lexicon lex, WordSet set,
+                                     Collection<Transform> learnedTransforms, List<Transform> hypTransforms,
+                                     boolean opt, boolean reEval, boolean doubling, TransformInference transInf) {
 		// Count of split compounds
 		int nCompounds = 0;
 		
@@ -76,7 +76,7 @@ public class Compounding {
 
 		// Track all the words that need to be created by the transform
 		// that created them
-		Map<Transform, Set<WordPair>> transformPairs = 
+		Map<Transform, Set<WordPair>> transformPairs =
 			new THashMap<Transform, Set<WordPair>>();
 		// Loop over each word in the appropriate set and try to break it
 		for (Word word : lex.getSetWords(set)) {
@@ -419,7 +419,7 @@ public class Compounding {
 		}
 
 		public static String makeFillerDerivedFromPrefix(String fullWord,
-				String prefixWord, boolean doubling, Affix affix1, Affix affix2) {
+                                                         String prefixWord, boolean doubling, Affix affix1, Affix affix2) {
 			String derived;
 			// Try possible derived forms using each transform
 			// Check for affix1

@@ -16,14 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel.lexicon;
+package org.lignos.morsel.lexicon;
 
-import edu.upenn.ircs.lignos.morsel.Util;
-import edu.upenn.ircs.lignos.morsel.transform.Affix;
-import edu.upenn.ircs.lignos.morsel.transform.AffixType;
-import edu.upenn.ircs.lignos.morsel.transform.Transform;
-import edu.upenn.ircs.lignos.morsel.transform.TransformPair;
-import edu.upenn.ircs.lignos.morsel.transform.WordPair;
+import org.lignos.morsel.Util;
+import org.lignos.morsel.transform.Affix;
+import org.lignos.morsel.transform.AffixType;
+import org.lignos.morsel.transform.Transform;
+import org.lignos.morsel.transform.TransformPair;
+import org.lignos.morsel.transform.WordPair;
 import gnu.trove.THashMap;
 import gnu.trove.THashSet;
 
@@ -506,9 +506,9 @@ public class Lexicon {
 	 * @param reEval as used by scoreWord
 	 * @param doubling as used by scoreWord
 	 */
-	public void moveTransformPairs(Transform learnedTransform, 
-			List<Transform> hypTransforms, boolean opt, boolean reEval, 
-			boolean doubling) {
+	public void moveTransformPairs(Transform learnedTransform,
+                                   List<Transform> hypTransforms, boolean opt, boolean reEval,
+                                   boolean doubling) {
 		// Select the list of moved words based on whether the transform
 		// has already been learned or not
 		Set<WordPair> pairs = learnedTransform.isLearned() ?

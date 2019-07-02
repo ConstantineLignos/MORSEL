@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel;
+package org.lignos.morsel;
 
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
@@ -44,14 +44,14 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 
-import edu.upenn.ircs.lignos.morsel.compound.Compounding;
-import edu.upenn.ircs.lignos.morsel.lexicon.Lexicon;
-import edu.upenn.ircs.lignos.morsel.lexicon.Word;
-import edu.upenn.ircs.lignos.morsel.lexicon.WordSet;
-import edu.upenn.ircs.lignos.morsel.transform.Affix;
-import edu.upenn.ircs.lignos.morsel.transform.AffixType;
-import edu.upenn.ircs.lignos.morsel.transform.Transform;
-import edu.upenn.ircs.lignos.morsel.transform.WordPair;
+import org.lignos.morsel.compound.Compounding;
+import org.lignos.morsel.lexicon.Lexicon;
+import org.lignos.morsel.lexicon.Word;
+import org.lignos.morsel.lexicon.WordSet;
+import org.lignos.morsel.transform.Affix;
+import org.lignos.morsel.transform.AffixType;
+import org.lignos.morsel.transform.Transform;
+import org.lignos.morsel.transform.WordPair;
 
 import gnu.trove.THashMap;
 import gnu.trove.THashSet;
@@ -307,7 +307,7 @@ public class MorphLearner {
 			//  Do iteration/aggressive compounding
 			if (ITER_COMPOUNDING) {
 				System.out.println("Handling iteration compounding...");
-				int nCompounds = Compounding.breakCompounds(lex, WordSet.BASE, 
+				int nCompounds = Compounding.breakCompounds(lex, WordSet.BASE,
 						learnedTransforms, hypTransforms, TRANSFORM_OPTIMIZATION,
 						REEVAL, DOUBLING, transInf);
 				System.out.println("Broke "  + nCompounds + " compounds in base");
@@ -583,7 +583,7 @@ public class MorphLearner {
 
 	private ArrayList<Transform> hypothesizeTransforms(List<Transform> learnedTransforms,
 			Set<Transform> badTransforms) {
-		List<Affix> topBUPrefixes = lex.topAffixes(TOP_AFFIXES, AffixType.PREFIX, 
+		List<Affix> topBUPrefixes = lex.topAffixes(TOP_AFFIXES, AffixType.PREFIX,
 				Lexicon.AffixSet.BASEUNMOD, WEIGHTED_AFFIXES);
 		List<Affix> topUPrefixes = lex.topAffixes(TOP_AFFIXES, AffixType.PREFIX,
 				Lexicon.AffixSet.UNMOD, WEIGHTED_AFFIXES);

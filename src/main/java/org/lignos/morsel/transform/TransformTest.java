@@ -16,20 +16,37 @@
  * You should have received a copy of the GNU General Public License
  * along with MORSEL.  If not, see <http://www.gnu.org/licenses/>.
  ******************************************************************************/
-package edu.upenn.ircs.lignos.morsel.lexicon;
+package org.lignos.morsel.transform;
+
+import junit.framework.TestCase;
 
 /**
- * The WordSet enumeration gives the sets words can belong to in the learner.
- * These sets represent the status of the word in the learner's representation.
+ * Test the Transform representation.
  *
  */
-public enum WordSet {
-	/** Words that are unanalyzed */
-	UNMODELED,
-	/** Words that are the bases of transforms */
-	BASE,
-	/** Words derived by transforms */
-	DERIVED,
-	/** Words derived by compounding */
-	COMPOUND
+public class TransformTest extends TestCase {
+
+	/**
+	 * Test making a derived form without accommodation.
+	 */
+	public void testmakeDerivedBasic() {
+		Affix edAffix = new Affix("ed", AffixType.SUFFIX);
+		assertEquals("pined", Transform.makeDerived("pin", edAffix, false, false));
+	}
+	
+	/**
+	 * Test making a derived form with doubling.
+	 */
+	public void testmakeDerivedDoubled() {
+		Affix edAffix = new Affix("ed", AffixType.SUFFIX);
+		assertEquals("pinned", Transform.makeDerived("pin", edAffix, true, false));
+	}
+	
+	/**
+	 * Test making a derived form with undoubling.
+	 */
+	public void testmakeDerivedUndoubled() {
+		Affix edAffix = new Affix("ed", AffixType.SUFFIX);
+		assertEquals("caned", Transform.makeDerived("cane", edAffix, false, true));
+	}
 }
