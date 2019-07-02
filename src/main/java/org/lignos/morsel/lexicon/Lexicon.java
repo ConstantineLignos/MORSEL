@@ -18,8 +18,8 @@
  */
 package org.lignos.morsel.lexicon;
 
-import gnu.trove.THashMap;
-import gnu.trove.THashSet;
+import gnu.trove.map.hash.THashMap;
+import gnu.trove.set.hash.THashSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

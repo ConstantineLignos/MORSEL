@@ -49,19 +49,19 @@
       <artifactId>junit</artifactId>
       <groupId>junit</groupId>
       <scope>test</scope>
-      <version>4.10</version>
+      <version>4.12</version>
     </dependency>
 
     <dependency>
       <artifactId>commons-cli</artifactId>
       <groupId>commons-cli</groupId>
-      <version>1.2</version>
+      <version>1.4</version>
     </dependency>
 
     <dependency>
       <artifactId>trove4j</artifactId>
       <groupId>net.sf.trove4j</groupId>
-      <version>2.1.0</version>
+      <version>3.0.3</version>
     </dependency>
 
   </dependencies>

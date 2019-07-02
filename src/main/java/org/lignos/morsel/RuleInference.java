@@ -18,7 +18,7 @@
  */
 package org.lignos.morsel;
 
-import gnu.trove.THashSet;
+import gnu.trove.set.hash.THashSet;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.List;

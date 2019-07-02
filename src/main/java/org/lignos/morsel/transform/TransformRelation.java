@@ -18,7 +18,7 @@
  */
 package org.lignos.morsel.transform;
 
-import gnu.trove.THashMap;
+import gnu.trove.map.hash.THashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;

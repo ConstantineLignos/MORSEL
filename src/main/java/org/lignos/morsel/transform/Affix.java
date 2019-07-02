@@ -19,7 +19,7 @@
 
 package org.lignos.morsel.transform;
 
-import gnu.trove.THashSet;
+import gnu.trove.set.hash.THashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
