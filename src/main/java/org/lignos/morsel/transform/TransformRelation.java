@@ -35,7 +35,7 @@ public class TransformRelation {
    */
   public TransformRelation(Transform t) {
     this.mainTransform = t;
-    precedingTransforms = new THashMap<Transform, Integer>();
+    precedingTransforms = new THashMap<>();
   }
 
   /**

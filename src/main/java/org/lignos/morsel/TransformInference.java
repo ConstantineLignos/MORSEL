@@ -41,8 +41,8 @@ public class TransformInference {
    */
   public void inferRelations(Lexicon lex) {
     // Reset the relations
-    relations = new THashMap<Transform, TransformRelation>();
-    goodRelations = new THashMap<Transform, THashSet<Transform>>();
+    relations = new THashMap<>();
+    goodRelations = new THashMap<>();
 
     // Loop over the derived words to learn the relationships
     for (Word w : lex.getSetWords(WordSet.DERIVED)) {
@@ -77,7 +77,7 @@ public class TransformInference {
       TransformRelation tRelation = e1.getValue();
 
       // Make a new nested map
-      THashSet<Transform> goodPreceders = new THashSet<Transform>();
+      THashSet<Transform> goodPreceders = new THashSet<>();
       goodRelations.put(followingTransform, goodPreceders);
       for (Entry<Transform, Integer> e2 : tRelation.getPrecedingTransformCounts()) {
         // Add it if the amount is > 1

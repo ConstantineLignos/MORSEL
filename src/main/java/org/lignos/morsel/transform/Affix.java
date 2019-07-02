@@ -61,7 +61,7 @@ public class Affix {
     derivedTypeCount = -1;
     unmodTypeCount = -1;
     tokenCount = 0L;
-    wordSet = new THashSet<Word>();
+    wordSet = new THashSet<>();
 
     length = text.length();
     weight = Math.max(length, 1);
@@ -77,7 +77,7 @@ public class Affix {
   public static String[] getAffixes(Word word, AffixType type) {
     int length = word.length();
 
-    List<String> affixes = new LinkedList<String>();
+    List<String> affixes = new LinkedList<>();
 
     if (length >= MIN_STEM_LENGTH) {
       affixes.add("");

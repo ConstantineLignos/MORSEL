@@ -56,7 +56,7 @@ public class Transform {
   public Transform(Affix affix1, Affix affix2) {
     this.affix1 = affix1;
     this.affix2 = affix2;
-    derivationPairs = new THashSet<WordPair>();
+    derivationPairs = new THashSet<>();
     unmovedDerivationPairs = null;
 
     // Make sure the affixes are of the same type, and set the affixType
@@ -415,7 +415,7 @@ public class Transform {
   public void markLearned() {
     learned = true;
     // As an optimization we lazily allocate this
-    unmovedDerivationPairs = new THashSet<WordPair>();
+    unmovedDerivationPairs = new THashSet<>();
   }
 
   /** @return the target affix */
@@ -471,7 +471,7 @@ public class Transform {
 
   /** Clear the set of derivation pairs that have yet to be moved */
   public void resetUnmoved() {
-    unmovedDerivationPairs = new THashSet<WordPair>();
+    unmovedDerivationPairs = new THashSet<>();
   }
 
   /**
@@ -480,7 +480,7 @@ public class Transform {
    * @return a string of all of the word pairs, each pair joined by a space
    */
   public String getPairsText() {
-    List<String> pairs = new LinkedList<String>();
+    List<String> pairs = new LinkedList<>();
     for (WordPair pair : derivationPairs) {
       pairs.add(pair.toString());
     }
@@ -497,7 +497,7 @@ public class Transform {
    */
   public String getSamplePairs() {
     int n = 0;
-    List<String> pairs = new LinkedList<String>();
+    List<String> pairs = new LinkedList<>();
     for (WordPair pair : derivationPairs) {
       if (n++ >= N_SAMPLES) {
         break;

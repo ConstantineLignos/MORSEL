@@ -308,9 +308,9 @@ public class MorphLearner {
 
   /** Learn from the loaded lexicon and output the results. */
   public void learn() {
-    List<Transform> learnedTransforms = new LinkedList<Transform>();
-    Set<Transform> badTransforms = new THashSet<Transform>();
-    Map<String, Transform> indexedTransforms = new THashMap<String, Transform>();
+    List<Transform> learnedTransforms = new LinkedList<>();
+    Set<Transform> badTransforms = new THashSet<>();
+    Map<String, Transform> indexedTransforms = new THashMap<>();
     RuleInference ruleInf = new RuleInference();
     TransformInference transInf = new TransformInference();
     PrintWriter baseLog = null;
@@ -538,7 +538,7 @@ public class MorphLearner {
   }
 
   private Map<String, Transform> indexTransforms(List<Transform> hypTransforms) {
-    Map<String, Transform> index = new THashMap<String, Transform>();
+    Map<String, Transform> index = new THashMap<>();
     for (Transform transform : hypTransforms) {
       index.put(transform.toKey(), transform);
     }
@@ -696,7 +696,7 @@ public class MorphLearner {
     int overlap = 0;
 
     // Create a set of all stems in the base words
-    Set<String> baseStems = new THashSet<String>();
+    Set<String> baseStems = new THashSet<>();
     for (Word word : lex.getSetWords(WordSet.BASE)) {
       if (word.length() > STEM_LENGTH) {
         baseStems.add(word.getText().substring(0, STEM_LENGTH));
@@ -746,7 +746,7 @@ public class MorphLearner {
 
   private void outputAnalysis(PrintWriter analysisOutput) {
     // Output an analysis of all the words
-    List<String> sortedWords = new ArrayList<String>(lex.getWordKeys());
+    List<String> sortedWords = new ArrayList<>(lex.getWordKeys());
     Collections.sort(sortedWords);
     for (String wordKey : sortedWords) {
       Word w = lex.getWord(wordKey);
@@ -799,7 +799,7 @@ public class MorphLearner {
       List<Affix> unmodSuffixes,
       Set<Transform> badTransforms) {
 
-    ArrayList<Transform> transforms = new ArrayList<Transform>();
+    ArrayList<Transform> transforms = new ArrayList<>();
     // Prefixes
     for (Affix affix1 : baseUnmodPrefixes) {
       for (Affix affix2 : unmodPrefixes) {

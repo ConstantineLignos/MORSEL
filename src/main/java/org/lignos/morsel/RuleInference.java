@@ -34,7 +34,7 @@ public class RuleInference {
 
   /** Create an new inference instance with an empty set of inferred bases. */
   public RuleInference() {
-    inferredBases = new THashSet<String>();
+    inferredBases = new THashSet<>();
   }
 
   /**
@@ -47,7 +47,7 @@ public class RuleInference {
   private Collection<Word> inferBases(Lexicon lex, Transform transform) {
     // Go over each unmodeled word with affix2 of the transform. If
     // its hypothesized base is not word, infer it
-    Set<Word> newWords = new THashSet<Word>();
+    Set<Word> newWords = new THashSet<>();
     for (Word w : transform.getAffix2().getWordSet()) {
       // Skip anything not unmodeled
       if (w.getSet() != WordSet.UNMODELED) {

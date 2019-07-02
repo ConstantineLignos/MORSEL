@@ -50,15 +50,15 @@ public class Lexicon {
 
   /** Create a new empty lexicon. */
   public Lexicon() {
-    lex = new THashMap<String, Word>();
+    lex = new THashMap<>();
 
-    prefixes = new THashMap<String, Affix>();
-    suffixes = new THashMap<String, Affix>();
+    prefixes = new THashMap<>();
+    suffixes = new THashMap<>();
     tokenCount = 0L;
 
-    base = new THashSet<Word>();
-    derived = new THashSet<Word>();
-    unmod = new THashSet<Word>();
+    base = new THashSet<>();
+    derived = new THashSet<>();
+    unmod = new THashSet<>();
     validSetCounts = false;
   }
 
@@ -265,7 +265,7 @@ public class Lexicon {
     }
 
     // Get the list of affixes, sort them
-    List<Affix> orderedAffixes = new ArrayList<Affix>(getAffixMap(type).values());
+    List<Affix> orderedAffixes = new ArrayList<>(getAffixMap(type).values());
     switch (set) {
       case ALL:
         if (weighted)
@@ -311,7 +311,7 @@ public class Lexicon {
     }
 
     // Get the list of affixes, sort them, truncate them
-    List<Affix> orderedAffixes = new ArrayList<Affix>(getAffixMap(type).values());
+    List<Affix> orderedAffixes = new ArrayList<>(getAffixMap(type).values());
     Collections.sort(
         orderedAffixes, Collections.reverseOrder(new WeightedUnmodTypeCountComparator()));
     return Util.truncateCollection(orderedAffixes, n);
@@ -410,15 +410,15 @@ public class Lexicon {
       boolean doubling,
       Set<WordPair> pairs) {
     // Keep track of words that moved based on the sets
-    List<Word> unmodBaseWords = new LinkedList<Word>();
-    List<Word> baseDerivedWords = new LinkedList<Word>();
-    List<Word> unmodDerivedWords = new LinkedList<Word>();
+    List<Word> unmodBaseWords = new LinkedList<>();
+    List<Word> baseDerivedWords = new LinkedList<>();
+    List<Word> unmodDerivedWords = new LinkedList<>();
 
     // Handle duplicates
     Set<WordPair> prunedPairs;
     // Keep track of all of the derivations
-    Map<Word, WordPair> derivedPairs = new THashMap<Word, WordPair>();
-    prunedPairs = new THashSet<WordPair>();
+    Map<Word, WordPair> derivedPairs = new THashMap<>();
+    prunedPairs = new THashSet<>();
 
     for (WordPair pair : pairs) {
       // Check whether this derived form has been derived already
@@ -579,7 +579,7 @@ public class Lexicon {
   public void processHyphenation() {
     // Loop over all words and process any hyphenated ones
     // Copy the values of the lexicon so we can modify it as we iterate
-    List<Word> lexWords = new ArrayList<Word>(lex.values());
+    List<Word> lexWords = new ArrayList<>(lex.values());
     for (Word w : lexWords) {
       // Check for a hyphen before doing the full split
       String text = w.getText();
@@ -587,7 +587,7 @@ public class Lexicon {
         String[] componentTexts = text.split("-");
 
         // Make a list of words that make this up, creating words if needed
-        List<Word> componentWords = new LinkedList<Word>();
+        List<Word> componentWords = new LinkedList<>();
         for (String componentText : componentTexts) {
           // If the text is empty, keep going
           if (componentText.equals("")) {

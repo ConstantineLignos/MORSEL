@@ -46,7 +46,7 @@ public class Util {
    * @return a new LinkedList containing the elements of the first and second collections in order
    */
   public static <T> List<T> concatCollections(Collection<T> first, Collection<T> second) {
-    List<T> out = new LinkedList<T>(first);
+    List<T> out = new LinkedList<>(first);
     out.addAll(second);
     return out;
   }
@@ -60,7 +60,7 @@ public class Util {
    */
   public static <T> List<T> truncateCollection(Collection<T> items, int max) {
     int curr = 0;
-    List<T> out = new LinkedList<T>();
+    List<T> out = new LinkedList<>();
     for (T item : items) {
       if (++curr > max) {
         break;

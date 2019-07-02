@@ -92,7 +92,7 @@ public class CompoundingTest extends TestCase {
         new Transform(new Affix("e", AffixType.SUFFIX), new Affix("ey", AffixType.SUFFIX));
     Transform pre =
         new Transform(new Affix("", AffixType.PREFIX), new Affix("pre", AffixType.PREFIX));
-    List<Transform> learnedTransforms = new LinkedList<Transform>();
+    List<Transform> learnedTransforms = new LinkedList<>();
     learnedTransforms.add(plural);
     learnedTransforms.add(pre);
     learnedTransforms.add(weird);
@@ -143,7 +143,7 @@ public class CompoundingTest extends TestCase {
     // Add an add -s rule
     Transform plural =
         new Transform(new Affix("", AffixType.SUFFIX), new Affix("s", AffixType.SUFFIX));
-    List<Transform> learnedTransforms = new LinkedList<Transform>();
+    List<Transform> learnedTransforms = new LinkedList<>();
     learnedTransforms.add(agentive);
     learnedTransforms.add(plural);
 
@@ -169,7 +169,7 @@ public class CompoundingTest extends TestCase {
     // Add an add -s rule, and add a pair
     Transform plural =
         new Transform(new Affix("", AffixType.SUFFIX), new Affix("s", AffixType.SUFFIX));
-    List<Transform> learnedTransforms = new LinkedList<Transform>();
+    List<Transform> learnedTransforms = new LinkedList<>();
     plural.addWordPair(lex.getWord("bake"), lex.getWord("bakes"), true);
     plural.addWordPair(lex.getWord("smack"), lex.getWord("smacks"), true);
     lex.moveTransformPairs(plural, null, false, true, true);
@@ -196,7 +196,7 @@ public class CompoundingTest extends TestCase {
         new Transform(new Affix("", AffixType.SUFFIX), new Affix("en", AffixType.SUFFIX));
     en.addWordPair(lex.getWord("haus"), lex.getWord("hausen"), false);
     lex.moveTransformPairs(en, null, false, true, true);
-    List<Transform> learnedTransforms = new LinkedList<Transform>();
+    List<Transform> learnedTransforms = new LinkedList<>();
     learnedTransforms.add(en);
     Compounding.breakCompounds(
         lex, WordSet.UNMODELED, learnedTransforms, null, false, false, false, null);
@@ -216,7 +216,7 @@ public class CompoundingTest extends TestCase {
         new Transform(new Affix("", AffixType.SUFFIX), new Affix("er", AffixType.SUFFIX));
     // Move "haus" to Base so it will be used
     lex.moveWord(lex.getWord("haus"), WordSet.BASE);
-    List<Transform> learnedTransforms = new LinkedList<Transform>();
+    List<Transform> learnedTransforms = new LinkedList<>();
     learnedTransforms.add(er);
     Compounding.breakCompounds(
         lex, WordSet.UNMODELED, learnedTransforms, null, false, false, false, null);

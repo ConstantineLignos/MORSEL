@@ -39,7 +39,7 @@ public class Hypothesis {
    */
   public Hypothesis(String remainingText) {
     this.remainingText = remainingText;
-    words = new LinkedList<Word>();
+    words = new LinkedList<>();
   }
 
   /**
@@ -50,7 +50,7 @@ public class Hypothesis {
    */
   public Hypothesis(String remainingText, List<Word> hypWords) {
     this.remainingText = remainingText;
-    words = new LinkedList<Word>(hypWords);
+    words = new LinkedList<>(hypWords);
   }
 
   /**
@@ -143,7 +143,7 @@ public class Hypothesis {
   public List<Hypothesis> extendAll(
       Lexicon lex, Compounding.Filler filler, TransformInference transInf, boolean doubling) {
     // Extend the hypothesis by one word, if possible
-    List<Hypothesis> extended = new LinkedList<Hypothesis>();
+    List<Hypothesis> extended = new LinkedList<>();
 
     // Get all prefix words of the remaining text
     // If words is not empty (i.e. this is after the first iteration

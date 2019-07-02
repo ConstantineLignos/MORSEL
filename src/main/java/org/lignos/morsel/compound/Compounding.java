@@ -79,7 +79,7 @@ public class Compounding {
 
     // Track all the words that need to be created by the transform
     // that created them
-    Map<Transform, Set<WordPair>> transformPairs = new THashMap<Transform, Set<WordPair>>();
+    Map<Transform, Set<WordPair>> transformPairs = new THashMap<>();
     // Loop over each word in the appropriate set and try to break it
     for (Word word : lex.getSetWords(set)) {
       // Skip words that are already compounds or are too short
@@ -165,7 +165,7 @@ public class Compounding {
       Map<Transform, Set<WordPair>> transformPairs) {
     // If the transform doesn't have any pairs yet, create the set
     if (!transformPairs.containsKey(derivingTransform)) {
-      transformPairs.put(derivingTransform, new THashSet<WordPair>());
+      transformPairs.put(derivingTransform, new THashSet<>());
     }
 
     // Add a new pair
@@ -186,11 +186,11 @@ public class Compounding {
       Word word, Filler filler, Lexicon lex, TransformInference transInf, boolean doubling) {
     // Create a queue for the search and a list for the complete hypotheses
     PriorityQueue<Hypothesis> currHyps =
-        new PriorityQueue<Hypothesis>(BEAM_SIZE, new Hypothesis.HypothesisScoreRanker());
+        new PriorityQueue<>(BEAM_SIZE, new Hypothesis.HypothesisScoreRanker());
     // Track the new hypotheses for each round
     PriorityQueue<Hypothesis> newHyps =
-        new PriorityQueue<Hypothesis>(BEAM_SIZE, new Hypothesis.HypothesisScoreRanker());
-    List<Hypothesis> completeHyps = new LinkedList<Hypothesis>();
+        new PriorityQueue<>(BEAM_SIZE, new Hypothesis.HypothesisScoreRanker());
+    List<Hypothesis> completeHyps = new LinkedList<>();
     // Temporary variable for swapping lists
     PriorityQueue<Hypothesis> swap;
 
@@ -258,7 +258,7 @@ public class Compounding {
     // We loop over possible ending indices of the prefix
     // The index can range from MIN_COMPOUND_LENGTH to either 1 less than the length of the string
     // or the full length of the string if allowFull is on
-    List<Word> prefixes = new LinkedList<Word>();
+    List<Word> prefixes = new LinkedList<>();
     int max = allowFull ? word.length() : word.length() - 1;
 
     for (int i = MIN_COMPOUND_LENGTH; i <= max; i++) {
@@ -390,11 +390,11 @@ public class Compounding {
 
     // Keep a list of good analysis hypotheses
     PriorityQueue<AnalysisResult> completeResults =
-        new PriorityQueue<AnalysisResult>(BEAM_SIZE, new AnalysisResult.AnalysisScoreRanker());
+        new PriorityQueue<>(BEAM_SIZE, new AnalysisResult.AnalysisScoreRanker());
     PriorityQueue<AnalysisResult> currResults =
-        new PriorityQueue<AnalysisResult>(BEAM_SIZE, new AnalysisResult.AnalysisScoreRanker());
+        new PriorityQueue<>(BEAM_SIZE, new AnalysisResult.AnalysisScoreRanker());
     PriorityQueue<AnalysisResult> newResults =
-        new PriorityQueue<AnalysisResult>(BEAM_SIZE, new AnalysisResult.AnalysisScoreRanker());
+        new PriorityQueue<>(BEAM_SIZE, new AnalysisResult.AnalysisScoreRanker());
     PriorityQueue<AnalysisResult> swap;
 
     // We loop over possible ending indices of the prefix and seed the results
@@ -501,8 +501,8 @@ public class Compounding {
      * @param transforms the transforms to be used as filler
      */
     public Filler(Collection<Transform> transforms) {
-      prefixes = new LinkedList<Transform>();
-      suffixes = new LinkedList<Transform>();
+      prefixes = new LinkedList<>();
+      suffixes = new LinkedList<>();
       for (Transform transform : transforms) {
         switch (transform.getAffixType()) {
           case PREFIX:
@@ -555,7 +555,7 @@ public class Compounding {
      */
     public List<FillerResult> getFilledSuffixes(
         String prefix, String fullWord, Word prefixWord, boolean doubling) {
-      List<FillerResult> filled = new LinkedList<FillerResult>();
+      List<FillerResult> filled = new LinkedList<>();
       for (Transform transform : suffixes) {
         String derived =
             makeFillerDerivedFromPrefix(
@@ -585,12 +585,12 @@ public class Compounding {
     public AnalysisResult(Word base) {
       this.base = base;
       this.text = base.getText();
-      derivingTransforms = new LinkedList<Transform>();
+      derivingTransforms = new LinkedList<>();
     }
 
     public static AnalysisResult cloneResult(AnalysisResult result) {
       AnalysisResult copy = new AnalysisResult(result.base);
-      copy.derivingTransforms = new LinkedList<Transform>(result.derivingTransforms);
+      copy.derivingTransforms = new LinkedList<>(result.derivingTransforms);
       return copy;
     }
 
@@ -614,7 +614,7 @@ public class Compounding {
         TransformInference transInf,
         boolean doubling,
         String fullWord) {
-      List<AnalysisResult> filled = new LinkedList<AnalysisResult>();
+      List<AnalysisResult> filled = new LinkedList<>();
       // Try possible derived forms using each transform
       for (Transform transform : filler.suffixes) {
         // Skip the transform if it's not allowed

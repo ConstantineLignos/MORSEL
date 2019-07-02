@@ -73,11 +73,11 @@ public class Word {
     externalAnalysis = null;
     compound = false;
 
-    transformPairs = new THashSet<TransformPair>();
+    transformPairs = new THashSet<>();
 
-    derivedWords = new THashSet<Word>();
-    prefixes = new THashSet<Affix>();
-    suffixes = new THashSet<Affix>();
+    derivedWords = new THashSet<>();
+    prefixes = new THashSet<>();
+    suffixes = new THashSet<>();
   }
 
   /**
@@ -88,8 +88,8 @@ public class Word {
   public String analyze() {
     if (externalAnalysis != null) return externalAnalysis;
 
-    List<String> prefixes = new LinkedList<String>();
-    List<String> suffixes = new LinkedList<String>();
+    List<String> prefixes = new LinkedList<>();
+    List<String> suffixes = new LinkedList<>();
 
     String rootText = analyzeRoot();
 
@@ -267,7 +267,7 @@ public class Word {
 
   /** @return all affixes the word participates in */
   public Set<Affix> getAffixes() {
-    Set<Affix> affixes = new THashSet<Affix>(prefixes);
+    Set<Affix> affixes = new THashSet<>(prefixes);
     affixes.addAll(suffixes);
     return affixes;
   }
@@ -362,7 +362,7 @@ public class Word {
   public String analyzeRoot() {
     if (getSet() == WordSet.COMPOUND) {
       // If it's a compound, return the analysis of all roots
-      List<String> analyses = new LinkedList<String>();
+      List<String> analyses = new LinkedList<>();
       for (Word w : componentWords) {
         analyses.add(w.analyze());
       }
