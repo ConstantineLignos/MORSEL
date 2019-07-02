@@ -18,7 +18,7 @@
  */
 package org.lignos.morsel.lexicon;
 
-import gnu.trove.set.hash.THashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,11 +74,11 @@ public class Word {
     externalAnalysis = null;
     compound = false;
 
-    transformPairs = new THashSet<>();
+    transformPairs = new ObjectOpenHashSet<>();
 
-    derivedWords = new THashSet<>();
-    prefixes = new THashSet<>();
-    suffixes = new THashSet<>();
+    derivedWords = new ObjectOpenHashSet<>();
+    prefixes = new ObjectOpenHashSet<>();
+    suffixes = new ObjectOpenHashSet<>();
   }
 
   /**
@@ -268,7 +268,7 @@ public class Word {
 
   /** @return all affixes the word participates in */
   public Set<Affix> getAffixes() {
-    Set<Affix> affixes = new THashSet<>(prefixes);
+    Set<Affix> affixes = new ObjectOpenHashSet<>(prefixes);
     affixes.addAll(suffixes);
     return affixes;
   }

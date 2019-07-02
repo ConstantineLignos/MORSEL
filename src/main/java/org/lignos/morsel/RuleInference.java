@@ -18,7 +18,7 @@
  */
 package org.lignos.morsel;
 
-import gnu.trove.set.hash.THashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.List;
@@ -34,7 +34,7 @@ public class RuleInference {
 
   /** Create an new inference instance with an empty set of inferred bases. */
   public RuleInference() {
-    inferredBases = new THashSet<>();
+    inferredBases = new ObjectOpenHashSet<>();
   }
 
   /**
@@ -47,7 +47,7 @@ public class RuleInference {
   private Collection<Word> inferBases(Lexicon lex, Transform transform) {
     // Go over each unmodeled word with affix2 of the transform. If
     // its hypothesized base is not word, infer it
-    Set<Word> newWords = new THashSet<>();
+    Set<Word> newWords = new ObjectOpenHashSet<>();
     for (Word w : transform.getAffix2().getWordSet()) {
       // Skip anything not unmodeled
       if (w.getSet() != WordSet.UNMODELED) {

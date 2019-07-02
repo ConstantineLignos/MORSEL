@@ -18,8 +18,8 @@
  */
 package org.lignos.morsel.lexicon;
 
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,14 +49,14 @@ public class Lexicon {
 
   /** Create a new empty lexicon. */
   public Lexicon() {
-    lex = new THashMap<>();
+    lex = new Object2ObjectOpenHashMap<>();
 
-    prefixes = new THashMap<>();
-    suffixes = new THashMap<>();
+    prefixes = new Object2ObjectOpenHashMap<>();
+    suffixes = new Object2ObjectOpenHashMap<>();
 
-    base = new THashSet<>();
-    derived = new THashSet<>();
-    unmod = new THashSet<>();
+    base = new ObjectOpenHashSet<>();
+    derived = new ObjectOpenHashSet<>();
+    unmod = new ObjectOpenHashSet<>();
     validSetCounts = false;
   }
 
@@ -406,8 +406,8 @@ public class Lexicon {
     // Handle duplicates
     Set<WordPair> prunedPairs;
     // Keep track of all of the derivations
-    Map<Word, WordPair> derivedPairs = new THashMap<>();
-    prunedPairs = new THashSet<>();
+    Map<Word, WordPair> derivedPairs = new Object2ObjectOpenHashMap<>();
+    prunedPairs = new ObjectOpenHashSet<>();
 
     for (WordPair pair : pairs) {
       // Check whether this derived form has been derived already

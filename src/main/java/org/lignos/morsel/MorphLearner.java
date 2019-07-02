@@ -18,8 +18,8 @@
  */
 package org.lignos.morsel;
 
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -313,8 +313,8 @@ public class MorphLearner {
   /** Learn from the loaded lexicon and output the results. */
   public void learn() {
     List<Transform> learnedTransforms = new LinkedList<>();
-    Set<Transform> badTransforms = new THashSet<>();
-    Map<String, Transform> indexedTransforms = new THashMap<>();
+    Set<Transform> badTransforms = new ObjectOpenHashSet<>();
+    Map<String, Transform> indexedTransforms = new Object2ObjectOpenHashMap<>();
     RuleInference ruleInf = new RuleInference();
     TransformInference transInf = new TransformInference();
     PrintWriter baseLog = null;
@@ -548,7 +548,7 @@ public class MorphLearner {
   }
 
   private Map<String, Transform> indexTransforms(List<Transform> hypTransforms) {
-    Map<String, Transform> index = new THashMap<>();
+    Map<String, Transform> index = new Object2ObjectOpenHashMap<>();
     for (Transform transform : hypTransforms) {
       index.put(transform.toKey(), transform);
     }
@@ -706,7 +706,7 @@ public class MorphLearner {
     int overlap = 0;
 
     // Create a set of all stems in the base words
-    Set<String> baseStems = new THashSet<>();
+    Set<String> baseStems = new ObjectOpenHashSet<>();
     for (Word word : lex.getSetWords(WordSet.BASE)) {
       if (word.length() > STEM_LENGTH) {
         baseStems.add(word.getText().substring(0, STEM_LENGTH));

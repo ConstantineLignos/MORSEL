@@ -18,8 +18,8 @@
  */
 package org.lignos.morsel.compound;
 
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -79,7 +79,7 @@ public class Compounding {
 
     // Track all the words that need to be created by the transform
     // that created them
-    Map<Transform, Set<WordPair>> transformPairs = new THashMap<>();
+    Map<Transform, Set<WordPair>> transformPairs = new Object2ObjectOpenHashMap<>();
     // Loop over each word in the appropriate set and try to break it
     for (Word word : lex.getSetWords(set)) {
       // Skip words that are already compounds or are too short
@@ -165,7 +165,7 @@ public class Compounding {
       Map<Transform, Set<WordPair>> transformPairs) {
     // If the transform doesn't have any pairs yet, create the set
     if (!transformPairs.containsKey(derivingTransform)) {
-      transformPairs.put(derivingTransform, new THashSet<>());
+      transformPairs.put(derivingTransform, new ObjectOpenHashSet<>());
     }
 
     // Add a new pair

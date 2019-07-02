@@ -59,9 +59,9 @@
     </dependency>
 
     <dependency>
-      <artifactId>trove4j</artifactId>
-      <groupId>net.sf.trove4j</groupId>
-      <version>3.0.3</version>
+      <groupId>it.unimi.dsi</groupId>
+      <artifactId>fastutil</artifactId>
+      <version>8.2.3</version>
     </dependency>
 
   </dependencies>

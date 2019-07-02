@@ -18,8 +18,8 @@
  */
 package org.lignos.morsel;
 
-import gnu.trove.map.hash.THashMap;
-import gnu.trove.set.hash.THashSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.lignos.morsel.lexicon.Lexicon;
@@ -32,7 +32,7 @@ import org.lignos.morsel.transform.TransformRelation;
 public class TransformInference {
   private static final int MIN_COUNT = 1;
   private Map<Transform, TransformRelation> relations;
-  private THashMap<Transform, THashSet<Transform>> goodRelations;
+  private Object2ObjectOpenHashMap<Transform, ObjectOpenHashSet<Transform>> goodRelations;
 
   /**
    * Infer the relationships between transforms as shown by the derived forms in the lexicon.
@@ -41,8 +41,8 @@ public class TransformInference {
    */
   public void inferRelations(Lexicon lex) {
     // Reset the relations
-    relations = new THashMap<>();
-    goodRelations = new THashMap<>();
+    relations = new Object2ObjectOpenHashMap<>();
+    goodRelations = new Object2ObjectOpenHashMap<>();
 
     // Loop over the derived words to learn the relationships
     for (Word w : lex.getSetWords(WordSet.DERIVED)) {
@@ -77,7 +77,7 @@ public class TransformInference {
       TransformRelation tRelation = e1.getValue();
 
       // Make a new nested map
-      THashSet<Transform> goodPreceders = new THashSet<>();
+      ObjectOpenHashSet<Transform> goodPreceders = new ObjectOpenHashSet<>();
       goodRelations.put(followingTransform, goodPreceders);
       for (Entry<Transform, Integer> e2 : tRelation.getPrecedingTransformCounts()) {
         // Add it if the amount is > 1
@@ -116,7 +116,7 @@ public class TransformInference {
       preceding = null;
     }
 
-    THashSet<Transform> goodPreceders = goodRelations.get(following);
+    ObjectOpenHashSet<Transform> goodPreceders = goodRelations.get(following);
 
     // If the preceding transform is unheard of, we throw an exception
     // because it means our information must be out of date.

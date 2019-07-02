@@ -18,7 +18,7 @@
  */
 package org.lignos.morsel.transform;
 
-import gnu.trove.set.hash.THashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -58,7 +58,7 @@ public class Transform {
   public Transform(Affix affix1, Affix affix2) {
     this.affix1 = affix1;
     this.affix2 = affix2;
-    derivationPairs = new THashSet<>();
+    derivationPairs = new ObjectOpenHashSet<>();
     unmovedDerivationPairs = null;
 
     // Make sure the affixes are of the same type, and set the affixType
@@ -416,7 +416,7 @@ public class Transform {
   public void markLearned() {
     learned = true;
     // As an optimization we lazily allocate this
-    unmovedDerivationPairs = new THashSet<>();
+    unmovedDerivationPairs = new ObjectOpenHashSet<>();
   }
 
   /** @return the target affix */
@@ -472,7 +472,7 @@ public class Transform {
 
   /** Clear the set of derivation pairs that have yet to be moved */
   public void resetUnmoved() {
-    unmovedDerivationPairs = new THashSet<>();
+    unmovedDerivationPairs = new ObjectOpenHashSet<>();
   }
 
   /**

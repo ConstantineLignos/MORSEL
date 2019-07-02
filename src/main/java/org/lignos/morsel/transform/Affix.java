@@ -19,7 +19,7 @@
 
 package org.lignos.morsel.transform;
 
-import gnu.trove.set.hash.THashSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,7 +62,7 @@ public class Affix {
     derivedTypeCount = -1;
     unmodTypeCount = -1;
     tokenCount = 0L;
-    wordSet = new THashSet<>();
+    wordSet = new ObjectOpenHashSet<>();
 
     length = text.length();
     weight = Math.max(length, 1);
