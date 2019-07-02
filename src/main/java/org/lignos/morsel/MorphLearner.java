@@ -745,10 +745,10 @@ public class MorphLearner {
 
   private void outputAnalysis(PrintWriter analysisOutput) {
     // Output an analysis of all the words
-    List<String> sortedWords = new ArrayList<>(lex.getWordKeys());
+    List<String> sortedWords = lex.getWordStrings();
     Collections.sort(sortedWords);
     for (String wordKey : sortedWords) {
-      Word w = lex.getWord(wordKey);
+      final Word w = lex.getWord(wordKey);
       if (w.shouldAnalyze()) {
         analysisOutput.println(wordKey + '\t' + w.analyze());
       }

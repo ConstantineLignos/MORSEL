@@ -139,9 +139,11 @@ public class Lexicon {
     return lex.values();
   }
 
-  /** @return the key set for all words in the lexicon */
-  public Set<String> getWordKeys() {
-    return lex.keySet();
+  /** @return the sorted strings for all words in the lexicon */
+  public List<String> getWordStrings() {
+    final List<String> sortedWords = new ArrayList<>(lex.keySet());
+    Collections.sort(sortedWords);
+    return sortedWords;
   }
 
   /**
@@ -579,15 +581,15 @@ public class Lexicon {
   public void processHyphenation() {
     // Loop over all words and process any hyphenated ones
     // Copy the values of the lexicon so we can modify it as we iterate
-    List<Word> lexWords = new ArrayList<>(lex.values());
-    for (Word w : lexWords) {
+    List<String> lexWords = getWordStrings();
+    for (String text : lexWords) {
+      final Word w = lex.get(text);
       // Check for a hyphen before doing the full split
-      String text = w.getText();
       if (text.indexOf('-') != -1) {
-        String[] componentTexts = text.split("-");
+        final String[] componentTexts = text.split("-");
 
         // Make a list of words that make this up, creating words if needed
-        List<Word> componentWords = new LinkedList<>();
+        final List<Word> componentWords = new ArrayList<>();
         for (String componentText : componentTexts) {
           // If the text is empty, keep going
           if (componentText.equals("")) {
