@@ -19,13 +19,11 @@
 package org.lignos.morsel.transform;
 
 /**
- * The AffixType enumeration gives the possible forms an affix can take, such
- * as prefix or suffix. 
- *
+ * The AffixType enumeration gives the possible forms an affix can take, such as prefix or suffix.
  */
 public enum AffixType {
-	/** Prefix */
-	PREFIX,
-	/** Suffix */
-	SUFFIX
+  /** Prefix */
+  PREFIX,
+  /** Suffix */
+  SUFFIX
 }

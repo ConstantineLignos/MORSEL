@@ -19,17 +19,16 @@
 package org.lignos.morsel.lexicon;
 
 /**
- * The WordSet enumeration gives the sets words can belong to in the learner.
- * These sets represent the status of the word in the learner's representation.
- *
+ * The WordSet enumeration gives the sets words can belong to in the learner. These sets represent
+ * the status of the word in the learner's representation.
  */
 public enum WordSet {
-	/** Words that are unanalyzed */
-	UNMODELED,
-	/** Words that are the bases of transforms */
-	BASE,
-	/** Words derived by transforms */
-	DERIVED,
-	/** Words derived by compounding */
-	COMPOUND
+  /** Words that are unanalyzed */
+  UNMODELED,
+  /** Words that are the bases of transforms */
+  BASE,
+  /** Words derived by transforms */
+  DERIVED,
+  /** Words derived by compounding */
+  COMPOUND
 }

@@ -19,61 +19,54 @@
 package org.lignos.morsel.transform;
 
 import gnu.trove.THashMap;
-
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-/**
- * Representation of the relationship between transforms.
- */
+/** Representation of the relationship between transforms. */
 public class TransformRelation {
-	private final Transform mainTransform;
-	private Map<Transform, Integer> precedingTransforms;
-	
-	/**
-	 * Create a new transformRelation for the given transform with empty
-	 * relationships.
-	 * @param t the transform to track relations to
-	 */
-	public TransformRelation(Transform t) {
-		this.mainTransform = t;
-		precedingTransforms = new THashMap<Transform, Integer>();
-	}
-	
-	
-	/**
-	 * Increment the count for a preceding transform.
-	 * @param preceder the preceding transform
-	 */
-	public void incrementPreceder(Transform preceder) {
-		// Add the transform if it's not there
-		if (!precedingTransforms.containsKey(preceder)) {
-			precedingTransforms.put(preceder, 0);
-		}
-		// Increment it
-		precedingTransforms.put(preceder, precedingTransforms.get(preceder) + 1);
-	}
-	
-	
-	/**
-	 * @return the entries mapping preceding transforms to their counts
-	 */
-	public Set<Entry<Transform, Integer>> getPrecedingTransformCounts() {
-		return precedingTransforms.entrySet();
-	}
-	
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	public String toString(){
-		StringBuilder out = new StringBuilder(mainTransform.toString() + "\n");
-		
-		for (Entry<Transform, Integer> e : precedingTransforms.entrySet()) {
-			out.append(e.getKey() + " " + e.getValue());
-		}
-		
-		return out.toString();
-	}
+  private final Transform mainTransform;
+  private Map<Transform, Integer> precedingTransforms;
+
+  /**
+   * Create a new transformRelation for the given transform with empty relationships.
+   *
+   * @param t the transform to track relations to
+   */
+  public TransformRelation(Transform t) {
+    this.mainTransform = t;
+    precedingTransforms = new THashMap<Transform, Integer>();
+  }
+
+  /**
+   * Increment the count for a preceding transform.
+   *
+   * @param preceder the preceding transform
+   */
+  public void incrementPreceder(Transform preceder) {
+    // Add the transform if it's not there
+    if (!precedingTransforms.containsKey(preceder)) {
+      precedingTransforms.put(preceder, 0);
+    }
+    // Increment it
+    precedingTransforms.put(preceder, precedingTransforms.get(preceder) + 1);
+  }
+
+  /** @return the entries mapping preceding transforms to their counts */
+  public Set<Entry<Transform, Integer>> getPrecedingTransformCounts() {
+    return precedingTransforms.entrySet();
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  public String toString() {
+    StringBuilder out = new StringBuilder(mainTransform.toString() + "\n");
+
+    for (Entry<Transform, Integer> e : precedingTransforms.entrySet()) {
+      out.append(e.getKey() + " " + e.getValue());
+    }
+
+    return out.toString();
+  }
 }

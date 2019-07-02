@@ -20,33 +20,24 @@ package org.lignos.morsel.transform;
 
 import junit.framework.TestCase;
 
-/**
- * Test the Transform representation.
- *
- */
+/** Test the Transform representation. */
 public class TransformTest extends TestCase {
 
-	/**
-	 * Test making a derived form without accommodation.
-	 */
-	public void testmakeDerivedBasic() {
-		Affix edAffix = new Affix("ed", AffixType.SUFFIX);
-		assertEquals("pined", Transform.makeDerived("pin", edAffix, false, false));
-	}
-	
-	/**
-	 * Test making a derived form with doubling.
-	 */
-	public void testmakeDerivedDoubled() {
-		Affix edAffix = new Affix("ed", AffixType.SUFFIX);
-		assertEquals("pinned", Transform.makeDerived("pin", edAffix, true, false));
-	}
-	
-	/**
-	 * Test making a derived form with undoubling.
-	 */
-	public void testmakeDerivedUndoubled() {
-		Affix edAffix = new Affix("ed", AffixType.SUFFIX);
-		assertEquals("caned", Transform.makeDerived("cane", edAffix, false, true));
-	}
+  /** Test making a derived form without accommodation. */
+  public void testmakeDerivedBasic() {
+    Affix edAffix = new Affix("ed", AffixType.SUFFIX);
+    assertEquals("pined", Transform.makeDerived("pin", edAffix, false, false));
+  }
+
+  /** Test making a derived form with doubling. */
+  public void testmakeDerivedDoubled() {
+    Affix edAffix = new Affix("ed", AffixType.SUFFIX);
+    assertEquals("pinned", Transform.makeDerived("pin", edAffix, true, false));
+  }
+
+  /** Test making a derived form with undoubling. */
+  public void testmakeDerivedUndoubled() {
+    Affix edAffix = new Affix("ed", AffixType.SUFFIX);
+    assertEquals("caned", Transform.makeDerived("cane", edAffix, false, true));
+  }
 }

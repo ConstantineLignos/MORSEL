@@ -19,36 +19,35 @@
 package org.lignos.morsel.transform;
 
 /**
- * Represent a combination of a word pair and the transform that
- * relates the words of the pair. This is used to allow a Word to
- * keep track of what transforms cover it.
- *
+ * Represent a combination of a word pair and the transform that relates the words of the pair. This
+ * is used to allow a Word to keep track of what transforms cover it.
  */
 public class TransformPair {
-	private Transform transform;
-	private WordPair pair;
-	
-	/**
-	 * Create a TranformPair from a Transform and a WordPair
-	 * @param transform the Transform
-	 * @param pair the WordPair
-	 */
-	public TransformPair(Transform transform, WordPair pair) {
-		this.transform = transform;
-		this.pair = pair;
-	}
-	
-	/**
-	 * @return the Transform
-	 */
-	public Transform getTransform() {return transform;}
+  private Transform transform;
+  private WordPair pair;
 
-	/**
-	 * @return the WordPair
-	 */
-	public WordPair getPair() {return pair;}
+  /**
+   * Create a TranformPair from a Transform and a WordPair
+   *
+   * @param transform the Transform
+   * @param pair the WordPair
+   */
+  public TransformPair(Transform transform, WordPair pair) {
+    this.transform = transform;
+    this.pair = pair;
+  }
 
-	public String toString() {
-		return transform + ": " + pair;
-	}
+  /** @return the Transform */
+  public Transform getTransform() {
+    return transform;
+  }
+
+  /** @return the WordPair */
+  public WordPair getPair() {
+    return pair;
+  }
+
+  public String toString() {
+    return transform + ": " + pair;
+  }
 }
