@@ -23,8 +23,8 @@ package org.lignos.morsel.transform;
  * is used to allow a Word to keep track of what transforms cover it.
  */
 public class TransformPair {
-  private Transform transform;
-  private WordPair pair;
+  private final Transform transform;
+  private final WordPair pair;
 
   /**
    * Create a TranformPair from a Transform and a WordPair

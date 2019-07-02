@@ -38,14 +38,14 @@ import org.lignos.morsel.transform.WordPair;
 
 /** The representation of all words in the language being learned. */
 public class Lexicon {
-  private Map<String, Word> lex;
-  private Map<String, Affix> prefixes;
-  private Map<String, Affix> suffixes;
+  private final Map<String, Word> lex;
+  private final Map<String, Affix> prefixes;
+  private final Map<String, Affix> suffixes;
   private long tokenCount;
 
-  private Set<Word> base;
-  private Set<Word> derived;
-  private Set<Word> unmod;
+  private final Set<Word> base;
+  private final Set<Word> derived;
+  private final Set<Word> unmod;
   private boolean validSetCounts;
 
   /** Create a new empty lexicon. */
@@ -155,7 +155,7 @@ public class Lexicon {
     String[] wordAffixes = Affix.getAffixes(word, type);
 
     // Pick the right map to put entries in based on AffixType
-    Map<String, Affix> affixes = null;
+    Map<String, Affix> affixes;
     if (type == AffixType.PREFIX) {
       affixes = prefixes;
     } else if (type == AffixType.SUFFIX) {
@@ -201,8 +201,8 @@ public class Lexicon {
   public boolean isWordInSet(String wordText, WordSet set) {
     Word word = lex.get(wordText);
     // If the word was found, return whether the set was correct,
-    // otheriwse false
-    return word != null ? word.getSet() == set : false;
+    // otherwise false
+    return word != null && word.getSet() == set;
   }
 
   /**
@@ -622,7 +622,7 @@ public class Lexicon {
   }
 
   /** The word sets that affix counts are computed over */
-  public static enum AffixSet {
+  public enum AffixSet {
     /** All words */
     ALL,
     /** Unmodeled words */

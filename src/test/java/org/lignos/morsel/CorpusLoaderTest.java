@@ -24,8 +24,8 @@ import org.lignos.morsel.lexicon.Word;
 
 /** Test basic wordlist loading capabilities. */
 public class CorpusLoaderTest extends TestCase {
-  String wordListPath = "data/test/test_wordlist.txt";
-  String overflowListPath = "data/test/test_overflowlist.txt";
+  final String wordListPath = "data/test/test_wordlist.txt";
+  final String overflowListPath = "data/test/test_overflowlist.txt";
 
   /** Test that entries are added to the lexicon when processing a wordlist. */
   public void testloadWordlist() {

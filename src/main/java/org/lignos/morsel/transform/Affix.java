@@ -33,18 +33,17 @@ public class Affix {
   private static final int MAX_AFFIX_LENGTH = 5;
   private static final int MIN_STEM_LENGTH = 3;
 
-  private String text;
-  private AffixType type;
-  private long typeCount = 0L;
-  private long freqTypeCount = -1L;
-  private long tokenCount = 0L;
-  private Set<Word> wordSet;
-  private int length;
-  private int weight;
-  // Set to -1 so it is clear when the counting functions have never been called
-  private long baseTypeCount = -1L;
-  private long derivedTypeCount = -1L;
-  private long unmodTypeCount = -1L;
+  private final String text;
+  private final AffixType type;
+  private long typeCount;
+  private long freqTypeCount;
+  private long tokenCount;
+  private final Set<Word> wordSet;
+  private final int length;
+  private final int weight;
+  private long baseTypeCount;
+  private long derivedTypeCount;
+  private long unmodTypeCount;
 
   /**
    * Create an affix, setting its counts to zero and making an empty wordset.
@@ -57,6 +56,7 @@ public class Affix {
     this.type = type;
     typeCount = 0;
     freqTypeCount = 0;
+    // Set to -1 so it is clear when the counting functions have never been called
     baseTypeCount = -1;
     derivedTypeCount = -1;
     unmodTypeCount = -1;
@@ -165,7 +165,7 @@ public class Affix {
     if (affix.getType() == AffixType.PREFIX) {
       return affix.getText().equals(text.substring(0, affixLen));
     } else if (affix.getType() == AffixType.SUFFIX) {
-      return affix.getText().equals(text.substring(text.length() - affixLen, text.length()));
+      return affix.getText().equals(text.substring(text.length() - affixLen));
     } else {
       throw new RuntimeException("Unhandled Affix Type");
     }

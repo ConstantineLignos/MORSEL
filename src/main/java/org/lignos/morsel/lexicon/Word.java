@@ -35,20 +35,20 @@ public class Word {
   public static double FREQ_THRESHOLD = .000001F;
   /** Default minimum count threshold for a word to count toward transform scoring */
   public static int COUNT_THRESHOLD = 1;
-  protected String text;
+  protected final String text;
   List<Word> componentWords; // Roots of the word if it is a compound
   private long count;
   private double freq;
   private WordSet set;
   private Word base;
   private Word root;
-  private Set<Word> derivedWords;
-  private Set<Affix> prefixes;
-  private Set<Affix> suffixes;
-  private Set<TransformPair>
+  private final Set<Word> derivedWords;
+  private final Set<Affix> prefixes;
+  private final Set<Affix> suffixes;
+  private final Set<TransformPair>
       transformPairs; // All possible transforms the word is in and what role it has
   private Transform derivation; // The transform that actually derives the word
-  private boolean analyze; // Use to block inferred words from analysis
+  private final boolean analyze; // Use to block inferred words from analysis
   private boolean duplicate; // Used to mark temporary words generated in compounding
   private String externalAnalysis; // Analysis if set externally
   private boolean compound;
@@ -120,13 +120,13 @@ public class Word {
     // Build up the analysis string
     StringBuilder out = new StringBuilder();
     if (prefixes.size() > 0) {
-      out.append(Util.join(prefixes, " ") + ' ');
+      out.append(Util.join(prefixes, " ")).append(' ');
     }
 
     out.append(rootText);
 
     if (suffixes.size() > 0) {
-      out.append(' ' + Util.join(suffixes, " "));
+      out.append(' ').append(Util.join(suffixes, " "));
     }
 
     return out.toString();
@@ -433,7 +433,7 @@ public class Word {
   public String toDerivedWordsString() {
     StringBuilder out = new StringBuilder();
     out.append(this.text);
-    for (Word w : derivedWords) out.append("," + w.toString());
+    for (Word w : derivedWords) out.append(",").append(w.toString());
     return out.toString();
   }
 }

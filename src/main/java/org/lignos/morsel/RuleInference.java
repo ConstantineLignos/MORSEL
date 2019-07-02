@@ -30,7 +30,7 @@ import org.lignos.morsel.transform.Transform;
 
 /** Allow inference of unseen forms using learned transforms. */
 public class RuleInference {
-  private Set<String> inferredBases;
+  private final Set<String> inferredBases;
 
   /** Create an new inference instance with an empty set of inferred bases. */
   public RuleInference() {

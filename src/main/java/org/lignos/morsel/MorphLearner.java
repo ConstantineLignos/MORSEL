@@ -61,7 +61,7 @@ public class MorphLearner {
   // Output options
   protected String analysisBase;
   // I/O Variables
-  String corpusPath;
+  final String corpusPath;
   PrintWriter output;
   PrintStream log;
   /** The lexicon being learned over */
@@ -91,9 +91,9 @@ public class MorphLearner {
   private boolean WEIGHTED_AFFIXES;
   private boolean TRANSFORM_RELATIONS;
   private boolean ANALYZE_SIMPLEX_WORDS;
-  private boolean outputBaseInf;
-  private boolean outputConflation;
-  private boolean outputCompounds;
+  private final boolean outputBaseInf;
+  private final boolean outputConflation;
+  private final boolean outputCompounds;
 
   /**
    * Create a new learner using the given paths for I/O.
@@ -118,7 +118,7 @@ public class MorphLearner {
       boolean outputBaseInf,
       boolean outputConflation,
       boolean outputCompounds)
-      throws FileNotFoundException, UnsupportedEncodingException {
+      throws IOException, UnsupportedEncodingException {
     this.corpusPath = corpusPath;
     this.outputBaseInf = outputBaseInf;
     this.outputConflation = outputConflation;
@@ -259,12 +259,12 @@ public class MorphLearner {
               outputBaseInf,
               outputConflation,
               outputCompounds);
-    } catch (FileNotFoundException e) {
-      System.err.println(e.getMessage());
-      System.exit(66);
     } catch (UnsupportedEncodingException e) {
       System.err.println("Unsupported file encoding: " + encoding);
       System.exit(74);
+    } catch (IOException e) {
+      System.err.println(e.getMessage());
+      System.exit(66);
     }
 
     // Output time stats
@@ -348,7 +348,7 @@ public class MorphLearner {
 
       // Hypothesize transforms
       System.out.println("Hypothesizing and scoring transforms...");
-      ArrayList<Transform> hypTransforms = hypothesizeTransforms(learnedTransforms, badTransforms);
+      ArrayList<Transform> hypTransforms = hypothesizeTransforms(badTransforms);
 
       // Score the transforms
       // Always pass false for doubling, this
@@ -572,7 +572,7 @@ public class MorphLearner {
       Set<Transform> badTransforms) {
     // Search through the transforms for the best one
     Transform bestTransform = null;
-    Transform secondTransform = null;
+    Transform secondTransform;
 
     System.out.println("Selecting a transform...");
     int nBadTransforms = 0;
@@ -608,7 +608,7 @@ public class MorphLearner {
       // Check the base-stem overlap
       int baseOverlap = baseOverlap(bestTransform);
       int stemOverlap = stemOverlap(bestTransform);
-      double overlapRatio = 0;
+      double overlapRatio;
 
       // If both ratios are zero count this as OK
       if (baseOverlap + stemOverlap == 0) {
@@ -728,8 +728,7 @@ public class MorphLearner {
     }
   }
 
-  private ArrayList<Transform> hypothesizeTransforms(
-      List<Transform> learnedTransforms, Set<Transform> badTransforms) {
+  private ArrayList<Transform> hypothesizeTransforms(Set<Transform> badTransforms) {
     List<Affix> topBUPrefixes =
         lex.topAffixes(TOP_AFFIXES, AffixType.PREFIX, Lexicon.AffixSet.BASEUNMOD, WEIGHTED_AFFIXES);
     List<Affix> topUPrefixes =
@@ -859,10 +858,9 @@ public class MorphLearner {
    * README is given in the implementation of this method.
    *
    * @param paramPath the path for the properties file
-   * @return true if the parameter file was successfully read
-   * @throws FileNotFoundException if the properties file cannot be read
+   * @throws IOException if the properties file cannot be read
    */
-  public boolean setParams(String paramPath) throws FileNotFoundException {
+  public void setParams(String paramPath) throws IOException {
     // Read in the params as properties
     Properties props = new Properties();
     FileInputStream paramFile;
@@ -876,7 +874,7 @@ public class MorphLearner {
     try {
       props.load(paramFile);
     } catch (IOException e) {
-      throw new FileNotFoundException("Problem reading parameter file: " + paramPath);
+      throw new IOException("Problem reading parameter file: " + paramPath, e);
     }
 
     // Iteration parameters
@@ -925,10 +923,8 @@ public class MorphLearner {
     try {
       paramFile.close();
     } catch (IOException e) {
-      // Ignore it
+      throw new IOException("Problem closing parameter file: " + paramPath, e);
     }
-
-    return true;
   }
 
   /** Compare transforms by their weighted type count */

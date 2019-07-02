@@ -135,13 +135,13 @@ public class TransformInference {
     for (Entry<Transform, TransformRelation> e1 : relations.entrySet()) {
       Transform preceding = e1.getKey();
       TransformRelation tRelation = e1.getValue();
-      out.append(preceding.toString() + " \t");
+      out.append(preceding.toString()).append(" \t");
       for (Entry<Transform, Integer> e2 : tRelation.getPrecedingTransformCounts()) {
         // Skip low counts
         if (e2.getValue() <= MIN_COUNT) continue;
 
         String preceder = e2.getKey() == null ? "root" : e2.getKey().toString();
-        out.append(preceder + ":" + e2.getValue() + " ");
+        out.append(preceder).append(":").append(e2.getValue()).append(" ");
       }
       out.append("\n");
     }

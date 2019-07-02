@@ -22,10 +22,10 @@ import org.lignos.morsel.lexicon.Word;
 
 /** Represent two related words */
 public class WordPair {
-  private Word base;
-  private Word derived;
-  private boolean accomodated;
-  private int hash;
+  private final Word base;
+  private final Word derived;
+  private final boolean accomodated;
+  private final int hash;
 
   /**
    * Creat a WordPair from based and derived words and whether they were accommodated

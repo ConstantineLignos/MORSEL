@@ -43,7 +43,7 @@ public class Compounding {
   /** The minimum length of a compound word */
   static int MIN_COMPOUND_LENGTH = 4;
   /** The beam size in the search for compounds */
-  static int BEAM_SIZE = 200;
+  static final int BEAM_SIZE = 200;
 
   /**
    * Break any compounds in the given wordset, using the lexicon and optionally using the
@@ -373,7 +373,7 @@ public class Compounding {
         // Set the word's analysis
         StringBuilder analysis = new StringBuilder(bestHyp.base.analyze());
         for (Transform t : bestHyp.derivingTransforms) {
-          analysis.append(" " + t.analyze());
+          analysis.append(" ").append(t.analyze());
         }
         word.setExternalAnalysis(analysis.toString());
         newAnalyses++;
@@ -469,9 +469,9 @@ public class Compounding {
    * word.
    */
   protected static class FillerResult {
-    String derivedText;
-    Word baseWord;
-    Transform derivation;
+    final String derivedText;
+    final Word baseWord;
+    final Transform derivation;
 
     /**
      * Create a FillerResult instance.
@@ -492,8 +492,8 @@ public class Compounding {
    * derived words inside a compound.
    */
   protected static class Filler {
-    private List<Transform> prefixes;
-    private List<Transform> suffixes;
+    private final List<Transform> prefixes;
+    private final List<Transform> suffixes;
 
     /**
      * Create a Filler instance from the given transforms.
@@ -577,7 +577,7 @@ public class Compounding {
   }
 
   private static class AnalysisResult {
-    Word base;
+    final Word base;
     String text;
     LinkedList<Transform> derivingTransforms;
     boolean complete;
@@ -666,7 +666,7 @@ public class Compounding {
       // Build up string for transforms
       StringBuilder out = new StringBuilder(base.getText());
       for (Transform t : derivingTransforms) {
-        out.append(" " + t);
+        out.append(" ").append(t);
       }
       return out.toString();
     }

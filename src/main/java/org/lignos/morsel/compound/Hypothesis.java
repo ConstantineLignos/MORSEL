@@ -28,7 +28,7 @@ import org.lignos.morsel.lexicon.Word;
 /** Represents a hypothesis in beam search for compounding */
 public class Hypothesis {
   /** Words used in the compound, in order */
-  List<Word> words;
+  final List<Word> words;
   /** Text remaining after those words */
   String remainingText;
 
@@ -163,7 +163,7 @@ public class Hypothesis {
   public String toString() {
     StringBuilder out = new StringBuilder();
     for (Word word : words) {
-      out.append(word.getText() + '|');
+      out.append(word.getText()).append('|');
     }
 
     out.append(remainingText);

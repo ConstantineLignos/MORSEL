@@ -26,7 +26,7 @@ import java.util.Set;
 /** Representation of the relationship between transforms. */
 public class TransformRelation {
   private final Transform mainTransform;
-  private Map<Transform, Integer> precedingTransforms;
+  private final Map<Transform, Integer> precedingTransforms;
 
   /**
    * Create a new transformRelation for the given transform with empty relationships.
@@ -64,7 +64,7 @@ public class TransformRelation {
     StringBuilder out = new StringBuilder(mainTransform.toString() + "\n");
 
     for (Entry<Transform, Integer> e : precedingTransforms.entrySet()) {
-      out.append(e.getKey() + " " + e.getValue());
+      out.append(e.getKey()).append(" ").append(e.getValue());
     }
 
     return out.toString();

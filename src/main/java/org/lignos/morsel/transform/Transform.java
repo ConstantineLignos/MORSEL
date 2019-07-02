@@ -34,14 +34,14 @@ import org.lignos.morsel.lexicon.WordSet;
  */
 public class Transform {
   private static final int N_SAMPLES = 3;
-  private Affix affix1;
-  private Affix affix2;
+  private final Affix affix1;
+  private final Affix affix2;
   private AffixType affixType;
   private int typeCount = 0;
   private long tokenCount = 0L;
   private int normalPairCount = 0;
   private int accomPairCount = 0; // Pairs of words formed by an accomodation
-  private Set<WordPair> derivationPairs;
+  private final Set<WordPair> derivationPairs;
   private Set<WordPair> unmovedDerivationPairs;
   private boolean learned;
   private int length;
@@ -147,7 +147,7 @@ public class Transform {
 
       // If the last letter of the stem and the first of affix2 are
       // the same, try undoubling.
-      if (stem.substring(stem.length() - 1, stem.length())
+      if (stem.substring(stem.length() - 1)
           .equals(affix2.getText().substring(0, 1))) {
         // Get undoubled stem and see if it's a word
         derived = lex.getWord(makeDerived(stem, affix2, false, true));
@@ -260,7 +260,7 @@ public class Transform {
   public static String makeStem(String word, Affix affix) {
     int affixLen = affix.length();
     if (affix.getType() == AffixType.PREFIX) {
-      return word.substring(affixLen, word.length());
+      return word.substring(affixLen);
     } else if (affix.getType() == AffixType.SUFFIX) {
       return word.substring(0, word.length() - affixLen);
     } else {
@@ -288,7 +288,7 @@ public class Transform {
 
     if (doubling) {
       // Repeat the last character of the stem
-      stem = stem + stem.substring(stem.length() - 1, stem.length());
+      stem = stem + stem.substring(stem.length() - 1);
     } else if (undoubling) {
       // Remove the last character of the stem
       stem = stem.substring(0, stem.length() - 1);
@@ -560,7 +560,7 @@ public class Transform {
                 + "/"
                 + accomPairCount);
     for (WordPair pair : derivationPairs) {
-      out.append(pair.toString() + " ");
+      out.append(pair.toString()).append(" ");
     }
     out.append("\n");
     return out.toString();
@@ -578,7 +578,7 @@ public class Transform {
     // Put in an inital parens
     analysis.append('(');
 
-    String sign = "";
+    String sign;
     if (affix1.isNull()) {
       // If affix1 is null, only output affix2 and note an addition
       analysis.append(affix2.toString());
