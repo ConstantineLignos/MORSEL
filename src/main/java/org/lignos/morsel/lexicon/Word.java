@@ -35,20 +35,21 @@ public class Word {
   public static double FREQ_THRESHOLD = .000001F;
   /** Default minimum count threshold for a word to count toward transform scoring */
   public static int COUNT_THRESHOLD = 1;
+
   protected final String text;
+  private final Set<Word> derivedWords;
+  private final Set<Affix> prefixes;
+  private final Set<Affix> suffixes;
+  private final Set<TransformPair>
+      transformPairs; // All possible transforms the word is in and what role it has
+  private final boolean analyze; // Use to block inferred words from analysis
   List<Word> componentWords; // Roots of the word if it is a compound
   private long count;
   private double freq;
   private WordSet set;
   private Word base;
   private Word root;
-  private final Set<Word> derivedWords;
-  private final Set<Affix> prefixes;
-  private final Set<Affix> suffixes;
-  private final Set<TransformPair>
-      transformPairs; // All possible transforms the word is in and what role it has
   private Transform derivation; // The transform that actually derives the word
-  private final boolean analyze; // Use to block inferred words from analysis
   private boolean duplicate; // Used to mark temporary words generated in compounding
   private String externalAnalysis; // Analysis if set externally
   private boolean compound;

@@ -19,6 +19,7 @@
 package org.lignos.morsel.transform;
 
 import gnu.trove.set.hash.THashSet;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,12 +37,12 @@ public class Transform {
   private static final int N_SAMPLES = 3;
   private final Affix affix1;
   private final Affix affix2;
+  private final Set<WordPair> derivationPairs;
   private AffixType affixType;
   private int typeCount = 0;
   private long tokenCount = 0L;
   private int normalPairCount = 0;
-  private int accomPairCount = 0; // Pairs of words formed by an accomodation
-  private final Set<WordPair> derivationPairs;
+  private int accomPairCount = 0; // Pairs of words formed by an accommodation
   private Set<WordPair> unmovedDerivationPairs;
   private boolean learned;
   private int length;
@@ -147,8 +148,7 @@ public class Transform {
 
       // If the last letter of the stem and the first of affix2 are
       // the same, try undoubling.
-      if (stem.substring(stem.length() - 1)
-          .equals(affix2.getText().substring(0, 1))) {
+      if (stem.substring(stem.length() - 1).equals(affix2.getText().substring(0, 1))) {
         // Get undoubled stem and see if it's a word
         derived = lex.getWord(makeDerived(stem, affix2, false, true));
 
@@ -340,17 +340,17 @@ public class Transform {
    *
    * @param base the base form
    * @param derived the derived form
-   * @param isAccomodated whether the pair required orthographic accommodation
+   * @param isAccommodated whether the pair required orthographic accommodation
    */
-  public void addWordPair(Word base, Word derived, boolean isAccomodated) {
-    WordPair pair = new WordPair(base, derived, isAccomodated);
+  public void addWordPair(Word base, Word derived, boolean isAccommodated) {
+    WordPair pair = new WordPair(base, derived, isAccommodated);
 
     // Increment counts if both words in the pair are frequent enough
     if (base.isFrequent() && derived.isFrequent()) {
       typeCount++;
       tokenCount += base.getCount() + derived.getCount();
 
-      if (isAccomodated) {
+      if (isAccommodated) {
         accomPairCount++;
       } else {
         normalPairCount++;
@@ -393,7 +393,7 @@ public class Transform {
       tokenCount -= base.getCount() + derived.getCount();
 
       // Change the normal/accom count based on the pair
-      if (pair.isAccomodated()) {
+      if (pair.isAccommodated()) {
         accomPairCount--;
       } else {
         normalPairCount--;
@@ -454,7 +454,7 @@ public class Transform {
     return normalPairCount;
   }
 
-  /** @return the count of accomodated (non-normal) word pairs covered by the transform */
+  /** @return the count of accommodated (non-normal) word pairs covered by the transform */
   public int getAccomPairCount() {
     return accomPairCount;
   }
@@ -490,12 +490,12 @@ public class Transform {
 
   /**
    * Sample N_SAMPLES pairs from the transform for display. The arbitrary ordering of the underlying
-   * derivationPairs data structure is used for the effect of a "random" sample while remaining
-   * deterministic.
+   * derivationPairs data structure is used for the effect of a "random" sample without explicitly
+   * randomization.
    *
    * @return a string given the total number of pairs and N_SAMPLES example pairs
    */
-  public String getSamplePairs() {
+  private String getSamplePairs() {
     int n = 0;
     List<String> pairs = new LinkedList<>();
     for (WordPair pair : derivationPairs) {
@@ -506,6 +506,12 @@ public class Transform {
     }
     Collections.sort(pairs);
     return "(" + derivationPairs.size() + ") " + Util.join(pairs, ", ");
+  }
+
+  private List<WordPair> getSortedPairs() {
+    final List<WordPair> sortedPairs = new ArrayList<>(derivationPairs);
+    sortedPairs.sort(new WordPair.PairStringComparator());
+    return sortedPairs;
   }
 
   public String toString() {
@@ -541,6 +547,28 @@ public class Transform {
         + getSamplePairs());
   }
 
+  /** @return a debug representation of the transform */
+  public String toDebugString() {
+    return (toString()
+        + '\n'
+        + "Weighted Types: "
+        + getWeightedTypeCount()
+        + ", Types: "
+        + typeCount
+        + ", Tokens: "
+        + tokenCount
+        + ", Pairs: "
+        + derivationPairs.size()
+        + ", Normal/Accom. Pairs: "
+        + normalPairCount
+        + "/"
+        + accomPairCount
+        + "\nAffix1: "
+        + affix1.toVerboseString()
+        + "\nAffix2: "
+        + affix2.toVerboseString());
+  }
+
   /** @return a verbose representation of the transform statistics with all word pairs */
   public String toDumpString() {
     StringBuilder out =
@@ -559,7 +587,7 @@ public class Transform {
                 + normalPairCount
                 + "/"
                 + accomPairCount);
-    for (WordPair pair : derivationPairs) {
+    for (WordPair pair : getSortedPairs()) {
       out.append(pair.toString()).append(" ");
     }
     out.append("\n");

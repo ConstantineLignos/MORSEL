@@ -18,13 +18,14 @@
  */
 package org.lignos.morsel.transform;
 
+import java.util.Comparator;
 import org.lignos.morsel.lexicon.Word;
 
 /** Represent two related words */
 public class WordPair {
   private final Word base;
   private final Word derived;
-  private final boolean accomodated;
+  private final boolean accommodated;
   private final int hash;
 
   /**
@@ -32,14 +33,14 @@ public class WordPair {
    *
    * @param base the base
    * @param derived the derived word
-   * @param accomodated whether orthographic accommodation was used to produce the pair
+   * @param accommodated whether orthographic accommodation was used to produce the pair
    */
-  public WordPair(Word base, Word derived, boolean accomodated) {
+  public WordPair(Word base, Word derived, boolean accommodated) {
     this.base = base;
     this.derived = derived;
-    this.accomodated = accomodated;
+    this.accommodated = accommodated;
 
-    hash = (base.getText() + derived.getText() + (accomodated ? 'a' : 'n')).hashCode();
+    hash = (base.getText() + derived.getText() + (accommodated ? 'a' : 'n')).hashCode();
   }
 
   /** @return the base of the pair */
@@ -53,8 +54,8 @@ public class WordPair {
   }
 
   /** @return whether orthographic accommodation was used to create the pair */
-  public boolean isAccomodated() {
-    return accomodated;
+  public boolean isAccommodated() {
+    return accommodated;
   }
 
   public boolean equals(Object other) {
@@ -62,7 +63,7 @@ public class WordPair {
     WordPair otherWord = (WordPair) other;
     return otherWord.getBase() == base
         && otherWord.getDerived() == derived
-        && otherWord.isAccomodated() == accomodated;
+        && otherWord.isAccommodated() == accommodated;
   }
 
   public int hashCode() {
@@ -71,5 +72,15 @@ public class WordPair {
 
   public String toString() {
     return base + "/" + derived;
+  }
+
+  /** Compare pairs by their base and derived forms */
+  public static class PairStringComparator implements Comparator<WordPair> {
+    @Override
+    public int compare(WordPair pair1, WordPair pair2) {
+      final String key1 = pair1.getBase().getText() + ' ' + pair1.getDerived().getText();
+      final String key2 = pair2.getBase().getText() + ' ' + pair2.getDerived().getText();
+      return key1.compareTo(key2);
+    }
   }
 }

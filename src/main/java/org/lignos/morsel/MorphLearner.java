@@ -58,14 +58,18 @@ import org.lignos.morsel.transform.WordPair;
  * learning loop.
  */
 public class MorphLearner {
+  /** Path of the corpus to analyze */
+  private final String corpusPath;
   // Output options
-  protected String analysisBase;
-  // I/O Variables
-  final String corpusPath;
-  PrintWriter output;
-  PrintStream log;
+  private final boolean outputBaseInf;
+  private final boolean outputConflation;
+  private final boolean outputCompounds;
+  /** Base path for analysis */
+  private final String analysisBase;
+  private final PrintWriter output;
+  private final PrintStream log;
   /** The lexicon being learned over */
-  Lexicon lex;
+  private Lexicon lex;
   /* The following parameters are documented in the README. See the
    * implementation of setParams for the mapping between the names
    * of these members and the official parameter names.
@@ -86,14 +90,12 @@ public class MorphLearner {
   private boolean AGGR_COMPOUNDING;
   private boolean BASE_INFERENCE;
   private boolean TRANSFORM_OPTIMIZATION;
+  private boolean TRANSFORM_DEBUG;
   private boolean ITERATION_ANALYSIS;
   private boolean WEIGHTED_TRANSFORMS;
   private boolean WEIGHTED_AFFIXES;
   private boolean TRANSFORM_RELATIONS;
   private boolean ANALYZE_SIMPLEX_WORDS;
-  private final boolean outputBaseInf;
-  private final boolean outputConflation;
-  private final boolean outputCompounds;
 
   /**
    * Create a new learner using the given paths for I/O.
@@ -138,6 +140,8 @@ public class MorphLearner {
           new PrintStream(new BufferedOutputStream(new FileOutputStream(logPath)), true, encoding);
       // Redirect output to log
       System.setOut(new PrintStream(logPath));
+    } else {
+      this.log = null;
     }
 
     System.out.println("Setting parameters from " + paramPath);
@@ -353,7 +357,7 @@ public class MorphLearner {
       // Score the transforms
       // Always pass false for doubling, this
       // is to ensure that rules cannot get high scores by using
-      // orthographic accomodation.
+      // orthographic accommodation.
       // Reeval is set by the SCORE_REEVAL parameter
       boolean doubling = false;
       boolean reeval = SCORE_REEVAL;
@@ -378,6 +382,13 @@ public class MorphLearner {
 
       // Rank the transforms
       sortTransforms(hypTransforms);
+
+      // Print all transforms if needed
+      if (TRANSFORM_DEBUG) {
+        for (Transform transform : hypTransforms) {
+          System.out.println(transform.toDebugString());
+        }
+      }
 
       // Trim them down, score them, and pick one
       List<Transform> topTransforms = Util.truncateCollection(hypTransforms, TOP_AFFIXES);
@@ -844,11 +855,11 @@ public class MorphLearner {
    *
    * @param transforms the transforms to be sorted
    */
-  public void sortTransforms(List<Transform> transforms) {
+  private void sortTransforms(List<Transform> transforms) {
     if (WEIGHTED_TRANSFORMS) {
-      Collections.sort(transforms, Collections.reverseOrder(new WeightedTypeCountComparator()));
+      transforms.sort(Collections.reverseOrder(Comparators.byWeightedTypeCount));
     } else {
-      Collections.sort(transforms, Collections.reverseOrder(new TypeCountComparator()));
+      transforms.sort(Collections.reverseOrder(Comparators.byTypeCount));
     }
   }
 
@@ -908,6 +919,7 @@ public class MorphLearner {
 
     // Implementation details
     TRANSFORM_OPTIMIZATION = Boolean.parseBoolean(props.getProperty("transform_optimization"));
+    TRANSFORM_DEBUG = Boolean.parseBoolean(props.getProperty("transform_debug"));
     ITERATION_ANALYSIS = Boolean.parseBoolean(props.getProperty("iteration_analysis"));
 
     WEIGHTED_TRANSFORMS = Boolean.parseBoolean(props.getProperty("weighted_transforms"));
@@ -927,31 +939,13 @@ public class MorphLearner {
     }
   }
 
-  /** Compare transforms by their weighted type count */
-  public static class WeightedTypeCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object transform1, Object transform2) {
-      return Long.compare(
-          ((Transform) transform1).getWeightedTypeCount(),
-          ((Transform) transform2).getWeightedTypeCount());
-    }
-  }
-
-  /** Compare transforms by their type count */
-  public static class TypeCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object transform1, Object transform2) {
-      return Long.compare(
-          ((Transform) transform1).getTypeCount(), ((Transform) transform2).getTypeCount());
-    }
-  }
-
-  /** Compare transforms by their token count */
-  public static class TokenCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object transform1, Object transform2) {
-      return Long.compare(
-          ((Transform) transform1).getTokenCount(), ((Transform) transform2).getTokenCount());
-    }
+  private static class Comparators {
+    private static final Comparator<Transform> byString = Comparator.comparing(Transform::toString);
+    private static final Comparator<Transform> byTokenCount =
+        Comparator.comparing(Transform::getTokenCount).thenComparing(byString);
+    private static final Comparator<Transform> byTypeCount =
+        Comparator.comparing(Transform::getTypeCount).thenComparing(byTokenCount);
+    private static final Comparator<Transform> byWeightedTypeCount =
+        Comparator.comparing(Transform::getWeightedTypeCount).thenComparing(byTypeCount);
   }
 }

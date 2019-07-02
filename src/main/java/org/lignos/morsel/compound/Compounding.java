@@ -38,12 +38,12 @@ import org.lignos.morsel.transform.WordPair;
 
 /** Support the analysis of compound words */
 public class Compounding {
+  /** The beam size in the search for compounds */
+  private static final int BEAM_SIZE = 200;
   /** The set of transform relations to take into account */
   public static boolean TRANSFORM_RELATIONS;
   /** The minimum length of a compound word */
   static int MIN_COMPOUND_LENGTH = 4;
-  /** The beam size in the search for compounds */
-  static final int BEAM_SIZE = 200;
 
   /**
    * Break any compounds in the given wordset, using the lexicon and optionally using the

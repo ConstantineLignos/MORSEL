@@ -41,11 +41,10 @@ public class Lexicon {
   private final Map<String, Word> lex;
   private final Map<String, Affix> prefixes;
   private final Map<String, Affix> suffixes;
-  private long tokenCount;
-
   private final Set<Word> base;
   private final Set<Word> derived;
   private final Set<Word> unmod;
+  private long tokenCount;
   private boolean validSetCounts;
 
   /** Create a new empty lexicon. */
@@ -429,10 +428,10 @@ public class Lexicon {
         // If it has, pick which derivation to keep
         WordPair oldPair = derivedPairs.get(derived);
 
-        // If the old pair is accomodated, we may need to replace it
-        if (oldPair.isAccomodated()) {
-          // If this pair is not accomodated, definitely replace
-          if (!pair.isAccomodated()) {
+        // If the old pair is accommodated, we may need to replace it
+        if (oldPair.isAccommodated()) {
+          // If this pair is not accommodated, definitely replace
+          if (!pair.isAccommodated()) {
             // Remove it from the pairs
             prunedPairs.remove(oldPair);
           } else {

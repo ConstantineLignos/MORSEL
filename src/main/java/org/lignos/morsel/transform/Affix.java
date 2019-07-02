@@ -35,12 +35,12 @@ public class Affix {
 
   private final String text;
   private final AffixType type;
-  private long typeCount;
-  private long freqTypeCount;
-  private long tokenCount;
   private final Set<Word> wordSet;
   private final int length;
   private final int weight;
+  private long typeCount;
+  private long freqTypeCount;
+  private long tokenCount;
   private long baseTypeCount;
   private long derivedTypeCount;
   private long unmodTypeCount;
@@ -399,7 +399,7 @@ public class Affix {
    * @return the transform's details
    */
   public String toVerboseString() {
-    return (toString() + '\n' + "Types: " + typeCount + ", Tokens: " + tokenCount);
+    return (toString() + ", Types: " + typeCount + ", Tokens: " + tokenCount);
   }
 
   /**
