@@ -2,6 +2,40 @@
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <artifactId>morsel</artifactId>
+  <groupId>org.lignos</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>MORSEL</name>
+  <packaging>jar</packaging>
+  <url>https://github.com/ConstantineLignos/MORSEL</url>
+  <version>1.0-SNAPSHOT</version>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+
+    <dependency>
+      <artifactId>junit</artifactId>
+      <groupId>junit</groupId>
+      <scope>test</scope>
+      <version>4.12</version>
+    </dependency>
+
+    <dependency>
+      <artifactId>commons-cli</artifactId>
+      <groupId>commons-cli</groupId>
+      <version>1.4</version>
+    </dependency>
+
+    <dependency>
+      <groupId>it.unimi.dsi</groupId>
+      <artifactId>fastutil</artifactId>
+      <version>8.2.3</version>
+    </dependency>
+
+  </dependencies>
+
   <build>
     <plugins>
 
@@ -43,39 +77,5 @@
 
     </plugins>
   </build>
-  <dependencies>
-
-    <dependency>
-      <artifactId>junit</artifactId>
-      <groupId>junit</groupId>
-      <scope>test</scope>
-      <version>4.12</version>
-    </dependency>
-
-    <dependency>
-      <artifactId>commons-cli</artifactId>
-      <groupId>commons-cli</groupId>
-      <version>1.4</version>
-    </dependency>
-
-    <dependency>
-      <groupId>it.unimi.dsi</groupId>
-      <artifactId>fastutil</artifactId>
-      <version>8.2.3</version>
-    </dependency>
-
-  </dependencies>
-  <groupId>org.lignos</groupId>
-  <modelVersion>4.0.0</modelVersion>
-  <name>morsel</name>
-  <packaging>jar</packaging>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
-  <url>http://maven.apache.org</url>
-
-  <version>1.0-SNAPSHOT</version>
 
 </project>
