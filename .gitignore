@@ -17,3 +17,12 @@
 # Output
 log.txt
 out.txt
+
+# Editors
+*~
+*.swp
+.idea/
+*.iml
+
+# Mac OS
+.DS_Store
