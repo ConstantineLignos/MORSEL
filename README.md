@@ -13,27 +13,25 @@ language and report what morphemes are present in each word.
 Using MORSEL
 ============
 
-MORSEL is distributed under the GPLv3. You are welcome to use it for
-performing evaluations, for bootstrapping a supervised learner, or for
-any other purpose you can think of as long as you comply with the
-license. Please get in touch with me (http://lignos.org/) if you're
-using it; while the documentation should be adequate it's always good
-to hear what applications other people have in mind for this system. I
-ask that if you use it you cite my Morpho Challenge 2010 paper (BibTeX
-information below).
+MORSEL is distributed under the Apache License, Version 2.0.  You are
+welcome to use it for performing evaluations, for bootstrapping a
+supervised learner, or for any other purpose you can think of as long
+as you comply with the license. Please get in touch with me
+(http://lignos.org/) if you're using it; while the documentation
+should be adequate it's always good to hear what applications other
+people have in mind for this system. I ask that if you use it you cite
+my Morpho Challenge 2010 paper (BibTeX information below).
 
-## Dependencies
+## Requirements
 
-- Java JDK 1.6 or newer (tested with 1.6, 1.7, and 1.8)
-- ant (tested with 1.8.2 and 1.9.4)
+- Java JDK 1.8 (may work with newer versions, but has not been tested)
+- Maven (tested with 3.5.2)
 
 ## Building
 
-Once you've got the dependencies installed, you can simply run `ant`
-in the root of the repository and it will compile all source and
-create `morsel.jar`. The jar depends on the other jars in `/lib`
-(Apache CLI, JUnit, and GNU Trove), so if you move the jar you'll need
-to move `/lib` along with it.
+Once you've got the dependencies installed, you can simply run `mvn
+package` in the root of the repository and it will fetch dependencies
+and build the jar.
 
 ## Taking it for a spin
 You run MORSEL by running the jar and providing:
@@ -65,12 +63,12 @@ accelerations   ACCELERATE +(ion) +(s)
   debug output there isn't much to see here.  Almost everything you
   want to set is set via the parameter file, not command-line
   arguments.
-  
+
 For example, if you want to run on the Brown corpus wordlist, write
 the analysis to `out.txt`, write the log to `log.txt`, and use the
 conservative parameter set do the following:
 
-`java -jar morsel.jar data/test/brown_wordlist.txt out.txt log.txt params/conservative.txt`
+`java -jar target/morsel-1.0-SNAPSHOT-jar-with-dependencies.jar data/test/brown_wordlist.txt out.txt log.txt params/conservative.txt`
 
 If you're using a data set of any significant size, you'll want to increase Java's maximum heap size, see Java's
 `Xmx` flag.
@@ -112,20 +110,22 @@ Design
 ## Overview
 
 Some relevant facts about the design of MORSEL:
+
 * MORSEL is single-threaded. It would be trivial to parallelize the
   transform scoring process that happens each iteration of learning,
   but as MORSEL already runs quite quickly I stuck with the simplicity
   of a serial implementation.
-* MORSEL uses GNU Trove for high performance hash maps and
-  sets. Because it does not create an additional object for every entry in
-  the hash table, using Trove can result in almost 50% lower memory
-  usage on large data sets in addition to some speed improvements.
-* MORSEL uses a fairly large amount of memory in order to speed
-  learning. It keeps all words and a large set of hypothesized
-  transforms in memory at once. You may need up to 16GB of memory to
-  run MORSEL on the Morpho Challenge 2010 Finnish data set. Small data
-  sets take much less memory; running on the Brown Corpus only uses
-  about 256MB of RAM.
+
+* MORSEL uses fastutil for high performance hash maps and sets instead
+  of the built-in Java collection. This can result in almost 50% lower
+  memory usage on large data sets in addition to substantial speed
+  improvements.
+
+* MORSEL uses as much memory as possible to speed learning. It keeps
+  all words and a large set of hypothesized transforms in memory at
+  once. You may need up to 16GB of memory to run MORSEL on the Morpho
+  Challenge 2010 Finnish data set. Small data sets take much less
+  memory; running on the Brown Corpus only uses about 256MB of RAM.
 
 ## Parameter files
 
@@ -135,13 +135,13 @@ sensible defaults, see `params/conservative.txt`. Some of these
 parameters are difficult to understand without understanding the
 learning algorithm. I recommend you look at the following papers:
 
-[A rule-based unsupervised morphology learning framework](http://lignos.org/papers/Lignos_etal_MC2009.pdf)  
-Constantine Lignos, Erwin Chan, Mitchell P. Marcus, and Charles Yang  
+[A rule-based unsupervised morphology learning framework](http://lignos.org/papers/Lignos_etal_MC2009.pdf)
+Constantine Lignos, Erwin Chan, Mitchell P. Marcus, and Charles Yang
 Working Notes of the 10th Workshop of the Cross-Language Evaluation
 Forum (CLEF), 2009.
 
-[Learning from unseen data](http://lignos.org/papers/mc_2010_lignos.pdf)  
-Constantine Lignos  
+[Learning from unseen data](http://lignos.org/papers/mc_2010_lignos.pdf)
+Constantine Lignos
 Proceedings of the Morpho Challenge 2010 Workshop, 35-38, 2010.
 
 Learning iteration parameters:
@@ -232,36 +232,27 @@ performance by keeping persistent data structures across
 iterations. You want this set to `true` unless you're debugging
 unexpected behavior.
 * `iteration_analysis`: Whether to output the analysis of the lexicon
-  at every single iteration. Generates a large amount of output but is
+  every five iterations. Generates a large amount of output but is
   useful for examining the learning trajectory.
 
 
 ## External libraries
 
 MORSEL depends on:
-* Apache Commons CLI library for parsing command-line arguments
-* junit for unit testing
-* GNU trove for hash maps and sets
-
-Because Maven was not yet widely adopted by researchers when MORSEL
-was first developed, JAR files for the dependencies are located in the
-`/lib` folder. The JAR built by MORSEL (`morsel.jar`) will look for
-these dependencies in the same directory.
+* fastutil for high performance collections
+* Apache Commons CLI for command-line parsing
+* JUnit for unit tests
 
 ## Building
 
-The ant buildfile `build.xml` specifies how MORSEL should be
-built. Just running `ant` will perform compilation (`compile` target)
-and packaging the JAR (`dist` target). To run unit tests, run `ant
-test`. `ant clean` cleans all compilation output, including the JAR.
-
+MORSEL is built using Maven. See `pom.xml` for configuration details.
 The JAR manifest is set such that the main class
-`org.lignos.morsel.MorphLearner` is run when the jar is
-executed. This is the the only main function in MORSEL.
+`org.lignos.morsel.MorphLearner` is run when the jar is executed. This
+is the the only useful main function in MORSEL.
 
 Enjoy!
 
-Constantine Lignos  
-Institute for Research in Cognitive Science  
-Computer and Information Science Department  
+Constantine Lignos
+Institute for Research in Cognitive Science
+Computer and Information Science Department
 University of Pennsylvania

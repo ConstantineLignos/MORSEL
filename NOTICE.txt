@@ -1,0 +1,10 @@
+MORSEL
+Copyright 2009-2019 Constantine Lignos
+
+MORSEL was originally developed by Constantine Lignos while affiliated with
+the University of Pennsylvania Institute for Research in Cognitive
+Science and Computer and Information Science Department. Development
+of MORSEL was supported by the following grants:
+
+NSF IIS 0415138
+NSF IGERT 0504487
