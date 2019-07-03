@@ -16,8 +16,8 @@
 package org.lignos.morsel.lexicon;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import org.lignos.morsel.Util;
