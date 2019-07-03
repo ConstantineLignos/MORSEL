@@ -23,7 +23,6 @@ import gnu.trove.set.hash.THashSet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import org.lignos.morsel.Util;
 import org.lignos.morsel.transform.Affix;
+import org.lignos.morsel.transform.Affix.WeightedUnmodTypeCountComparator;
 import org.lignos.morsel.transform.AffixType;
 import org.lignos.morsel.transform.Transform;
 import org.lignos.morsel.transform.TransformPair;
@@ -53,7 +53,6 @@ public class Lexicon {
 
     prefixes = new THashMap<>();
     suffixes = new THashMap<>();
-    tokenCount = 0L;
 
     base = new THashSet<>();
     derived = new THashSet<>();
@@ -269,28 +268,17 @@ public class Lexicon {
     List<Affix> orderedAffixes = new ArrayList<>(getAffixMap(type).values());
     switch (set) {
       case ALL:
-        if (weighted)
-          Collections.sort(
-              orderedAffixes, Collections.reverseOrder(new WeightedAllTypeCountComparator()));
-        else
-          Collections.sort(orderedAffixes, Collections.reverseOrder(new AllTypeCountComparator()));
+        if (weighted) orderedAffixes.sort(Affix.Comparators.byWeightedAllTypeCount.reversed());
+        else orderedAffixes.sort(Affix.Comparators.byAllTypeCount.reversed());
         break;
       case BASEUNMOD:
         if (weighted)
-          Collections.sort(
-              orderedAffixes, Collections.reverseOrder(new WeightedBaseUnmodTypeCountComparator()));
-        else
-          Collections.sort(
-              orderedAffixes, Collections.reverseOrder(new BaseUnmodTypeCountComparator()));
+          orderedAffixes.sort(Affix.Comparators.byWeightedBaseUnmodTypeCount.reversed());
+        else orderedAffixes.sort(Affix.Comparators.byBaseUnmodTypeCount.reversed());
         break;
       case UNMOD:
-        if (weighted)
-          Collections.sort(
-              orderedAffixes, Collections.reverseOrder(new WeightedUnmodTypeCountComparator()));
-        else
-          Collections.sort(
-              orderedAffixes, Collections.reverseOrder(new UnmodTypeCountComparator()));
-        return Util.truncateCollection(orderedAffixes, n);
+        if (weighted) orderedAffixes.sort(Affix.Comparators.byWeightedUnmodTypeCount.reversed());
+        else orderedAffixes.sort(Affix.Comparators.byUnmodTypeCount.reversed());
     }
 
     // Truncate the list
@@ -579,8 +567,7 @@ public class Lexicon {
   /** Add new entries to the lexicon based on which existing forms are hyphenated. */
   public void processHyphenation() {
     // Loop over all words and process any hyphenated ones
-    // Copy the values of the lexicon so we can modify it as we iterate
-    List<String> lexWords = getWordStrings();
+    final List<String> lexWords = getWordStrings();
     for (String text : lexWords) {
       final Word w = lex.get(text);
       // Check for a hyphen before doing the full split
@@ -632,97 +619,5 @@ public class Lexicon {
     BASEUNMOD
   }
 
-  /** Compare affixes based on type count */
-  public static class TypeCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object affix1, Object affix2) {
-      return Long.compare(((Affix) affix1).getTypeCount(), ((Affix) affix2).getTypeCount());
-    }
-  }
-
-  /** Compare affixes based on weighted type count */
-  public static class WeightedTypeCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object affix1, Object affix2) {
-      return Long.compare(
-          ((Affix) affix1).getWeightedTypeCount(), ((Affix) affix2).getWeightedTypeCount());
-    }
-  }
-
-  /** Compare affixes based on type count */
-  public static class AllTypeCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object affix1, Object affix2) {
-      return Long.compare(
-          (((Affix) affix1).getBaseTypeCount()
-              + ((Affix) affix1).getUnmodTypeCount()
-              + ((Affix) affix1).getDerivedTypeCount()),
-          (((Affix) affix2).getBaseTypeCount()
-              + ((Affix) affix2).getUnmodTypeCount()
-              + ((Affix) affix2).getDerivedTypeCount()));
-    }
-  }
-
-  /** Compare affixes based on weighted type count */
-  public static class WeightedAllTypeCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object affix1, Object affix2) {
-      return Long.compare(
-          (((Affix) affix1).getWeightedBaseTypeCount()
-              + ((Affix) affix1).getWeightedUnmodTypeCount()
-              + ((Affix) affix1).getWeightedDerivedTypeCount()),
-          (((Affix) affix2).getWeightedBaseTypeCount()
-              + ((Affix) affix2).getWeightedUnmodTypeCount()
-              + ((Affix) affix2).getWeightedDerivedTypeCount()));
-    }
-  }
-
-  /** Compare affixes based on base and unmodeled type count */
-  public static class BaseUnmodTypeCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object affix1, Object affix2) {
-      return Long.compare(
-          (((Affix) affix1).getBaseTypeCount() + ((Affix) affix1).getUnmodTypeCount()),
-          (((Affix) affix2).getBaseTypeCount() + ((Affix) affix2).getUnmodTypeCount()));
-    }
-  }
-
-  /** Compare affixes based on unmodeled type count */
-  public static class UnmodTypeCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object affix1, Object affix2) {
-      return Long.compare(
-          ((Affix) affix1).getUnmodTypeCount(), ((Affix) affix2).getUnmodTypeCount());
-    }
-  }
-
-  /** Compare affixes based on weighted base and unmodeled type count */
-  public static class WeightedBaseUnmodTypeCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object affix1, Object affix2) {
-      return Long.compare(
-          (((Affix) affix1).getWeightedBaseTypeCount()
-              + ((Affix) affix1).getWeightedUnmodTypeCount()),
-          (((Affix) affix2).getWeightedBaseTypeCount()
-              + ((Affix) affix2).getWeightedUnmodTypeCount()));
-    }
-  }
-
-  /** Compare affixes based on weighted unmodeled type count */
-  public static class WeightedUnmodTypeCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object affix1, Object affix2) {
-      return Long.compare(
-          ((Affix) affix1).getWeightedUnmodTypeCount(),
-          ((Affix) affix2).getWeightedUnmodTypeCount());
-    }
-  }
-
-  /** Compare affixes based on token count */
-  public static class TokenCountComparator implements Comparator<Object> {
-    @Override
-    public int compare(Object affix1, Object affix2) {
-      return Long.compare(((Affix) affix1).getTokenCount(), ((Affix) affix2).getTokenCount());
-    }
-  }
+  private static final class Comparators {}
 }

@@ -31,7 +31,6 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -39,11 +38,11 @@ import java.util.Properties;
 import java.util.Set;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.lignos.morsel.compound.Compounding;
 import org.lignos.morsel.lexicon.Lexicon;
 import org.lignos.morsel.lexicon.Word;
@@ -66,6 +65,7 @@ public class MorphLearner {
   private final boolean outputCompounds;
   /** Base path for analysis */
   private final String analysisBase;
+
   private final PrintWriter output;
   private final PrintStream log;
   /** The lexicon being learned over */
@@ -191,7 +191,7 @@ public class MorphLearner {
    */
   public static void main(String[] args) {
     // create the command line parser
-    CommandLineParser parser = new PosixParser();
+    CommandLineParser parser = new DefaultParser();
     // Set up command line arguments
     Options options = new Options();
     options.addOption(new Option("h", "help", false, "dislay this help and exit"));
@@ -292,7 +292,7 @@ public class MorphLearner {
    * @param encoding the encoding of the corpus
    * @throws FileNotFoundException if the file at corpusPath could not be read.
    */
-  public void loadCorpus(String encoding) throws FileNotFoundException {
+  private void loadCorpus(String encoding) throws FileNotFoundException {
     System.out.println("Loading words...");
     lex = CorpusLoader.loadWordlist(corpusPath, encoding, true);
 
@@ -302,7 +302,7 @@ public class MorphLearner {
   }
 
   /** Clean up any open resources. */
-  protected void cleanUp() {
+  private void cleanUp() {
     output.close();
     // Log can be null, so check for it
     if (log != null) {
@@ -355,12 +355,11 @@ public class MorphLearner {
       ArrayList<Transform> hypTransforms = hypothesizeTransforms(badTransforms);
 
       // Score the transforms
-      // Always pass false for doubling, this
-      // is to ensure that rules cannot get high scores by using
+      // Always pass false for doubling to ensure that rules cannot get high scores solely by using
       // orthographic accommodation.
       // Reeval is set by the SCORE_REEVAL parameter
-      boolean doubling = false;
-      boolean reeval = SCORE_REEVAL;
+      final boolean doubling = false;
+      final boolean reeval = SCORE_REEVAL;
       if (TRANSFORM_OPTIMIZATION) {
         // If this is the first iteration, score from scratch
         if (i == 0) {
@@ -391,7 +390,7 @@ public class MorphLearner {
       }
 
       // Trim them down, score them, and pick one
-      List<Transform> topTransforms = Util.truncateCollection(hypTransforms, TOP_AFFIXES);
+      final List<Transform> topTransforms = Util.truncateCollection(hypTransforms, TOP_AFFIXES);
       Transform bestTransform = selectTransform(topTransforms, learnedTransforms, badTransforms);
 
       // Quit if no good transform was found
@@ -404,7 +403,7 @@ public class MorphLearner {
 
       // Re-evaluate the best transform
       if (REEVAL) {
-        Transform reEvalTransform =
+        final Transform reEvalTransform =
             new Transform(bestTransform.getAffix1(), bestTransform.getAffix2());
         Transform.scoreTransform(reEvalTransform, lex, REEVAL, DOUBLING);
         bestTransform = reEvalTransform;
@@ -809,7 +808,7 @@ public class MorphLearner {
       List<Affix> unmodSuffixes,
       Set<Transform> badTransforms) {
 
-    ArrayList<Transform> transforms = new ArrayList<>();
+    final ArrayList<Transform> transforms = new ArrayList<>();
     // Prefixes
     for (Affix affix1 : baseUnmodPrefixes) {
       for (Affix affix2 : unmodPrefixes) {
@@ -821,7 +820,7 @@ public class MorphLearner {
 
         // Otherwise pair them up if the transform isn't one we've
         // marked as bad already
-        Transform newTrans = new Transform(affix1, affix2);
+        final Transform newTrans = new Transform(affix1, affix2);
         if (!badTransforms.contains(newTrans)) {
           transforms.add(newTrans);
         }
@@ -839,7 +838,7 @@ public class MorphLearner {
 
         // Otherwise pair them up if the transform isn't one we've
         // marked as bad already
-        Transform newTrans = new Transform(affix1, affix2);
+        final Transform newTrans = new Transform(affix1, affix2);
         if (!badTransforms.contains(newTrans)) {
           transforms.add(newTrans);
         }
@@ -857,9 +856,9 @@ public class MorphLearner {
    */
   private void sortTransforms(List<Transform> transforms) {
     if (WEIGHTED_TRANSFORMS) {
-      transforms.sort(Collections.reverseOrder(Comparators.byWeightedTypeCount));
+      transforms.sort(Transform.Comparators.byWeightedTypeCount.reversed());
     } else {
-      transforms.sort(Collections.reverseOrder(Comparators.byTypeCount));
+      transforms.sort(Transform.Comparators.byTypeCount.reversed());
     }
   }
 
@@ -937,15 +936,5 @@ public class MorphLearner {
     } catch (IOException e) {
       throw new IOException("Problem closing parameter file: " + paramPath, e);
     }
-  }
-
-  private static class Comparators {
-    private static final Comparator<Transform> byString = Comparator.comparing(Transform::toString);
-    private static final Comparator<Transform> byTokenCount =
-        Comparator.comparing(Transform::getTokenCount).thenComparing(byString);
-    private static final Comparator<Transform> byTypeCount =
-        Comparator.comparing(Transform::getTypeCount).thenComparing(byTokenCount);
-    private static final Comparator<Transform> byWeightedTypeCount =
-        Comparator.comparing(Transform::getWeightedTypeCount).thenComparing(byTypeCount);
   }
 }

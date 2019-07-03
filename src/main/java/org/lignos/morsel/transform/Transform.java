@@ -21,6 +21,7 @@ package org.lignos.morsel.transform;
 import gnu.trove.set.hash.THashSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -669,5 +670,15 @@ public class Transform {
 
   public int hashCode() {
     return hash;
+  }
+
+  public static final class Comparators {
+    public static final Comparator<Transform> byString = Comparator.comparing(Transform::toString);
+    public static final Comparator<Transform> byTokenCount =
+        Comparator.comparing(Transform::getTokenCount).thenComparing(byString);
+    public static final Comparator<Transform> byTypeCount =
+        Comparator.comparing(Transform::getTypeCount).thenComparing(byTokenCount);
+    public static final Comparator<Transform> byWeightedTypeCount =
+        Comparator.comparing(Transform::getWeightedTypeCount).thenComparing(byTypeCount);
   }
 }

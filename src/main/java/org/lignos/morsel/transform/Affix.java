@@ -20,6 +20,7 @@
 package org.lignos.morsel.transform;
 
 import gnu.trove.set.hash.THashSet;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -371,7 +372,7 @@ public class Affix {
   }
 
   /** Increment the affix's type count. */
-  public void incTypeCount() {
+  private void incTypeCount() {
     this.typeCount += 1;
   }
 
@@ -380,7 +381,7 @@ public class Affix {
    *
    * @param amount the amount to increment by
    */
-  public void incTokenCount(long amount) {
+  private void incTokenCount(long amount) {
     this.tokenCount += amount;
   }
 
@@ -410,5 +411,81 @@ public class Affix {
    */
   public boolean hasWord(Word word) {
     return wordSet.contains(word);
+  }
+
+  public static final class Comparators {
+    public static final Comparator<Affix> byString = Comparator.comparing(Affix::getText);
+    public static final Comparator<Affix> byAllTypeCount =
+        new AllTypeCountComparator().thenComparing(byString);
+    public static final Comparator<Affix> byWeightedAllTypeCount =
+        new WeightedAllTypeCountComparator().thenComparing(byString);
+    public static final Comparator<Affix> byBaseUnmodTypeCount =
+        new BaseUnmodTypeCountComparator().thenComparing(byString);
+    public static final Comparator<Affix> byUnmodTypeCount =
+        new UnmodTypeCountComparator().thenComparing(byString);
+    public static final Comparator<Affix> byWeightedBaseUnmodTypeCount =
+        new WeightedBaseUnmodTypeCountComparator().thenComparing(byString);
+    public static final Comparator<Affix> byWeightedUnmodTypeCount =
+        new WeightedUnmodTypeCountComparator().thenComparing(byString);
+  }
+
+  /** Compare affixes based on type count */
+  public static class AllTypeCountComparator implements Comparator<Affix> {
+    @Override
+    public int compare(Affix affix1, Affix affix2) {
+      return Long.compare(
+          (affix1.getBaseTypeCount() + affix1.getUnmodTypeCount() + affix1.getDerivedTypeCount()),
+          (affix2.getBaseTypeCount() + affix2.getUnmodTypeCount() + affix2.getDerivedTypeCount()));
+    }
+  }
+
+  /** Compare affixes based on weighted type count */
+  public static class WeightedAllTypeCountComparator implements Comparator<Affix> {
+    @Override
+    public int compare(Affix affix1, Affix affix2) {
+      return Long.compare(
+          (affix1.getWeightedBaseTypeCount()
+              + affix1.getWeightedUnmodTypeCount()
+              + affix1.getWeightedDerivedTypeCount()),
+          (affix2.getWeightedBaseTypeCount()
+              + affix2.getWeightedUnmodTypeCount()
+              + affix2.getWeightedDerivedTypeCount()));
+    }
+  }
+
+  /** Compare affixes based on base and unmodeled type count */
+  public static class BaseUnmodTypeCountComparator implements Comparator<Affix> {
+    @Override
+    public int compare(Affix affix1, Affix affix2) {
+      return Long.compare(
+          (affix1.getBaseTypeCount() + affix1.getUnmodTypeCount()),
+          (affix2.getBaseTypeCount() + affix2.getUnmodTypeCount()));
+    }
+  }
+
+  /** Compare affixes based on unmodeled type count */
+  public static class UnmodTypeCountComparator implements Comparator<Affix> {
+    @Override
+    public int compare(Affix affix1, Affix affix2) {
+      return Long.compare(affix1.getUnmodTypeCount(), affix2.getUnmodTypeCount());
+    }
+  }
+
+  /** Compare affixes based on weighted base and unmodeled type count */
+  public static class WeightedBaseUnmodTypeCountComparator implements Comparator<Affix> {
+    @Override
+    public int compare(Affix affix1, Affix affix2) {
+      return Long.compare(
+          (affix1.getWeightedBaseTypeCount() + affix1.getWeightedUnmodTypeCount()),
+          (affix2.getWeightedBaseTypeCount() + affix2.getWeightedUnmodTypeCount()));
+    }
+  }
+
+  /** Compare affixes based on weighted unmodeled type count */
+  public static class WeightedUnmodTypeCountComparator implements Comparator<Affix> {
+    @Override
+    public int compare(Affix affix1, Affix affix2) {
+      return Long.compare(affix1.getWeightedUnmodTypeCount(), affix2.getWeightedUnmodTypeCount());
+    }
   }
 }
