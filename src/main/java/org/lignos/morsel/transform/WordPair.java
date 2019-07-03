@@ -55,18 +55,23 @@ public class WordPair {
     return accommodated;
   }
 
+  @Override
+  @SuppressWarnings("ReferenceEquality")
   public boolean equals(Object other) {
     if (other == null || !(other instanceof WordPair)) return false;
     WordPair otherWord = (WordPair) other;
+    // Reference equality is correct here
     return otherWord.getBase() == base
         && otherWord.getDerived() == derived
         && otherWord.isAccommodated() == accommodated;
   }
 
+  @Override
   public int hashCode() {
     return hash;
   }
 
+  @Override
   public String toString() {
     return base + "/" + derived;
   }

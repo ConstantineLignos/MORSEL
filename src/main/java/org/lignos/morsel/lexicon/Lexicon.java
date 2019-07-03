@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -396,9 +396,9 @@ public class Lexicon {
       boolean doubling,
       Set<WordPair> pairs) {
     // Keep track of words that moved based on the sets
-    List<Word> unmodBaseWords = new LinkedList<>();
-    List<Word> baseDerivedWords = new LinkedList<>();
-    List<Word> unmodDerivedWords = new LinkedList<>();
+    List<Word> unmodBaseWords = new ArrayList<>();
+    List<Word> baseDerivedWords = new ArrayList<>();
+    List<Word> unmodDerivedWords = new ArrayList<>();
 
     // Handle duplicates
     Set<WordPair> prunedPairs;
@@ -534,6 +534,7 @@ public class Lexicon {
    *
    * @param newDerivedWords words to remove from scoring
    */
+  @SuppressWarnings("ReferenceEquality")
   private void removeWordsTransforms(Collection<Word> newDerivedWords) {
     for (Word movedWord : newDerivedWords) {
       // Remove a word entirely from transform scoring
@@ -550,6 +551,7 @@ public class Lexicon {
         // base or the derived to remove the pair from the other word
         transform.removeWordPair(wordPair);
         iter.remove(); // Removes from the current word in the pair
+        // We only care about reference equality here
         if (wordPair.getBase() == movedWord) {
           // If the current word was the base, remove from the derived word
           wordPair.getDerived().removeTransformPair(tPair);
@@ -562,6 +564,7 @@ public class Lexicon {
   }
 
   /** Add new entries to the lexicon based on which existing forms are hyphenated. */
+  @SuppressWarnings("StringSplitter")
   public void processHyphenation() {
     // Loop over all words and process any hyphenated ones
     final List<String> lexWords = getWordStrings();
@@ -615,6 +618,4 @@ public class Lexicon {
     /** Unmodeled and base words */
     BASEUNMOD
   }
-
-  private static final class Comparators {}
 }

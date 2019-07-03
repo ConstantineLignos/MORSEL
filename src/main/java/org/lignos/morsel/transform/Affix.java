@@ -18,7 +18,7 @@ package org.lignos.morsel.transform;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.lignos.morsel.lexicon.Word;
@@ -75,7 +75,7 @@ public class Affix {
   public static String[] getAffixes(Word word, AffixType type) {
     int length = word.length();
 
-    List<String> affixes = new LinkedList<>();
+    List<String> affixes = new ArrayList<>();
 
     if (length >= MIN_STEM_LENGTH) {
       affixes.add("");
@@ -382,6 +382,7 @@ public class Affix {
     this.tokenCount += amount;
   }
 
+  @Override
   public String toString() {
     // Return the text, but if we're null return "$"
     if (text.length() > 0) {

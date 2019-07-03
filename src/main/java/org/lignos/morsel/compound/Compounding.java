@@ -17,9 +17,9 @@ package org.lignos.morsel.compound;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -187,7 +187,7 @@ public class Compounding {
     // Track the new hypotheses for each round
     PriorityQueue<Hypothesis> newHyps =
         new PriorityQueue<>(BEAM_SIZE, new Hypothesis.HypothesisScoreRanker());
-    List<Hypothesis> completeHyps = new LinkedList<>();
+    List<Hypothesis> completeHyps = new ArrayList<>();
     // Temporary variable for swapping lists
     PriorityQueue<Hypothesis> swap;
 
@@ -255,7 +255,7 @@ public class Compounding {
     // We loop over possible ending indices of the prefix
     // The index can range from MIN_COMPOUND_LENGTH to either 1 less than the length of the string
     // or the full length of the string if allowFull is on
-    List<Word> prefixes = new LinkedList<>();
+    List<Word> prefixes = new ArrayList<>();
     int max = allowFull ? word.length() : word.length() - 1;
 
     for (int i = MIN_COMPOUND_LENGTH; i <= max; i++) {
@@ -498,8 +498,8 @@ public class Compounding {
      * @param transforms the transforms to be used as filler
      */
     public Filler(Collection<Transform> transforms) {
-      prefixes = new LinkedList<>();
-      suffixes = new LinkedList<>();
+      prefixes = new ArrayList<>();
+      suffixes = new ArrayList<>();
       for (Transform transform : transforms) {
         switch (transform.getAffixType()) {
           case PREFIX:
@@ -552,7 +552,7 @@ public class Compounding {
      */
     public List<FillerResult> getFilledSuffixes(
         String prefix, String fullWord, Word prefixWord, boolean doubling) {
-      List<FillerResult> filled = new LinkedList<>();
+      List<FillerResult> filled = new ArrayList<>();
       for (Transform transform : suffixes) {
         String derived =
             makeFillerDerivedFromPrefix(
@@ -576,18 +576,18 @@ public class Compounding {
   private static class AnalysisResult {
     final Word base;
     String text;
-    LinkedList<Transform> derivingTransforms;
+    ArrayList<Transform> derivingTransforms;
     boolean complete;
 
     public AnalysisResult(Word base) {
       this.base = base;
       this.text = base.getText();
-      derivingTransforms = new LinkedList<>();
+      derivingTransforms = new ArrayList<>();
     }
 
     public static AnalysisResult cloneResult(AnalysisResult result) {
       AnalysisResult copy = new AnalysisResult(result.base);
-      copy.derivingTransforms = new LinkedList<>(result.derivingTransforms);
+      copy.derivingTransforms = new ArrayList<>(result.derivingTransforms);
       return copy;
     }
 
@@ -611,13 +611,14 @@ public class Compounding {
         TransformInference transInf,
         boolean doubling,
         String fullWord) {
-      List<AnalysisResult> filled = new LinkedList<>();
+      List<AnalysisResult> filled = new ArrayList<>();
       // Try possible derived forms using each transform
       for (Transform transform : filler.suffixes) {
         // Skip the transform if it's not allowed
         if (TRANSFORM_RELATIONS
             && !derivingTransforms.isEmpty()
-            && !transInf.isGoodRelation(derivingTransforms.getLast(), transform)) continue;
+            && !transInf.isGoodRelation(
+                derivingTransforms.get(derivingTransforms.size() - 1), transform)) continue;
 
         String derived =
             Filler.makeFillerDerivedFromPrefix(
@@ -656,9 +657,7 @@ public class Compounding {
       return Math.pow(prod, 1.0 / (double) derivingTransforms.size());
     }
 
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
+    @Override
     public String toString() {
       // Build up string for transforms
       StringBuilder out = new StringBuilder(base.getText());
@@ -670,9 +669,8 @@ public class Compounding {
 
     /** Allow comparison of two analyses by the derivations they rely */
     public static class AnalysisScoreRanker implements Comparator<AnalysisResult> {
-      /* (non-Javadoc)
-       * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-       */
+
+      @Override
       public int compare(AnalysisResult h1, AnalysisResult h2) {
         // Try to differentiate by base first
         if (h1.base.getCount() != h2.base.getCount())

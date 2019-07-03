@@ -28,7 +28,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -309,7 +309,7 @@ public class MorphLearner {
 
   /** Learn from the loaded lexicon and output the results. */
   public void learn() {
-    List<Transform> learnedTransforms = new LinkedList<>();
+    List<Transform> learnedTransforms = new ArrayList<>();
     Set<Transform> badTransforms = new ObjectOpenHashSet<>();
     Map<String, Transform> indexedTransforms = new Object2ObjectOpenHashMap<>();
     RuleInference ruleInf = new RuleInference();

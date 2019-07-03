@@ -123,9 +123,7 @@ public class TransformInference {
     return goodPreceders.contains(preceding);
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#toString()
-   */
+  @Override
   public String toString() {
     // Print out each transform and the counts of what preceded it
     StringBuilder out = new StringBuilder();

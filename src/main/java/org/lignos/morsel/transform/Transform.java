@@ -19,7 +19,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.lignos.morsel.Util;
@@ -103,6 +103,7 @@ public class Transform {
    * @param doubling whether orthographic accommodation can be performed
    * @return whether the word participates in the transform
    */
+  @SuppressWarnings("ReferenceEquality")
   public static boolean scoreWord(
       Transform trans, Word base, Lexicon lex, boolean reEval, boolean doubling) {
 
@@ -153,6 +154,7 @@ public class Transform {
         // If we got a word, the derived form is not the same as the base,
         // and the pair is legal, add it and move on
         if (derived != null
+            // Reference equality is correct here
             && derived != base
             && isLegalPairSets(baseSet, derived.getSet(), reEval)
             && affix2.hasWord(derived)) {
@@ -478,7 +480,7 @@ public class Transform {
    * @return a string of all of the word pairs, each pair joined by a space
    */
   public String getPairsText() {
-    List<String> pairs = new LinkedList<>();
+    List<String> pairs = new ArrayList<>();
     for (WordPair pair : derivationPairs) {
       pairs.add(pair.toString());
     }
@@ -495,7 +497,7 @@ public class Transform {
    */
   private String getSamplePairs() {
     int n = 0;
-    List<String> pairs = new LinkedList<>();
+    List<String> pairs = new ArrayList<>();
     for (WordPair pair : derivationPairs) {
       if (n++ >= N_SAMPLES) {
         break;
@@ -512,6 +514,7 @@ public class Transform {
     return sortedPairs;
   }
 
+  @Override
   public String toString() {
     String affixes = '(' + affix1.toString() + ", " + affix2.toString() + ')';
     // Put the sign in the right place
@@ -659,12 +662,14 @@ public class Transform {
     return transType + ':' + affix1 + ',' + affix2;
   }
 
+  @Override
   public boolean equals(Object other) {
     if (other == null || !(other instanceof Transform)) return false;
     Transform otherTransform = (Transform) other;
     return otherTransform.getAffix1() == affix1 && otherTransform.getAffix2() == affix2;
   }
 
+  @Override
   public int hashCode() {
     return hash;
   }

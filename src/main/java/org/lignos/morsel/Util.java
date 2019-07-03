@@ -17,7 +17,7 @@ package org.lignos.morsel;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /** General static utility functions. */
@@ -36,14 +36,14 @@ public class Util {
   }
 
   /**
-   * Concatenate the elements of two collections into a LinkedList.
+   * Concatenate the elements of two collections into a ArrayList.
    *
    * @param first the first collection
    * @param second the second collection
-   * @return a new LinkedList containing the elements of the first and second collections in order
+   * @return a new ArrayList containing the elements of the first and second collections in order
    */
   public static <T> List<T> concatCollections(Collection<T> first, Collection<T> second) {
-    List<T> out = new LinkedList<>(first);
+    List<T> out = new ArrayList<>(first);
     out.addAll(second);
     return out;
   }
@@ -53,11 +53,11 @@ public class Util {
    *
    * @param items source collection
    * @param max the number of items to keep
-   * @return a new LinkedList containing the first items from the source collection
+   * @return a new ArrayList containing the first items from the source collection
    */
   public static <T> List<T> truncateCollection(Collection<T> items, int max) {
     int curr = 0;
-    List<T> out = new LinkedList<>();
+    List<T> out = new ArrayList<>();
     for (T item : items) {
       if (++curr > max) {
         break;

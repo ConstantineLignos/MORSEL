@@ -17,7 +17,7 @@ package org.lignos.morsel.lexicon;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.lignos.morsel.Util;
@@ -86,8 +86,8 @@ public class Word {
   public String analyze() {
     if (externalAnalysis != null) return externalAnalysis;
 
-    List<String> prefixes = new LinkedList<>();
-    List<String> suffixes = new LinkedList<>();
+    List<String> prefixes = new ArrayList<>();
+    List<String> suffixes = new ArrayList<>();
 
     String rootText = analyzeRoot();
 
@@ -178,11 +178,13 @@ public class Word {
    *
    * @param root the word's new root
    */
+  @SuppressWarnings("ReferenceEquality")
   public void setRoot(Word root) {
     this.root = root;
 
     // Set all forms derived from this one to have the same root
     for (Word derived : derivedWords) {
+      // Reference equality is correct here
       if (derived == this) {
         throw new RuntimeException("Circular derivation: " + this);
       }
@@ -360,7 +362,7 @@ public class Word {
   public String analyzeRoot() {
     if (getSet() == WordSet.COMPOUND) {
       // If it's a compound, return the analysis of all roots
-      List<String> analyses = new LinkedList<>();
+      List<String> analyses = new ArrayList<>();
       for (Word w : componentWords) {
         analyses.add(w.analyze());
       }
@@ -415,10 +417,12 @@ public class Word {
     return text.equals(((Word) other).getText());
   }
 
+  @Override
   public int hashCode() {
     return text.hashCode();
   }
 
+  @Override
   public String toString() {
     return this.text;
   }
