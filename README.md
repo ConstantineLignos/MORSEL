@@ -35,9 +35,18 @@ and build the jar.
 
 ## Taking it for a spin
 You run MORSEL by running the jar and providing:
+
 * A wordlist formatted with a word and its frequency on each line
   separated by whitespace, i.e., `69971 the`. See
   `data/test/brown_wordlist.txt` for an example.
+
+* A parameter file to configure the system. There are two files in
+  the params folder corresponding to the parameters used for the
+  Morpho Challenge 2010 evaluation. Both settings (aggressive and
+  conservative) produced state of the art results for English in
+  Morpho Challenge 2010, and aggressive produced state of the art
+  results for Finnish.
+
 * An output file where the morphological analyses will be stored. The
   output will look like this:
 
@@ -48,15 +57,7 @@ accelerating    ACCELERATE +(ing)
 acceleration    ACCELERATE +(ion)
 accelerations   ACCELERATE +(ion) +(s)
 ```
-* A log file to record what the learner is doing while it learns. If
-  you'd like it to write to standard out, just enter `-` for the log
-  file.
-* A parameter file to configure the segmenter. There are two files in
-  the params folder corresponding to the parameters used for the
-  Morpho Challenge 2010 evaluation. Both settings (aggressive and
-  conservative) produced state of the art results for English in
-  Morpho Challenge 2010, and aggressive produced state of the art
-  results for Finnish.
+
 * The rest of the command-line parameters are documented by running
   `java -jar morsel.jar --help`. With the exception of encoding,
   unless you are interested in the algorithm's internals and want more
@@ -70,8 +71,10 @@ conservative parameter set do the following:
 
 `java -jar target/morsel-1.0-SNAPSHOT-jar-with-dependencies.jar data/test/brown_wordlist.txt out.txt params/conservative.txt > log.txt`
 
-If you're using a data set of any significant size, you'll want to increase Java's maximum heap size, see Java's
-`Xmx` flag.
+Note that in the example above, redirecting the log to file is
+handled by the shell; MORSEL writes the log to standard output and
+(rare) warnings to standard error. If you're using a large data set,
+you'll want to increase Java's maximum heap size, see Java's `Xmx` flag.
 
 ## Evaluating MORSEL
 
