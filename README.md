@@ -13,7 +13,7 @@ language and report what morphemes are present in each word.
 Using MORSEL
 ============
 
-MORSEL is distributed under the Apache License, Version 2.0.  You are
+MORSEL is distributed under the Apache License, Version 2.0. You are
 welcome to use it for performing evaluations, for bootstrapping a
 supervised learner, or for any other purpose you can think of as long
 as you comply with the license. Please get in touch with me
@@ -36,7 +36,7 @@ and build the jar.
 ## Taking it for a spin
 You run MORSEL by running the jar and providing:
 * A wordlist formatted with a word and its frequency on each line
-  separated by whitespace, i.e., `69971 the`.  See
+  separated by whitespace, i.e., `69971 the`. See
   `data/test/brown_wordlist.txt` for an example.
 * An output file where the morphological analyses will be stored. The
   output will look like this:
@@ -60,7 +60,7 @@ accelerations   ACCELERATE +(ion) +(s)
 * The rest of the command-line parameters are documented by running
   `java -jar morsel.jar --help`. With the exception of encoding,
   unless you are interested in the algorithm's internals and want more
-  debug output there isn't much to see here.  Almost everything you
+  debug output there isn't much to see here. Almost everything you
   want to set is set via the parameter file, not command-line
   arguments.
 
@@ -68,7 +68,7 @@ For example, if you want to run on the Brown corpus wordlist, write
 the analysis to `out.txt`, write the log to `log.txt`, and use the
 conservative parameter set do the following:
 
-`java -jar target/morsel-1.0-SNAPSHOT-jar-with-dependencies.jar data/test/brown_wordlist.txt out.txt log.txt params/conservative.txt`
+`java -jar target/morsel-1.0-SNAPSHOT-jar-with-dependencies.jar data/test/brown_wordlist.txt out.txt params/conservative.txt > log.txt`
 
 If you're using a data set of any significant size, you'll want to increase Java's maximum heap size, see Java's
 `Xmx` flag.
@@ -202,7 +202,7 @@ Weighting parameters:
   `true` allows for rarer but more substantial transforms to outscore
   shorter but more frequent ones.
 * `weighted_affixes`: Whether the score of affixes should be weighted
-  by their length.  Setting to `true` allows for rarer but longer
+  by their length. Setting to `true` allows for rarer but longer
   affixes to outscore shorter but more frequent ones.
 
 Pre-processing parameters:
@@ -216,7 +216,7 @@ Pre-processing parameters:
 
 Word/transform Inference parameters:
 * `rule_inference_conservative`: Whether to use the transforms learned
-    to infer missing bases (base inference).
+  to infer missing bases (base inference).
 
 Experimental features (features that appear to be implemented
 correctly but do not improve performance):

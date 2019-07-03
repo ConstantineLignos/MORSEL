@@ -16,9 +16,10 @@
 package org.lignos.morsel;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import org.lignos.morsel.lexicon.Lexicon;
 import org.lignos.morsel.lexicon.Word;
 
@@ -34,26 +35,34 @@ public class CorpusLoader {
    *
    * <pre>500 dog</pre>
    *
-   * Warnings are printed to stderr if duplicate words are found in the wordlist, and status is
-   * printed to stdout every 50,000 word types that are loaded.
+   * Warnings are printed to stderr if duplicate words are found in the wordlist.
    *
    * @param wordListPath The path to the wordlist file.
-   * @param encoding Encoding of the wordlist file.
+   * @param charset Character set of the wordlist file.
    * @param verbose Whether to print information about the lexicon.
    * @return A lexicon representing the wordlist.
+   * @throws IOException if the wordlist file could not be parsed.
    */
-  public static Lexicon loadWordlist(String wordListPath, String encoding, boolean verbose) {
-    try {
-      Lexicon lex = new Lexicon();
+  public static Lexicon loadWordlist(
+      final Path wordListPath, final Charset charset, final boolean verbose) throws IOException {
+    Lexicon lex = new Lexicon();
 
-      // Open the word list and get each word
-      BufferedReader input =
-          new BufferedReader(new InputStreamReader(new FileInputStream(wordListPath), encoding));
+    long typesLoaded = 0L;
+    long tokensLoaded = 0L;
+
+    // Open the word list and get each word
+    try (final BufferedReader input = Files.newBufferedReader(wordListPath, charset)) {
+      int lineNum = 0;
       String line;
-      long typesLoaded = 0;
-      long tokensLoaded = 0;
       while ((line = input.readLine()) != null) {
-        Word word = parseWordlistEntry(line);
+        lineNum++;
+
+        // Skip lines with only whitespace
+        if (line.trim().length() == 0) {
+          continue;
+        }
+
+        final Word word = parseWordlistEntry(line);
         if (word != null) {
           // Add the word, print a warning if it's a duplicate
           if (!lex.addWord(word)) {
@@ -61,31 +70,26 @@ public class CorpusLoader {
             continue;
           }
 
-          // Add the token count
+          // Add the token and type counts
           tokensLoaded += word.getCount();
-
-          // Update status every 50,000 words
-          if (verbose && ++typesLoaded % 50000 == 0) {
-            System.out.print("\r" + typesLoaded + " types loaded...");
-          }
+          typesLoaded++;
+        } else {
+          throw new IOException(
+              String.format(
+                  "Could not parse line %d of wordlist file containing text:\n%s", lineNum, line));
         }
       }
-      // Clean up
-      input.close();
-
-      if (verbose) {
-        System.out.println("\r" + typesLoaded + " types loaded.");
-        System.out.println(tokensLoaded + " tokens loaded.");
-      }
-
-      // Set the word frequencies in the lexicon
-      lex.updateFrequencies();
-
-      return lex;
-    } catch (IOException e) {
-      // If the file could not be loaded, just return null for the lexicon
-      return null;
     }
+
+    if (verbose) {
+      System.out.println(typesLoaded + " types loaded.");
+      System.out.println(tokensLoaded + " tokens loaded.");
+    }
+
+    // Set the word frequencies in the lexicon
+    lex.updateFrequencies();
+
+    return lex;
   }
 
   /**

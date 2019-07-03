@@ -15,6 +15,9 @@
  */
 package org.lignos.morsel.compound;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.TestCase;
@@ -28,10 +31,14 @@ import org.lignos.morsel.transform.Transform;
 
 /** Test Compounding and Hypothesis */
 public class CompoundingTest extends TestCase {
-  Lexicon lex;
+  private static final Charset CHARSET = Charset.forName("ISO8859_1");
 
-  public void setUp() {
-    lex = CorpusLoader.loadWordlist("data/test/compounding_test_eng.txt", "ISO8859_1", false);
+  private Lexicon lex;
+
+  @Override
+  public void setUp() throws IOException {
+    lex =
+        CorpusLoader.loadWordlist(Paths.get("data/test/compounding_test_eng.txt"), CHARSET, false);
   }
 
   /** Test getPrefixes without filler */
@@ -118,17 +125,17 @@ public class CompoundingTest extends TestCase {
   }
 
   /** Do an end-to-end compounding test on the Brown corpus without filler */
-  public void testinferCompoundsBrown() {
-    lex = CorpusLoader.loadWordlist("data/test/brown_wordlist.txt", "ISO8859_1", false);
+  public void testinferCompoundsBrown() throws IOException {
+    lex = CorpusLoader.loadWordlist(Paths.get("data/test/brown_wordlist.txt"), CHARSET, false);
     Compounding.breakCompounds(lex, WordSet.UNMODELED, null, null, false, false, false, null);
     // Check that the analysis of shorthand is now compound
     assertEquals("SHORT HAND", lex.getWord("shorthand").analyze());
   }
 
   /** Do an end-to-end compounding test on the Brown corpus using filler */
-  public void testinferCompoundsBrownFiller() {
+  public void testinferCompoundsBrownFiller() throws IOException {
     // Load the Brown corpus
-    lex = CorpusLoader.loadWordlist("data/test/brown_wordlist.txt", "ISO8859_1", false);
+    lex = CorpusLoader.loadWordlist(Paths.get("data/test/brown_wordlist.txt"), CHARSET, false);
 
     // Set up bake-baker properly, so that baker is in derived and thus
     // can have rules applied to it when splitting compounds
@@ -154,9 +161,9 @@ public class CompoundingTest extends TestCase {
   }
 
   /** Test the simplex word analysis feature */
-  public void testanalyzeSimplexWords() {
+  public void testanalyzeSimplexWords() throws IOException {
     // Load a test data set
-    lex = CorpusLoader.loadWordlist("data/test/test_wordlist.txt", "ISO8859_1", false);
+    lex = CorpusLoader.loadWordlist(Paths.get("data/test/test_wordlist.txt"), CHARSET, false);
 
     // Set up rules to be used for simplex analysis
     Transform agentive =
@@ -184,11 +191,12 @@ public class CompoundingTest extends TestCase {
   }
 
   /** Regression test for repeated morphemes in a compounding analysis */
-  public void testdoubleRuleEnding1() {
+  public void testdoubleRuleEnding1() throws IOException {
     // Targeted test for buggy analyses such as MAIN HAUSEN = MAIN HAUSEN +(en)
     // This test looks for the case where an new word is created while
     // applying rules in compounding that is already in the lexicon
-    lex = CorpusLoader.loadWordlist("data/test/compounding_test_ger.txt", "ISO8859_1", false);
+    lex =
+        CorpusLoader.loadWordlist(Paths.get("data/test/compounding_test_ger.txt"), CHARSET, false);
     Transform en =
         new Transform(new Affix("", AffixType.SUFFIX), new Affix("en", AffixType.SUFFIX));
     en.addWordPair(lex.getWord("haus"), lex.getWord("hausen"), false);
@@ -204,11 +212,12 @@ public class CompoundingTest extends TestCase {
   }
 
   /** Regression test for repeated morphemes in a compounding analysis */
-  public void testdoubleRuleEnding2() {
+  public void testdoubleRuleEnding2() throws IOException {
     // Targeted test for buggy analyses such as MAIN HAUSEN = MAIN HAUSEN +(en)
     // This checks that analyses of words created in compounding are
     // correct in the simple case.
-    lex = CorpusLoader.loadWordlist("data/test/compounding_test_ger.txt", "ISO8859_1", false);
+    lex =
+        CorpusLoader.loadWordlist(Paths.get("data/test/compounding_test_ger.txt"), CHARSET, false);
     Transform er =
         new Transform(new Affix("", AffixType.SUFFIX), new Affix("er", AffixType.SUFFIX));
     // Move "haus" to Base so it will be used

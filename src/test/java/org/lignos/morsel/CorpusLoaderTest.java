@@ -15,18 +15,23 @@
  */
 package org.lignos.morsel;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import junit.framework.TestCase;
 import org.lignos.morsel.lexicon.Lexicon;
 import org.lignos.morsel.lexicon.Word;
 
 /** Test basic wordlist loading capabilities. */
 public class CorpusLoaderTest extends TestCase {
-  final String wordListPath = "data/test/test_wordlist.txt";
-  final String overflowListPath = "data/test/test_overflowlist.txt";
+  private static final Charset CHARSET = Charset.forName("ISO8859_1");
+  private static final Path wordListPath = Paths.get("data/test/test_wordlist.txt");
+  private static final Path overflowListPath = Paths.get("data/test/test_overflowlist.txt");
 
   /** Test that entries are added to the lexicon when processing a wordlist. */
-  public void testloadWordlist() {
-    Lexicon lex = CorpusLoader.loadWordlist(wordListPath, "ISO8859_1", false);
+  public void testloadWordlist() throws IOException {
+    Lexicon lex = CorpusLoader.loadWordlist(wordListPath, CHARSET, false);
     assertNotNull(lex.getWord("a"));
     assertEquals(500, lex.getWord("a").getCount());
     assertNotNull(lex.getWord("rat"));
@@ -40,8 +45,8 @@ public class CorpusLoaderTest extends TestCase {
   }
 
   /** Test that counts bigger than MAX_INT do not cause overflow. */
-  public void testloadWordlistOverflow() {
-    Lexicon lex = CorpusLoader.loadWordlist(overflowListPath, "ISO8859_1", false);
+  public void testloadWordlistOverflow() throws IOException {
+    Lexicon lex = CorpusLoader.loadWordlist(overflowListPath, CHARSET, false);
     assertEquals(2147483648L, lex.getWord("biggerthanmaxint").getCount());
     assertEquals(2147526943L, lex.getTokenCount());
   }
