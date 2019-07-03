@@ -157,6 +157,7 @@ public class Hypothesis {
     return extended;
   }
 
+  @Override
   public String toString() {
     StringBuilder out = new StringBuilder();
     for (Word word : words) {
@@ -173,9 +174,8 @@ public class Hypothesis {
    * inverts the usual ordering.
    */
   public static class HypothesisScoreRanker implements Comparator<Hypothesis> {
-    /* (non-Javadoc)
-     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-     */
+
+    @Override
     public int compare(Hypothesis h1, Hypothesis h2) {
       // Intentionally 2 - 1 to get a descending sort
       return Double.compare(h2.getScore(), h1.getScore());

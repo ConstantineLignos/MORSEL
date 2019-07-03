@@ -74,9 +74,9 @@ public class MorphLearner {
    */
   private int MAX_ITER;
   private int TOP_AFFIXES;
-  private boolean REEVAL;
+  private boolean REEVAL_DERIVATION;
   private boolean SCORE_REEVAL;
-  private boolean DOUBLING;
+  private boolean USE_DOUBLING;
   private int TYPE_THRESHOLD;
   private int STEM_LENGTH;
   private double OVERLAP_THRESHOLD;
@@ -422,10 +422,10 @@ public class MorphLearner {
       System.out.println("Selected " + bestTransform.toString());
 
       // Re-evaluate the best transform
-      if (REEVAL) {
+      if (REEVAL_DERIVATION) {
         final Transform reEvalTransform =
             new Transform(bestTransform.getAffix1(), bestTransform.getAffix2());
-        Transform.scoreTransform(reEvalTransform, lex, REEVAL, DOUBLING);
+        Transform.scoreTransform(reEvalTransform, lex, REEVAL_DERIVATION, USE_DOUBLING);
         bestTransform = reEvalTransform;
       }
 
@@ -461,8 +461,8 @@ public class MorphLearner {
             lex,
             learnedTransforms,
             hypTransforms,
-            REEVAL,
-            DOUBLING,
+            REEVAL_DERIVATION,
+            USE_DOUBLING,
             TRANSFORM_OPTIMIZATION,
             baseLog);
       }
@@ -477,8 +477,8 @@ public class MorphLearner {
                 learnedTransforms,
                 hypTransforms,
                 TRANSFORM_OPTIMIZATION,
-                REEVAL,
-                DOUBLING,
+                REEVAL_DERIVATION,
+                USE_DOUBLING,
                 transInf);
         System.out.println("Broke " + nCompounds + " compounds in base");
         if (AGGR_COMPOUNDING) {
@@ -489,8 +489,8 @@ public class MorphLearner {
                   learnedTransforms,
                   hypTransforms,
                   TRANSFORM_OPTIMIZATION,
-                  REEVAL,
-                  DOUBLING,
+                  REEVAL_DERIVATION,
+                  USE_DOUBLING,
                   transInf);
           System.out.println("Broke " + nCompounds + " compounds in unmodeled");
         }
@@ -531,12 +531,12 @@ public class MorphLearner {
       // we don't care that hypothesized transforms won't be updated
       int nCompounds =
           Compounding.breakCompounds(
-              lex, WordSet.BASE, fillerRules, null, false, REEVAL, DOUBLING, transInf);
+              lex, WordSet.BASE, fillerRules, null, false, REEVAL_DERIVATION, USE_DOUBLING, transInf);
       System.out.println("Broke " + nCompounds + " compounds in base");
       System.out.println(memoryStatus());
       nCompounds =
           Compounding.breakCompounds(
-              lex, WordSet.UNMODELED, fillerRules, null, false, REEVAL, DOUBLING, transInf);
+              lex, WordSet.UNMODELED, fillerRules, null, false, REEVAL_DERIVATION, USE_DOUBLING, transInf);
       System.out.println("Broke " + nCompounds + " compounds in unmodeled");
     }
 
@@ -545,7 +545,7 @@ public class MorphLearner {
       System.out.println("Analyzing simplex words...");
       int nAnalyzed =
           Compounding.analyzeSimplexWords(
-              lex, WordSet.UNMODELED, learnedTransforms, DOUBLING, transInf);
+              lex, WordSet.UNMODELED, learnedTransforms, USE_DOUBLING, transInf);
       System.out.println("Analyzed " + nAnalyzed + " words in unmodeled");
     }
 
@@ -911,9 +911,9 @@ public class MorphLearner {
     Word.COUNT_THRESHOLD = Integer.parseInt(props.getProperty("frequent_type_threshold"));
 
     // Transform scoring parameters
-    REEVAL = Boolean.parseBoolean(props.getProperty("reeval"));
+    REEVAL_DERIVATION = Boolean.parseBoolean(props.getProperty("reeval"));
     SCORE_REEVAL = Boolean.parseBoolean(props.getProperty("score_reeval"));
-    DOUBLING = Boolean.parseBoolean(props.getProperty("doubling"));
+    USE_DOUBLING = Boolean.parseBoolean(props.getProperty("doubling"));
 
     // Transform selection parameters
     TYPE_THRESHOLD = Integer.parseInt(props.getProperty("type_threshold"));

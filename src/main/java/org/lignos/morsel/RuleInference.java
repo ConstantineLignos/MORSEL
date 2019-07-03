@@ -83,6 +83,7 @@ public class RuleInference {
    * @param optimization as used by moveTransformPairs
    * @param out the destination for any printing to the log
    */
+  @SuppressWarnings("ReferenceEquality")
   public void conservInference(
       Lexicon lex,
       List<Transform> learnedTransforms,
@@ -131,6 +132,7 @@ public class RuleInference {
     if (optimization) {
       for (Word newBase : newWords) {
         for (Transform trans : hypTransforms) {
+          // Reference equality is correct here
           if (trans != newestTransform && newBase.hasAffix(trans.getAffix1())) {
             Transform.scoreWord(trans, newBase, lex, reEval, doubling);
           }

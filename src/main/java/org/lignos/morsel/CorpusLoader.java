@@ -100,6 +100,7 @@ public class CorpusLoader {
    *     whitespace, and the count of the word.
    * @return A Word parsed from the line.
    */
+  @SuppressWarnings("StringSplitter")
   static Word parseWordlistEntry(String line) {
     // Parse the line, return null if parsing fails
     String[] parts = line.split("\\s");

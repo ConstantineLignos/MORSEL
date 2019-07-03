@@ -54,9 +54,7 @@ public class TransformRelation {
     return precedingTransforms.entrySet();
   }
 
-  /* (non-Javadoc)
-   * @see java.lang.Object#toString()
-   */
+  @SuppressWarnings("StringSplitter")
   public String toString() {
     StringBuilder out = new StringBuilder(mainTransform.toString() + "\n");
 
