@@ -59,7 +59,7 @@ accelerations   ACCELERATE +(ion) +(s)
 ```
 
 * The rest of the command-line parameters are documented by running
-  `java -jar morsel.jar --help`. With the exception of encoding,
+  with the `--help` flag. With the exception of encoding,
   unless you are interested in the algorithm's internals and want more
   debug output there isn't much to see here. Almost everything you
   want to set is set via the parameter file, not command-line
@@ -74,7 +74,7 @@ conservative parameter set do the following:
 Note that in the example above, redirecting the log to file is
 handled by the shell; MORSEL writes the log to standard output and
 (rare) warnings to standard error. If you're using a large data set,
-you'll want to increase Java's maximum heap size, see Java's `Xmx` flag.
+you'll want to increase Java's maximum heap size, see Java's `-Xmx` flag.
 
 ## Evaluating MORSEL
 
@@ -138,12 +138,12 @@ sensible defaults, see `params/conservative.txt`. Some of these
 parameters are difficult to understand without understanding the
 learning algorithm. I recommend you look at the following papers:
 
-[A rule-based unsupervised morphology learning framework](http://lignos.org/papers/Lignos_etal_MC2009.pdf)
+[A rule-based unsupervised morphology learning framework](http://lignos.org/papers/Lignos_etal_MC2009.pdf).
 Constantine Lignos, Erwin Chan, Mitchell P. Marcus, and Charles Yang
 Working Notes of the 10th Workshop of the Cross-Language Evaluation
 Forum (CLEF), 2009.
 
-[Learning from unseen data](http://lignos.org/papers/mc_2010_lignos.pdf)
+[Learning from unseen data](http://lignos.org/papers/mc_2010_lignos.pdf).
 Constantine Lignos
 Proceedings of the Morpho Challenge 2010 Workshop, 35-38, 2010.
 
