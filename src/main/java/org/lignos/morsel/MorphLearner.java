@@ -190,7 +190,7 @@ public class MorphLearner {
     Options options = new Options();
     options.addOption(new Option("h", "help", false, "dislay this help and exit"));
     Option encodingOption =
-        new Option("e", "encoding", true, "input and output file encoding. Defaults to ISO8859_1.");
+        new Option("e", "encoding", true, "input and output file encoding. Defaults to UTF8.");
     encodingOption.setArgName("encoding");
     options.addOption(encodingOption);
     options.addOption(
@@ -259,7 +259,7 @@ public class MorphLearner {
     }
 
     // Get options
-    final String encodingName = line.getOptionValue("encoding", "ISO8859_1");
+    final String encodingName = line.getOptionValue("encoding", "UTF8");
     final Charset encoding;
     try {
       encoding = Charset.forName(encodingName);

@@ -58,6 +58,11 @@ acceleration    ACCELERATE +(ion)
 accelerations   ACCELERATE +(ion) +(s)
 ```
 
+* (Optional) The encoding used for the wordlist, specified using the
+  `--encoding` (or `-e`) flag . If this is not specified, UTF-8 will
+  be used. Note that if you are using the Morpho Challenge data, you
+  want to specify ISO8859-1 for the encoding (`-e ISO8859-1`).
+
 * The rest of the command-line parameters are documented by running
   with the `--help` flag. With the exception of encoding,
   unless you are interested in the algorithm's internals and want more
