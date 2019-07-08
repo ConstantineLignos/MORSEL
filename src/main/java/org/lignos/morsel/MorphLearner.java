@@ -54,6 +54,8 @@ import org.lignos.morsel.transform.WordPair;
  * learning loop.
  */
 public class MorphLearner {
+  private static final String ERROR_PREFIX = "ERROR: ";
+
   /** Path of the wordlist to analyze */
   private final Path corpusPath;
   /** Character encoding to use for reading and writing */
@@ -125,7 +127,15 @@ public class MorphLearner {
     this.outputCompounds = outputCompounds;
 
     System.out.println("Setting parameters from " + paramPath);
-    this.setParams(paramPath);
+    try {
+      this.setParams(paramPath);
+    } catch (IOException e) {
+      System.err.println(
+          ERROR_PREFIX
+              + String.format("Could not parse parameter file %s: %s", paramPath, e.getMessage()));
+      // Exit code 74: input/output error
+      System.exit(74);
+    }
 
     System.out.println("Loading wordlist from " + wordlistPath + " using charset " + charset);
     loadCorpus(charset);
@@ -232,22 +242,15 @@ public class MorphLearner {
     final Path paramPath = Paths.get(otherArgs[1]).toAbsolutePath();
     final Path outputPath = Paths.get(otherArgs[2]).toAbsolutePath();
 
-    // Check file arguments early just to be safe
+    // Check file arguments early just to be safe. We check the output file later, that way if you
+    // make the mistake of reversing the param and output files, it won't destroy your param file.
     boolean badPath = false;
     if (!wordlistPath.toFile().isFile()) {
-      System.err.println("Cannot read wordlist file " + wordlistPath);
+      System.err.println(ERROR_PREFIX + "Cannot read wordlist file " + wordlistPath);
       badPath = true;
     }
     if (!paramPath.toFile().isFile()) {
-      System.err.println("Cannot read parameter file " + paramPath);
-      badPath = true;
-    }
-    // There's no good way to check whether we can write to the output file other than just trying
-    // it. We go to the trouble so that we fail fast rather than at the end of learning.
-    try (final Writer output = Files.newBufferedWriter(outputPath)) {
-      output.write('\n');
-    } catch (IOException e) {
-      System.err.println("Cannot write output file " + outputPath);
+      System.err.println(ERROR_PREFIX + "Cannot read parameter file " + paramPath);
       badPath = true;
     }
     if (badPath) {
@@ -261,7 +264,8 @@ public class MorphLearner {
     try {
       encoding = Charset.forName(encodingName);
     } catch (UnsupportedCharsetException e) {
-      System.err.println("Unsupported file encoding: " + encodingName);
+      System.err.println(
+          ERROR_PREFIX + String.format("Unsupported file encoding '%s'", encodingName));
       // Exit code 74: input/output error
       System.exit(74);
       // Explicit return to appease compiler
@@ -287,9 +291,10 @@ public class MorphLearner {
               outputConflation,
               outputCompounds);
     } catch (IOException e) {
-      System.err.println(e.toString());
-      // Exit code 66: cannot open input
-      System.exit(66);
+      System.err.println(
+          ERROR_PREFIX + "During initialization, the following error occurred: " + e.getMessage());
+      // Exit code 74: input/output error
+      System.exit(74);
       // Explicit return to appease compiler
       return;
     }
@@ -298,14 +303,25 @@ public class MorphLearner {
     float elapsedSeconds = (System.currentTimeMillis() - start) / 1000F;
     System.out.println("Init time: " + elapsedSeconds + "s\n");
 
+    // Check the output file path.
+    // There's no good way to check whether we can write to the output file other than just trying
+    // it. We go to the trouble so that we fail fast rather than at the end of learning.
+    try (final Writer output = Files.newBufferedWriter(outputPath)) {
+      output.write('\n');
+    } catch (IOException e) {
+      System.err.println(ERROR_PREFIX + "Cannot write output file " + outputPath);
+      // Exit code 74: input/output error
+      System.exit(74);
+    }
+
     // Time learning
     start = System.currentTimeMillis();
 
     try {
       learner.learn();
     } catch (IOException e) {
-      System.err.println("Error during learning:");
-      System.err.println(e.toString());
+      System.err.println(
+          ERROR_PREFIX + "During learning, the following error occurred: " + e.toString());
       // Exit code 74: input/output error
       System.exit(66);
     }
@@ -322,7 +338,6 @@ public class MorphLearner {
    * @throws IOException if the file at corpusPath could not be read.
    */
   private void loadCorpus(Charset encoding) throws IOException {
-    System.out.println("Loading words...");
     lex = CorpusLoader.loadWordlist(corpusPath, encoding, true);
   }
 
@@ -453,7 +468,7 @@ public class MorphLearner {
                 new PrintWriter(
                     Files.newBufferedWriter(Paths.get(analysisBase + "_baseinf.txt"), charset));
           } catch (FileNotFoundException e) {
-            System.err.println("Couldn't output base inference dump.");
+            System.err.println(ERROR_PREFIX + "Couldn't output base inference dump.");
           }
         }
 
@@ -531,12 +546,26 @@ public class MorphLearner {
       // we don't care that hypothesized transforms won't be updated
       int nCompounds =
           Compounding.breakCompounds(
-              lex, WordSet.BASE, fillerRules, null, false, REEVAL_DERIVATION, USE_DOUBLING, transInf);
+              lex,
+              WordSet.BASE,
+              fillerRules,
+              null,
+              false,
+              REEVAL_DERIVATION,
+              USE_DOUBLING,
+              transInf);
       System.out.println("Broke " + nCompounds + " compounds in base");
       System.out.println(memoryStatus());
       nCompounds =
           Compounding.breakCompounds(
-              lex, WordSet.UNMODELED, fillerRules, null, false, REEVAL_DERIVATION, USE_DOUBLING, transInf);
+              lex,
+              WordSet.UNMODELED,
+              fillerRules,
+              null,
+              false,
+              REEVAL_DERIVATION,
+              USE_DOUBLING,
+              transInf);
       System.out.println("Broke " + nCompounds + " compounds in unmodeled");
     }
 
@@ -569,7 +598,7 @@ public class MorphLearner {
     usage /= 1048576L;
     remaining /= 1048576L;
 
-    return "Memory status: " + usage + "MB Used, " + remaining + "MB Remaining";
+    return "Memory status: " + usage + "MiB Used, " + remaining + "MiB Remaining";
   }
 
   private Map<String, Transform> indexTransforms(List<Transform> hypTransforms) {
@@ -893,7 +922,7 @@ public class MorphLearner {
    */
   private void setParams(final Path paramPath) throws IOException {
     // Read in the params as properties
-    final Properties props = new Properties();
+    final CheckedProperties props = new CheckedProperties();
 
     try (final BufferedReader reader = Files.newBufferedReader(paramPath)) {
       props.load(reader);
@@ -902,46 +931,101 @@ public class MorphLearner {
     }
 
     // Iteration parameters
-    MAX_ITER = Integer.parseInt(props.getProperty("max_iter"));
-    TOP_AFFIXES = Integer.parseInt(props.getProperty("top_affixes"));
-    WINDOW_SIZE = Integer.parseInt(props.getProperty("window_size"));
+    MAX_ITER = props.getIntProperty("max_iter");
+    TOP_AFFIXES = props.getIntProperty("top_affixes");
+    WINDOW_SIZE = props.getIntProperty("window_size");
 
     // Word scoring parameters
-    Word.FREQ_THRESHOLD = Double.parseDouble(props.getProperty("frequent_prob_threshold"));
-    Word.COUNT_THRESHOLD = Integer.parseInt(props.getProperty("frequent_type_threshold"));
+    Word.FREQ_THRESHOLD = props.getDoubleProperty("frequent_prob_threshold");
+    Word.COUNT_THRESHOLD = props.getIntProperty("frequent_type_threshold");
 
     // Transform scoring parameters
-    REEVAL_DERIVATION = Boolean.parseBoolean(props.getProperty("reeval"));
-    SCORE_REEVAL = Boolean.parseBoolean(props.getProperty("score_reeval"));
-    USE_DOUBLING = Boolean.parseBoolean(props.getProperty("doubling"));
+    REEVAL_DERIVATION = props.getBooleanProperty("reeval");
+    SCORE_REEVAL = props.getBooleanProperty("score_reeval");
+    USE_DOUBLING = props.getBooleanProperty("doubling");
 
     // Transform selection parameters
-    TYPE_THRESHOLD = Integer.parseInt(props.getProperty("type_threshold"));
-    STEM_LENGTH = Integer.parseInt(props.getProperty("overlap_stem_length"));
-    OVERLAP_THRESHOLD = Double.parseDouble(props.getProperty("overlap_threshold"));
-    PRECISION_THRESHOLD = Double.parseDouble(props.getProperty("precision_threshold"));
+    TYPE_THRESHOLD = props.getIntProperty("type_threshold");
+    STEM_LENGTH = props.getIntProperty("overlap_stem_length");
+    OVERLAP_THRESHOLD = props.getDoubleProperty("overlap_threshold");
+    PRECISION_THRESHOLD = props.getDoubleProperty("precision_threshold");
 
     // Preprocessing flags
-    HYPHENATION = Boolean.parseBoolean(props.getProperty("hyphenation"));
-    FINAL_COMPOUNDING = Boolean.parseBoolean(props.getProperty("compounding"));
-    ITER_COMPOUNDING = Boolean.parseBoolean(props.getProperty("iter_compounding"));
-    AGGR_COMPOUNDING = Boolean.parseBoolean(props.getProperty("aggr_compounding"));
+    HYPHENATION = props.getBooleanProperty("hyphenation");
+    FINAL_COMPOUNDING = props.getBooleanProperty("compounding");
+    ITER_COMPOUNDING = props.getBooleanProperty("iter_compounding");
+    AGGR_COMPOUNDING = props.getBooleanProperty("aggr_compounding");
 
     // Rule inference flags
-    BASE_INFERENCE = Boolean.parseBoolean(props.getProperty("rule_inference_conservative"));
+    BASE_INFERENCE = props.getBooleanProperty("rule_inference_conservative");
 
     // Implementation details
-    TRANSFORM_OPTIMIZATION = Boolean.parseBoolean(props.getProperty("transform_optimization"));
-    TRANSFORM_DEBUG = Boolean.parseBoolean(props.getProperty("transform_debug"));
-    ITERATION_ANALYSIS = Boolean.parseBoolean(props.getProperty("iteration_analysis"));
+    TRANSFORM_OPTIMIZATION = props.getBooleanProperty("transform_optimization");
+    TRANSFORM_DEBUG = props.getBooleanProperty("transform_debug");
+    ITERATION_ANALYSIS = props.getBooleanProperty("iteration_analysis");
 
-    WEIGHTED_TRANSFORMS = Boolean.parseBoolean(props.getProperty("weighted_transforms"));
-    WEIGHTED_AFFIXES = Boolean.parseBoolean(props.getProperty("weighted_affixes"));
+    WEIGHTED_TRANSFORMS = props.getBooleanProperty("weighted_transforms");
+    WEIGHTED_AFFIXES = props.getBooleanProperty("weighted_affixes");
 
     // Compounding aggressiveness controls
     Compounding.TRANSFORM_RELATIONS =
-        TRANSFORM_RELATIONS = Boolean.parseBoolean(props.getProperty("transform_relations"));
-    ANALYZE_SIMPLEX_WORDS =
-        Boolean.parseBoolean(props.getProperty("allow_unmod_simplex_word_analysis"));
+        TRANSFORM_RELATIONS = props.getBooleanProperty("transform_relations");
+    ANALYZE_SIMPLEX_WORDS = props.getBooleanProperty("allow_unmod_simplex_word_analysis");
+  }
+
+  private static class CheckedProperties extends Properties {
+    String getCheckedProperty(final String key) throws PropertyException {
+      final String prop = super.getProperty(key);
+      if (prop == null) {
+        throw new PropertyException("Missing required property " + key);
+      }
+      return prop;
+    }
+
+    int getIntProperty(final String key) throws PropertyException {
+      final String prop = getCheckedProperty(key);
+      try {
+        return Integer.parseInt(prop);
+      } catch (NumberFormatException e) {
+        throw new PropertyException(
+            String.format("Integer property %s has invalid value '%s'", key, prop));
+      }
+    }
+
+    double getDoubleProperty(final String key) throws PropertyException {
+      final String prop = getCheckedProperty(key);
+      try {
+        return Double.parseDouble(prop);
+      } catch (NumberFormatException e) {
+        throw new PropertyException(
+            String.format("Floating-point property %s has invalid value '%s'", key, prop));
+      }
+    }
+
+    boolean getBooleanProperty(final String key) throws PropertyException {
+      final String prop = getCheckedProperty(key);
+      // We explicitly check for true/false since parseBoolean returns true for "true" and false for
+      // every other non-null string.
+      if (prop.equalsIgnoreCase("true") || prop.equalsIgnoreCase("false")) {
+        return Boolean.parseBoolean(prop);
+      } else {
+        throw new PropertyException(
+            String.format("Boolean property %s has invalid value '%s'", key, prop));
+      }
+    }
+  }
+
+  private static class PropertyException extends IOException {
+    PropertyException(String message) {
+      super(message);
+    }
+
+    PropertyException(String message, Throwable cause) {
+      super(message, cause);
+    }
+
+    PropertyException(Throwable cause) {
+      super(cause);
+    }
   }
 }

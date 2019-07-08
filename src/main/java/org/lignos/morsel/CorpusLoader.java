@@ -66,7 +66,7 @@ public class CorpusLoader {
         if (word != null) {
           // Add the word, print a warning if it's a duplicate
           if (!lex.addWord(word)) {
-            System.err.println("Warning: Duplicate word in wordlist: " + word.getText());
+            System.err.println("WARNING: Duplicate word in wordlist: " + word.getText());
             continue;
           }
 
@@ -76,7 +76,7 @@ public class CorpusLoader {
         } else {
           throw new IOException(
               String.format(
-                  "Could not parse line %d of wordlist file containing text:\n%s", lineNum, line));
+                  "Could not parse line %d of wordlist file containing text: '%s'", lineNum, line));
         }
       }
     }

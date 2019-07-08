@@ -35,4 +35,5 @@ allow_unmod_simplex_word_analysis = false
 
 # Implementation miscellanea
 transform_optimization = true
+transform_debug = false
 iteration_analysis = false
