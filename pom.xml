@@ -63,6 +63,9 @@
           <descriptorRefs>
             <descriptorRef>jar-with-dependencies</descriptorRef>
           </descriptorRefs>
+          <finalName>morsel</finalName>
+          <appendAssemblyId>false</appendAssemblyId>
+          <attach>false</attach>
         </configuration>
         <executions>
           <execution>

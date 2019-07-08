@@ -31,7 +31,7 @@ my Morpho Challenge 2010 paper (BibTeX information below).
 
 Once you've got the dependencies installed, you can simply run `mvn
 package` in the root of the repository and it will fetch dependencies
-and build the jar.
+and build the jar. The output jar will be located at `target/morsel.jar`.
 
 ## Taking it for a spin
 You run MORSEL by running the jar and providing:
@@ -69,7 +69,7 @@ For example, if you want to run on the Brown corpus wordlist, write
 the analysis to `out.txt`, write the log to `log.txt`, and use the
 conservative parameter set do the following:
 
-`java -jar target/morsel-1.0-SNAPSHOT-jar-with-dependencies.jar data/test/brown_wordlist.txt out.txt params/conservative.txt > log.txt`
+`java -jar target/morsel.jar data/test/brown_wordlist.txt out.txt params/conservative.txt > log.txt`
 
 Note that in the example above, redirecting the log to file is
 handled by the shell; MORSEL writes the log to standard output and
