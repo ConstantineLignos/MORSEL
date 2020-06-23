@@ -673,12 +673,12 @@ public class MorphLearner {
 
       // If both ratios are zero count this as OK
       if (baseOverlap + stemOverlap == 0) {
-        System.out.println("Overlap Ratio: 0/0");
+        System.out.println("Overlap Ratio: undefined (no base or stem overlap)");
         overlapRatio = 0;
       }
       // If only the base is 0, make sure this is rejected
       else if (baseOverlap == 0) {
-        System.out.println("Overlap ratio: " + baseOverlap + "/0");
+        System.out.println("Overlap ratio: undefined (no base overlap, but stem overlap of " + stemOverlap + ")");
         overlapRatio = OVERLAP_THRESHOLD + 1.0;
       } else {
         overlapRatio = (double) stemOverlap / (double) baseOverlap;
