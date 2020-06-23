@@ -24,8 +24,8 @@ my Morpho Challenge 2010 paper (BibTeX information below).
 
 ## Requirements
 
-- Java JDK 1.8 (may work with newer versions, but has not been tested)
-- Maven (tested with 3.5.2)
+- Java JDK 11 (may work with newer versions, but has not been tested)
+- Maven (tested with 3.6.3, but older and newer versions will likely work)
 
 ## Building
 
@@ -74,7 +74,7 @@ For example, if you want to run on the Brown corpus wordlist, write
 the analysis to `out.txt`, write the log to `log.txt`, and use the
 conservative parameter set do the following:
 
-`java -jar target/morsel.jar data/test/brown_wordlist.txt out.txt params/conservative.txt > log.txt`
+`java -jar target/morsel.jar data/test/brown_wordlist.txt params/dev.txt out.txt > log.txt`
 
 Note that in the example above, redirecting the log to file is
 handled by the shell; MORSEL writes the log to standard output and
