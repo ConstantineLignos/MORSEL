@@ -297,8 +297,7 @@ public class Lexicon {
 
     // Get the list of affixes, sort them, truncate them
     List<Affix> orderedAffixes = new ArrayList<>(getAffixMap(type).values());
-    Collections.sort(
-        orderedAffixes, Collections.reverseOrder(new WeightedUnmodTypeCountComparator()));
+    orderedAffixes.sort(Collections.reverseOrder(new WeightedUnmodTypeCountComparator()));
     return Util.truncateCollection(orderedAffixes, n);
   }
 
