@@ -130,11 +130,8 @@ public class MorphLearner {
     try {
       this.setParams(paramPath);
     } catch (IOException e) {
-      System.err.println(
-          ERROR_PREFIX
-              + String.format("Could not parse parameter file %s: %s", paramPath, e.getMessage()));
-      // Exit code 74: input/output error
-      System.exit(74);
+      throw new IOException(String.format("Could not parse parameter file %s due to the following error: %s",
+              paramPath, e.getMessage()), e);
     }
 
     System.out.println("Loading wordlist from " + wordlistPath + " using charset " + charset);
