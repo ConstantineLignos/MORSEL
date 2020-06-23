@@ -139,9 +139,12 @@ Some relevant facts about the design of MORSEL:
 
 MORSEL's behavior is largely specified via the parameter file specified
 on the command line. Here is a description of the parameters used. For
-sensible defaults, see `params/conservative.txt`. Some of these
-parameters are difficult to understand without understanding the
-learning algorithm. I recommend you look at the following papers:
+sensible defaults for smaller vocabularies (e.g., the Brown corpus)
+see `params/dev.txt`. The conservative and aggressive parameters
+used for Morpho Challenge data are available in the `/params` folder
+as well. Some of these parameters are difficult to understand without
+understanding the learning algorithm. I recommend you look at the
+following papers:
 
 [A rule-based unsupervised morphology learning framework](http://lignos.org/papers/Lignos_etal_MC2009.pdf).
 Constantine Lignos, Erwin Chan, Mitchell P. Marcus, and Charles Yang

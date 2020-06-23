@@ -1,0 +1,39 @@
+# Iteration parameters
+max_iter = 50
+top_affixes = 50
+window_size = 10
+
+# Word scoring parameters
+frequent_type_threshold = 1
+frequent_prob_threshold = 0.000001
+
+# Transform scoring parameters
+reeval = true
+score_reeval = false
+doubling = true
+
+# Transform selection parameters
+type_threshold = 10
+overlap_stem_length = 4
+overlap_threshold = 5.0
+precision_threshold = 0.01
+
+# Weighting parameters
+weighted_transforms = true
+weighted_affixes = true
+
+# Preprocessing flags
+hyphenation = true
+compounding = true
+iter_compounding = false
+aggr_compounding = false
+
+# Inference flags
+rule_inference_conservative = true
+transform_relations = false
+allow_unmod_simplex_word_analysis = false
+
+# Implementation miscellanea
+transform_optimization = true
+transform_debug = false
+iteration_analysis = false
