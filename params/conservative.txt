@@ -30,6 +30,7 @@ aggr_compounding = false
 
 # Inference flags
 rule_inference_conservative = true
+allow_inferred_forms_as_derived = true
 transform_relations = false
 allow_unmod_simplex_word_analysis = false
 

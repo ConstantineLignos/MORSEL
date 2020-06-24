@@ -106,19 +106,19 @@ public class CompoundingTest extends TestCase {
     lex.moveWord(lex.getWord("sausage"), WordSet.BASE);
 
     List<Word> result = Compounding.getPrefixes("sausagesmarket", lex, false, filler, null, false);
-    assertTrue(result.contains(new Word("sausages", 0, false)));
-    assertTrue(result.contains(new Word("sausage", 0, false)));
+    assertTrue(result.contains(new Word("sausages", 0, false, false)));
+    assertTrue(result.contains(new Word("sausage", 0, false, false)));
     assertEquals(2, result.size());
 
     result = Compounding.getPrefixes("sausageymarket", lex, false, filler, null, false);
-    assertTrue(result.contains(new Word("sausage", 0, false)));
-    assertTrue(result.contains(new Word("sausagey", 0, false)));
+    assertTrue(result.contains(new Word("sausage", 0, false, false)));
+    assertTrue(result.contains(new Word("sausagey", 0, false, false)));
     assertEquals(2, result.size());
   }
 
   /** Do an end-to-end compounding test on a small lexicon without filler */
   public void testinferCompoundsQuick() {
-    Compounding.breakCompounds(lex, WordSet.UNMODELED, null, null, false, false, false, null);
+    Compounding.breakCompounds(lex, WordSet.UNMODELED, null, null, false, false, false, false, null);
     // Check that the analysis of applesauce is now compound and is APPLE
     // SAUCE instead of APPLES AUCE, which checks the frequency heuristic
     assertEquals("APPLE SAUCE", lex.getWord("applesauce").analyze());
@@ -127,7 +127,7 @@ public class CompoundingTest extends TestCase {
   /** Do an end-to-end compounding test on the Brown corpus without filler */
   public void testinferCompoundsBrown() throws IOException {
     lex = CorpusLoader.loadWordlist(Paths.get("data/test/brown_wordlist.txt"), CHARSET, false);
-    Compounding.breakCompounds(lex, WordSet.UNMODELED, null, null, false, false, false, null);
+    Compounding.breakCompounds(lex, WordSet.UNMODELED, null, null, false, false, false, false, null);
     // Check that the analysis of shorthand is now compound
     assertEquals("SHORT HAND", lex.getWord("shorthand").analyze());
   }
@@ -142,7 +142,7 @@ public class CompoundingTest extends TestCase {
     Transform agentive =
         new Transform(new Affix("", AffixType.SUFFIX), new Affix("er", AffixType.SUFFIX));
     agentive.addWordPair(lex.getWord("bake"), lex.getWord("baker"), true);
-    lex.moveTransformPairs(agentive, null, false, true, true);
+    lex.moveTransformPairs(agentive, null, false, true, true, false);
 
     // Add an add -s rule
     Transform plural =
@@ -153,7 +153,7 @@ public class CompoundingTest extends TestCase {
 
     // Now split the compounds
     Compounding.breakCompounds(
-        lex, WordSet.UNMODELED, learnedTransforms, null, false, false, false, null);
+        lex, WordSet.UNMODELED, learnedTransforms, null, false, false, false, false, null);
     // Check that the analysis of bakersfield is now compound with transforms
     // Since "bakers" isn't in the Brown corpus
     String result = lex.getWord("bakersfield").analyze();
@@ -176,7 +176,7 @@ public class CompoundingTest extends TestCase {
     List<Transform> learnedTransforms = new ArrayList<>();
     plural.addWordPair(lex.getWord("bake"), lex.getWord("bakes"), true);
     plural.addWordPair(lex.getWord("smack"), lex.getWord("smacks"), true);
-    lex.moveTransformPairs(plural, null, false, true, true);
+    lex.moveTransformPairs(plural, null, false, true, true, false);
     learnedTransforms.add(agentive);
     learnedTransforms.add(plural);
     learnedTransforms.add(ing);
@@ -200,11 +200,11 @@ public class CompoundingTest extends TestCase {
     Transform en =
         new Transform(new Affix("", AffixType.SUFFIX), new Affix("en", AffixType.SUFFIX));
     en.addWordPair(lex.getWord("haus"), lex.getWord("hausen"), false);
-    lex.moveTransformPairs(en, null, false, true, true);
+    lex.moveTransformPairs(en, null, false, true, true, false);
     List<Transform> learnedTransforms = new ArrayList<>();
     learnedTransforms.add(en);
     Compounding.breakCompounds(
-        lex, WordSet.UNMODELED, learnedTransforms, null, false, false, false, null);
+        lex, WordSet.UNMODELED, learnedTransforms, null, false, false, false, false, null);
 
     // Check that the analysis is correct
     String result = lex.getWord("mainhausen").analyze();
@@ -225,7 +225,7 @@ public class CompoundingTest extends TestCase {
     List<Transform> learnedTransforms = new ArrayList<>();
     learnedTransforms.add(er);
     Compounding.breakCompounds(
-        lex, WordSet.UNMODELED, learnedTransforms, null, false, false, false, null);
+        lex, WordSet.UNMODELED, learnedTransforms, null, false, false, false, false, null);
 
     // Check that the analysis is correct
     String result = lex.getWord("mainhauser").analyze();

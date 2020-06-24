@@ -39,7 +39,8 @@ public class Word {
   private final Set<Affix> suffixes;
   private final Set<TransformPair>
       transformPairs; // All possible transforms the word is in and what role it has
-  private final boolean analyze; // Use to block inferred words from analysis
+  private final boolean analyze; // Use to block words from analysis
+  private final boolean inferred; // Use to mark words as inferred
   List<Word> componentWords; // Roots of the word if it is a compound
   private long count;
   private double freq;
@@ -53,16 +54,17 @@ public class Word {
 
   /**
    * Create a new word
-   *
    * @param text the text of the word
    * @param count its count in the input
-   * @param analyze whether it should be analyzed
+   * @param shouldAnalyze whether it should be analyzed
+   * @param isInferred whether it was inferred
    */
-  public Word(String text, long count, boolean analyze) {
+  public Word(String text, long count, boolean shouldAnalyze, boolean isInferred) {
     this.text = text;
     this.count = count;
     this.freq = -1.0F; // Indicator that it has not been computed
-    this.analyze = analyze;
+    this.analyze = shouldAnalyze;
+    this.inferred = isInferred;
     set = WordSet.UNMODELED;
 
     base = root = null;
@@ -133,6 +135,11 @@ public class Word {
   /** @return whether this word should be analyzed */
   public boolean shouldAnalyze() {
     return analyze;
+  }
+
+  /** @return whether this word was inferred */
+  public boolean isInferred() {
+    return inferred;
   }
 
   /** @return the count of the word */

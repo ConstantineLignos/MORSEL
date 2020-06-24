@@ -16,11 +16,13 @@
 package org.lignos.morsel.transform;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+
 import org.lignos.morsel.Util;
 import org.lignos.morsel.lexicon.Lexicon;
 import org.lignos.morsel.lexicon.Word;
@@ -80,15 +82,16 @@ public class Transform {
    * @param lex the lexicon
    * @param reEval as used by scoreWord
    * @param doubling as used by scoreWord
+   * @param deriveInferredForms as used by scoreWord
    */
   public static void scoreTransform(
-      Transform trans, Lexicon lex, boolean reEval, boolean doubling) {
+      Transform trans, Lexicon lex, boolean reEval, boolean doubling, boolean deriveInferredForms) {
     // Get the words from the first affix of the transform
     Set<Word> affix1Words = trans.getAffix1().getWordSet();
 
     // Check each word
     for (Word base : affix1Words) {
-      scoreWord(trans, base, lex, reEval, doubling);
+      scoreWord(trans, base, lex, reEval, doubling, deriveInferredForms);
     }
   }
 
@@ -100,11 +103,12 @@ public class Transform {
    * @param lex the lexicon
    * @param reEval whether derived forms may be used as bases for new transforms
    * @param doubling whether orthographic accommodation can be performed
+   * @param deriveInferredForms whether inferred forms can be derived
    * @return whether the word participates in the transform
    */
   @SuppressWarnings("ReferenceEquality")
   public static boolean scoreWord(
-      Transform trans, Word base, Lexicon lex, boolean reEval, boolean doubling) {
+          Transform trans, Word base, Lexicon lex, boolean reEval, boolean doubling, boolean deriveInferredForms) {
 
     // If the base is illegal, skip it
     if (!isLegalBaseSet(base.getSet(), reEval)) {
@@ -114,7 +118,7 @@ public class Transform {
     // Extract fields
     Affix affix1 = trans.getAffix1();
     Affix affix2 = trans.getAffix2();
-    WordSet baseSet = base.getSet();
+    WordSet baseWordSet = base.getSet();
 
     // Make the normal derived form
     String stem = makeStem(base, affix1);
@@ -123,9 +127,7 @@ public class Transform {
     Word derived = lex.getWord(makeDerived(stem, affix2, false, false));
 
     // If we got a word and the pair is legal, add it and move on
-    if (derived != null
-        && isLegalPairSets(baseSet, derived.getSet(), reEval)
-        && affix2.hasWord(derived)) {
+    if (isLegalDerived(derived, baseWordSet, affix2, reEval, deriveInferredForms)) {
       trans.addWordPair(base, derived, false);
       return true;
     }
@@ -137,9 +139,7 @@ public class Transform {
       derived = lex.getWord(makeDerived(stem, affix2, true, false));
 
       // If we got a word and the pair is legal, add it and move on
-      if (derived != null
-          && affix2.hasWord(derived)
-          && isLegalPairSets(baseSet, derived.getSet(), reEval)) {
+      if (isLegalDerived(derived, baseWordSet, affix2, reEval, deriveInferredForms)) {
         trans.addWordPair(base, derived, true);
         return true;
       }
@@ -152,11 +152,8 @@ public class Transform {
 
         // If we got a word, the derived form is not the same as the base,
         // and the pair is legal, add it and move on
-        if (derived != null
-            // Reference equality is correct here
-            && derived != base
-            && isLegalPairSets(baseSet, derived.getSet(), reEval)
-            && affix2.hasWord(derived)) {
+        if (derived != base  // Reference equality is correct here
+                && isLegalDerived(derived, baseWordSet, affix2, reEval, deriveInferredForms)) {
           trans.addWordPair(base, derived, true);
           return true;
         }
@@ -165,11 +162,24 @@ public class Transform {
     return false;
   }
 
+  private static boolean isLegalDerived(
+          Word derived, WordSet baseWordSet, Affix affix2, boolean reEval, boolean deriveInferredForms) {
+    return derived != null
+            // The derived form is not inferred or we're allowed to derive inferred forms
+            && (!derived.isInferred() || deriveInferredForms)
+            // Is the combination of word sets between base and derived allowed?
+            && isLegalPairSets(baseWordSet, derived.getSet(), reEval)
+            // Does the derived word actually have this affix? This is false in cases like "feed" for the affix "ed"
+            // if the minimum stem length is > 2, since although it appears to end in -ed it is not marked as having
+            // that affix.
+            && affix2.hasWord(derived);
+  }
+
   /**
    * Determine whether the set of a word allows it to be a base. If reEval is true, anything can be
    * a base. Otherwise, derived forms are not allowed to be bases.
    *
-   * @param set the word set
+   * @param set    the word set
    * @param reEval whether to allow derived forms to serve as bases
    * @return whether the set allows for the word to be a base
    */

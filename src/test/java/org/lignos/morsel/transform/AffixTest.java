@@ -25,42 +25,42 @@ public class AffixTest extends TestCase {
 
   /** Test getAffixes for suffixes of a long word */
   public void testBasicSuffixes() {
-    Word w = new Word("hamburger", 1, true);
+    Word w = new Word("hamburger", 1, true, false);
     String[] expected = {"", "urger", "rger", "ger", "er", "r"};
     assertArrayEquals(expected, Affix.getAffixes(w, AffixType.SUFFIX));
   }
 
   /** Test getAffixes for suffixes of a short word */
   public void testShortSuffixes() {
-    Word w = new Word("ha", 1, true);
+    Word w = new Word("ha", 1, true, false);
     String[] expected = {};
     assertArrayEquals(expected, Affix.getAffixes(w, AffixType.SUFFIX));
   }
 
   /** Test getAffixes for suffixes of a word of the minimum stem length */
   public void testOnlyNullSuffix() {
-    Word w = new Word("ham", 1, true);
+    Word w = new Word("ham", 1, true, false);
     String[] expected = {""};
     assertArrayEquals(expected, Affix.getAffixes(w, AffixType.SUFFIX));
   }
 
   /** Test getAffixes for prefixes of a long word */
   public void testBasicPrefixes() {
-    Word w = new Word("hamburger", 1, true);
+    Word w = new Word("hamburger", 1, true, false);
     String[] expected = {"", "h", "ha", "ham", "hamb", "hambu"};
     assertArrayEquals(expected, Affix.getAffixes(w, AffixType.PREFIX));
   }
 
   /** Test getAffixes for prefixes of a short word */
   public void testShortPrefixes() {
-    Word w = new Word("ha", 1, true);
+    Word w = new Word("ha", 1, true, false);
     String[] expected = {};
     assertArrayEquals(expected, Affix.getAffixes(w, AffixType.PREFIX));
   }
 
   /** Test getAffixes for prefixes of a word of the minimum stem length */
   public void testOnlyNullPrefix() {
-    Word w = new Word("ham", 1, true);
+    Word w = new Word("ham", 1, true, false);
     String[] expected = {""};
     assertArrayEquals(expected, Affix.getAffixes(w, AffixType.PREFIX));
   }

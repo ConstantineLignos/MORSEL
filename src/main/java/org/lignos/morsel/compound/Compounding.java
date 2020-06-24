@@ -54,6 +54,7 @@ public class Compounding {
    * @param opt whether optimization is on
    * @param reEval whether transform reevaluation is on
    * @param doubling whether doubling is on
+   * @param deriveInferredForms whether inferred forms can be derived
    * @param transInf the inferred relationships between transforms
    * @return the number of compounds that were broken
    */
@@ -65,6 +66,7 @@ public class Compounding {
       boolean opt,
       boolean reEval,
       boolean doubling,
+      boolean deriveInferredForms,
       TransformInference transInf) {
     // Count of split compounds
     int nCompounds = 0;
@@ -79,8 +81,10 @@ public class Compounding {
     Map<Transform, Set<WordPair>> transformPairs = new Object2ObjectOpenHashMap<>();
     // Loop over each word in the appropriate set and try to break it
     for (Word word : lex.getSetWords(set)) {
-      // Skip words that are already compounds or are too short
-      if (word.isCompound() || word.length() < MIN_COMPOUND_LENGTH) continue;
+      // Skip words that are already compounds, too short, or inferred (if not allowed)
+      if (word.isCompound() || word.length() < MIN_COMPOUND_LENGTH || (word.isInferred() && ! deriveInferredForms)) {
+        continue;
+      }
 
       // Get the best compounding hypothesis for each word
       Hypothesis bestHyp = breakWord(word, filler, lex, transInf, doubling);
@@ -141,7 +145,7 @@ public class Compounding {
       }
 
       // Then have the lexicon move all the pairs
-      lex.moveWordPairs(e.getKey(), hypTransforms, opt, reEval, doubling, e.getValue());
+      lex.moveWordPairs(e.getKey(), hypTransforms, opt, reEval, doubling, deriveInferredForms, e.getValue());
     }
 
     return nCompounds;
@@ -310,7 +314,7 @@ public class Compounding {
           // This word will be added to the lexicon later if the hypothesized
           // compound is accepted
           long count = duplicate ? dupeWord.getCount() : lex.getWord(prefix).getCount() / 2;
-          Word prefixWord = new Word(result.derivedText, count, false);
+          Word prefixWord = new Word(result.derivedText, count, false, false);
 
           // Mark as duplicate if needed
           if (duplicate) {

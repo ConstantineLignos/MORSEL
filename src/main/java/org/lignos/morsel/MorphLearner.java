@@ -89,6 +89,7 @@ public class MorphLearner {
   private boolean ITER_COMPOUNDING;
   private boolean AGGR_COMPOUNDING;
   private boolean BASE_INFERENCE;
+  private boolean DERIVE_INFERRED_FORMS;
   private boolean TRANSFORM_OPTIMIZATION;
   private boolean TRANSFORM_DEBUG;
   private boolean ITERATION_ANALYSIS;
@@ -389,25 +390,23 @@ public class MorphLearner {
       // Score the transforms
       // Always pass false for doubling to ensure that rules cannot get high scores solely by using
       // orthographic accommodation.
-      // Reeval is set by the SCORE_REEVAL parameter
       final boolean doubling = false;
-      final boolean reeval = SCORE_REEVAL;
       if (TRANSFORM_OPTIMIZATION) {
         // If this is the first iteration, score from scratch
         if (i == 0) {
           for (Transform trans : hypTransforms) {
-            Transform.scoreTransform(trans, lex, reeval, doubling);
+            Transform.scoreTransform(trans, lex, SCORE_REEVAL, doubling, DERIVE_INFERRED_FORMS);
           }
         }
         // Otherwise, incrementally score, using what we had from last round
         else {
-          incrementalScoreTransforms(hypTransforms, indexedTransforms, lex, reeval, doubling);
+          incrementalScoreTransforms(hypTransforms, indexedTransforms, lex, SCORE_REEVAL, doubling, DERIVE_INFERRED_FORMS);
         }
         // Update indexedTransforms for the next round
         indexedTransforms = indexTransforms(hypTransforms);
       } else {
         for (Transform trans : hypTransforms) {
-          Transform.scoreTransform(trans, lex, reeval, doubling);
+          Transform.scoreTransform(trans, lex, SCORE_REEVAL, doubling, DERIVE_INFERRED_FORMS);
         }
       }
 
@@ -437,14 +436,14 @@ public class MorphLearner {
       if (REEVAL_DERIVATION) {
         final Transform reEvalTransform =
             new Transform(bestTransform.getAffix1(), bestTransform.getAffix2());
-        Transform.scoreTransform(reEvalTransform, lex, REEVAL_DERIVATION, USE_DOUBLING);
+        Transform.scoreTransform(reEvalTransform, lex, REEVAL_DERIVATION, USE_DOUBLING, DERIVE_INFERRED_FORMS);
         bestTransform = reEvalTransform;
       }
 
       // Accept the best transform
       System.out.println("Learned " + bestTransform.toVerboseString());
       // Reeval should be false for moving the words
-      lex.moveTransformPairs(bestTransform, hypTransforms, TRANSFORM_OPTIMIZATION, false, doubling);
+      lex.moveTransformPairs(bestTransform, hypTransforms, TRANSFORM_OPTIMIZATION, false, doubling, DERIVE_INFERRED_FORMS);
 
       // Mark learned after words have been moved
       bestTransform.markLearned();
@@ -475,6 +474,7 @@ public class MorphLearner {
             hypTransforms,
             REEVAL_DERIVATION,
             USE_DOUBLING,
+            DERIVE_INFERRED_FORMS,
             TRANSFORM_OPTIMIZATION,
             baseLog);
       }
@@ -491,6 +491,7 @@ public class MorphLearner {
                 TRANSFORM_OPTIMIZATION,
                 REEVAL_DERIVATION,
                 USE_DOUBLING,
+                DERIVE_INFERRED_FORMS,
                 transInf);
         System.out.println("Broke " + nCompounds + " compounds in base");
         if (AGGR_COMPOUNDING) {
@@ -503,6 +504,7 @@ public class MorphLearner {
                   TRANSFORM_OPTIMIZATION,
                   REEVAL_DERIVATION,
                   USE_DOUBLING,
+                  DERIVE_INFERRED_FORMS,
                   transInf);
           System.out.println("Broke " + nCompounds + " compounds in unmodeled");
         }
@@ -550,6 +552,7 @@ public class MorphLearner {
               false,
               REEVAL_DERIVATION,
               USE_DOUBLING,
+              DERIVE_INFERRED_FORMS,
               transInf);
       System.out.println("Broke " + nCompounds + " compounds in base");
       System.out.println(memoryStatus());
@@ -562,6 +565,7 @@ public class MorphLearner {
               false,
               REEVAL_DERIVATION,
               USE_DOUBLING,
+              DERIVE_INFERRED_FORMS,
               transInf);
       System.out.println("Broke " + nCompounds + " compounds in unmodeled");
     }
@@ -612,7 +616,8 @@ public class MorphLearner {
       Map<String, Transform> indexedTransforms,
       Lexicon lex,
       boolean reEval,
-      boolean doubling) {
+      boolean doubling,
+      boolean deriveInferredForms) {
     // If the transform is in the index, reuse it
     for (int i = 0; i < hypTransforms.size(); i++) {
       Transform hypTransform = hypTransforms.get(i);
@@ -622,7 +627,7 @@ public class MorphLearner {
       if (scoredTransform != null) {
         hypTransforms.set(i, scoredTransform);
       } else {
-        Transform.scoreTransform(hypTransform, lex, reEval, doubling);
+        Transform.scoreTransform(hypTransform, lex, reEval, doubling, deriveInferredForms);
       }
     }
   }
@@ -955,6 +960,7 @@ public class MorphLearner {
 
     // Rule inference flags
     BASE_INFERENCE = props.getBooleanProperty("rule_inference_conservative");
+    DERIVE_INFERRED_FORMS = props.getBooleanProperty("allow_inferred_forms_as_derived");
 
     // Implementation details
     TRANSFORM_OPTIMIZATION = props.getBooleanProperty("transform_optimization");

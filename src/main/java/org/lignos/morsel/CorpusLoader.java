@@ -111,7 +111,7 @@ public class CorpusLoader {
     // Parse the second item as a count
     try {
       long count = Long.parseLong(parts[0]);
-      return new Word(parts[1], count, true);
+      return new Word(parts[1], count, true, false);
     } catch (NumberFormatException e) {
       // Return null if the string could not be parsed
       return null;

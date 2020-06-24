@@ -16,7 +16,7 @@ doubling = true
 type_threshold = 10
 overlap_stem_length = 4
 overlap_threshold = 5.0
-precision_threshold = 0.01
+precision_threshold = 0.1
 
 # Weighting parameters
 weighted_transforms = true
@@ -30,6 +30,7 @@ aggr_compounding = false
 
 # Inference flags
 rule_inference_conservative = true
+allow_inferred_forms_as_derived = false
 transform_relations = false
 allow_unmod_simplex_word_analysis = false
 

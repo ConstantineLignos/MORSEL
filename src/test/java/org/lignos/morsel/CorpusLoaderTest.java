@@ -41,7 +41,7 @@ public class CorpusLoaderTest extends TestCase {
 
   /** Test parsing a single line into a Word object. */
   public void testparseWordlistEntry() {
-    assertEquals(new Word("at", 400, true), CorpusLoader.parseWordlistEntry("400 at"));
+    assertEquals(new Word("at", 400, true, false), CorpusLoader.parseWordlistEntry("400 at"));
   }
 
   /** Test that counts bigger than MAX_INT do not cause overflow. */

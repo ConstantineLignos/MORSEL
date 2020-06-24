@@ -358,13 +358,15 @@ public class Lexicon {
    * @param opt whether to optimize performance by maintaining other transforms
    * @param reEval as used by scoreWord
    * @param doubling as used by scoreWord
+   * @param deriveInferredForms as used by scoreWord
    */
   public void moveTransformPairs(
       Transform learnedTransform,
       List<Transform> hypTransforms,
       boolean opt,
       boolean reEval,
-      boolean doubling) {
+      boolean doubling,
+      boolean deriveInferredForms) {
     // Select the list of moved words based on whether the transform
     // has already been learned or not
     Set<WordPair> pairs =
@@ -373,7 +375,7 @@ public class Lexicon {
             : learnedTransform.getWordPairs();
 
     // Call moveWordPairs to do all the work
-    moveWordPairs(learnedTransform, hypTransforms, opt, reEval, doubling, pairs);
+    moveWordPairs(learnedTransform, hypTransforms, opt, reEval, doubling, deriveInferredForms, pairs);
   }
 
   /**
@@ -384,6 +386,7 @@ public class Lexicon {
    * @param opt whether to optimize performance by maintaining other transforms
    * @param reEval as used by scoreWord
    * @param doubling as used by scoreWord
+   * @param deriveInferredForms as used by scoreWord
    * @param pairs the pairs of words to operate on
    */
   public void moveWordPairs(
@@ -392,6 +395,7 @@ public class Lexicon {
       boolean opt,
       boolean reEval,
       boolean doubling,
+      boolean deriveInferredForms,
       Set<WordPair> pairs) {
     // Keep track of words that moved based on the sets
     List<Word> unmodBaseWords = new ArrayList<>();
@@ -503,7 +507,7 @@ public class Lexicon {
     removeWordsTransforms(unmodDerivedWords);
 
     // Now, rescore the new bases for each transform
-    scoreWordsTransforms(unmodBaseWords, hypTransforms, reEval, doubling);
+    scoreWordsTransforms(unmodBaseWords, hypTransforms, reEval, doubling, deriveInferredForms);
   }
 
   /**
@@ -513,15 +517,17 @@ public class Lexicon {
    * @param transforms the transforms to check
    * @param reEval whether to allow words to change word sets
    * @param doubling as used by scoreWord
+   * @param deriveInferredForms as used by scoreWord
    */
   public void scoreWordsTransforms(
-      Collection<Word> words, Collection<Transform> transforms, boolean reEval, boolean doubling) {
+      Collection<Word> words, Collection<Transform> transforms, boolean reEval, boolean doubling,
+      boolean deriveInferredForms) {
     // Score each word for each transform
     for (Word word : words) {
       for (Transform transform : transforms) {
         // Score only if the transform applies
         if (word.hasAffix(transform.getAffix1())) {
-          Transform.scoreWord(transform, word, this, reEval, doubling);
+          Transform.scoreWord(transform, word, this, reEval, doubling, deriveInferredForms);
         }
       }
     }
@@ -584,7 +590,7 @@ public class Lexicon {
           Word componentWord = lex.get(componentText);
           if (componentWord == null) {
             // Use the frequency of the original
-            componentWord = new Word(componentText, w.getCount(), false);
+            componentWord = new Word(componentText, w.getCount(), false, false);
             addWord(componentWord);
           } else {
             // If the word has been seen before, increment its

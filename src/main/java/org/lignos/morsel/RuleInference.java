@@ -60,7 +60,7 @@ public class RuleInference {
         if (inferredBases.contains(baseText)) {
           // Create a new word using the token count of the word
           // that ended up promoting it
-          Word newWord = new Word(baseText, w.getCount(), false);
+          Word newWord = new Word(baseText, w.getCount(), false, true);
           newWords.add(newWord);
         } else {
           // Otherwise, infer it
@@ -80,6 +80,7 @@ public class RuleInference {
    * @param hypTransforms the hypothesized transforms
    * @param reEval as used by scoreWord
    * @param doubling as used by scoreWord
+   * @param deriveInferredForms as used by scoreWord
    * @param optimization as used by moveTransformPairs
    * @param out the destination for any printing to the log
    */
@@ -90,6 +91,7 @@ public class RuleInference {
       List<Transform> hypTransforms,
       boolean reEval,
       boolean doubling,
+      boolean deriveInferredForms,
       boolean optimization,
       PrintWriter out) {
     int newBaseCount = 0;
@@ -109,7 +111,7 @@ public class RuleInference {
       // to it, counting new pairs
       for (Transform trans : learnedTransforms) {
         if (newBase.hasAffix(trans.getAffix1())
-            && Transform.scoreWord(trans, newBase, lex, reEval, doubling)) {
+            && Transform.scoreWord(trans, newBase, lex, reEval, doubling, deriveInferredForms)) {
           newPairCount++;
         }
       }
@@ -123,7 +125,7 @@ public class RuleInference {
     // Move all the words for each transform
     if (newPairCount > 0) {
       for (Transform trans : learnedTransforms) {
-        lex.moveTransformPairs(trans, hypTransforms, optimization, reEval, doubling);
+        lex.moveTransformPairs(trans, hypTransforms, optimization, reEval, doubling, deriveInferredForms);
       }
     }
 
@@ -134,7 +136,7 @@ public class RuleInference {
         for (Transform trans : hypTransforms) {
           // Reference equality is correct here
           if (trans != newestTransform && newBase.hasAffix(trans.getAffix1())) {
-            Transform.scoreWord(trans, newBase, lex, reEval, doubling);
+            Transform.scoreWord(trans, newBase, lex, reEval, doubling, deriveInferredForms);
           }
         }
       }
