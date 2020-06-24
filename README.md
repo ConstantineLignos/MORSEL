@@ -263,7 +263,7 @@ is the the only useful main function in MORSEL.
 
 Enjoy!
 
-Constantine Lignos
-Institute for Research in Cognitive Science
-Computer and Information Science Department
+Constantine Lignos  
+Institute for Research in Cognitive Science  
+Computer and Information Science Department  
 University of Pennsylvania
