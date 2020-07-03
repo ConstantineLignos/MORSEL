@@ -11,6 +11,8 @@ frequent_prob_threshold = 0.000001
 reeval = true
 score_reeval = false
 doubling = true
+allow_inferred_forms_as_derived = true
+transform_length_weighting_exponent = 1.0
 
 # Transform selection parameters
 type_threshold = 10
@@ -30,7 +32,6 @@ aggr_compounding = false
 
 # Inference flags
 rule_inference_conservative = true
-allow_inferred_forms_as_derived = false
 transform_relations = false
 allow_unmod_simplex_word_analysis = false
 

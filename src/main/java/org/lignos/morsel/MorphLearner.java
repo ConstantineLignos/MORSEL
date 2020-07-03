@@ -390,23 +390,24 @@ public class MorphLearner {
       // Score the transforms
       // Always pass false for doubling to ensure that rules cannot get high scores solely by using
       // orthographic accommodation.
-      final boolean doubling = false;
+      final boolean scoreDoubling = false;
+      final boolean scoreInferredForms = false;
       if (TRANSFORM_OPTIMIZATION) {
         // If this is the first iteration, score from scratch
         if (i == 0) {
           for (Transform trans : hypTransforms) {
-            Transform.scoreTransform(trans, lex, SCORE_REEVAL, doubling, DERIVE_INFERRED_FORMS);
+            Transform.scoreTransform(trans, lex, SCORE_REEVAL, scoreDoubling, scoreInferredForms);
           }
         }
         // Otherwise, incrementally score, using what we had from last round
         else {
-          incrementalScoreTransforms(hypTransforms, indexedTransforms, lex, SCORE_REEVAL, doubling, DERIVE_INFERRED_FORMS);
+          incrementalScoreTransforms(hypTransforms, indexedTransforms, lex, SCORE_REEVAL, scoreDoubling, scoreInferredForms);
         }
         // Update indexedTransforms for the next round
         indexedTransforms = indexTransforms(hypTransforms);
       } else {
         for (Transform trans : hypTransforms) {
-          Transform.scoreTransform(trans, lex, SCORE_REEVAL, doubling, DERIVE_INFERRED_FORMS);
+          Transform.scoreTransform(trans, lex, SCORE_REEVAL, scoreDoubling, scoreInferredForms);
         }
       }
 
@@ -433,9 +434,11 @@ public class MorphLearner {
       System.out.println("Selected " + bestTransform.toString());
 
       // Re-evaluate the best transform
+      // TODO: Maybe REEVAL_DERIVATION || USE_DOUBLING || DERIVE_INFERRED_FORMS
       if (REEVAL_DERIVATION) {
         final Transform reEvalTransform =
             new Transform(bestTransform.getAffix1(), bestTransform.getAffix2());
+        // TODO: Doubling might not work if REEVAL_DERIVATION is false, since this is the only place doubling is allowed
         Transform.scoreTransform(reEvalTransform, lex, REEVAL_DERIVATION, USE_DOUBLING, DERIVE_INFERRED_FORMS);
         bestTransform = reEvalTransform;
       }
@@ -443,7 +446,8 @@ public class MorphLearner {
       // Accept the best transform
       System.out.println("Learned " + bestTransform.toVerboseString());
       // Reeval should be false for moving the words
-      lex.moveTransformPairs(bestTransform, hypTransforms, TRANSFORM_OPTIMIZATION, false, doubling, DERIVE_INFERRED_FORMS);
+      // Doubling is set false here since we're updating scoring
+      lex.moveTransformPairs(bestTransform, hypTransforms, TRANSFORM_OPTIMIZATION, false, scoreDoubling, scoreInferredForms);
 
       // Mark learned after words have been moved
       bestTransform.markLearned();
@@ -945,6 +949,7 @@ public class MorphLearner {
     REEVAL_DERIVATION = props.getBooleanProperty("reeval");
     SCORE_REEVAL = props.getBooleanProperty("score_reeval");
     USE_DOUBLING = props.getBooleanProperty("doubling");
+    Transform.WEIGHTING_EXPONENT = props.getDoubleProperty("transform_length_weighting_exponent");
 
     // Transform selection parameters
     TYPE_THRESHOLD = props.getIntProperty("type_threshold");

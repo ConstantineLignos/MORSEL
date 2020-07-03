@@ -33,7 +33,9 @@ import org.lignos.morsel.lexicon.WordSet;
  * suffix from characters (or null) to other characters (or null).
  */
 public class Transform {
+  public static double WEIGHTING_EXPONENT = 1.0;
   private static final int N_SAMPLES = 3;
+
   private final Affix affix1;
   private final Affix affix2;
   private final Set<WordPair> derivationPairs;
@@ -442,10 +444,12 @@ public class Transform {
     return typeCount;
   }
 
-  /** @return the weighted type count of the affix */
+  /** @return the weighted type count of the affix, <pre>type_count * length^weighting_exponent</pre> */
   public int getWeightedTypeCount() {
     // If the length is zero, count it as one
-    return typeCount * Math.max(length(), 1);
+    final int length = Math.max(length(), 1);
+    final double weight = Math.pow(length, WEIGHTING_EXPONENT);
+    return (int) Math.round(typeCount * weight);
   }
 
   /** @return the token count of the affix */
