@@ -19,22 +19,24 @@ import junit.framework.TestCase;
 
 /** Test the Transform representation. */
 public class TransformTest extends TestCase {
+  private static final Affix edSuffix = new Affix("ed", AffixType.SUFFIX);
+  private static final Affix unPrefix = new Affix("un", AffixType.PREFIX);
 
   /** Test making a derived form without accommodation. */
   public void testmakeDerivedBasic() {
-    Affix edAffix = new Affix("ed", AffixType.SUFFIX);
-    assertEquals("pined", Transform.makeDerived("pin", edAffix, false, false));
+    assertEquals("pined", Transform.makeDerived("pin", edSuffix, false, false));
+    assertEquals("unpin", Transform.makeDerived("pin", unPrefix, false, false));
   }
 
   /** Test making a derived form with doubling. */
   public void testmakeDerivedDoubled() {
-    Affix edAffix = new Affix("ed", AffixType.SUFFIX);
-    assertEquals("pinned", Transform.makeDerived("pin", edAffix, true, false));
+    assertEquals("pinned", Transform.makeDerived("pin", edSuffix, true, false));
+    assertEquals("unppin", Transform.makeDerived("pin", unPrefix, true, false));
   }
 
   /** Test making a derived form with undoubling. */
   public void testmakeDerivedUndoubled() {
-    Affix edAffix = new Affix("ed", AffixType.SUFFIX);
-    assertEquals("caned", Transform.makeDerived("cane", edAffix, false, true));
+    assertEquals("caned", Transform.makeDerived("cane", edSuffix, false, true));
+    assertEquals("uneed", Transform.makeDerived("need", unPrefix, false, true));
   }
 }

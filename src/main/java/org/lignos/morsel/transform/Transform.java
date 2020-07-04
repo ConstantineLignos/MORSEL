@@ -291,6 +291,7 @@ public class Transform {
    * @return the derived form
    */
   public static String makeDerived(String stem, Affix affix, boolean doubling, boolean undoubling) {
+    final AffixType affixType = affix.getType();
 
     // Only allow double or undouble, not both
     if (doubling && undoubling) {
@@ -298,19 +299,41 @@ public class Transform {
     }
 
     if (doubling) {
-      // Repeat the last character of the stem
-      stem = stem + stem.substring(stem.length() - 1);
+      // Repeat the character of the stem at the attachment point
+      switch (affixType) {
+        case PREFIX:
+          // Double the first character of the stem
+          stem = stem.substring(0, 1) + stem;
+          break;
+        case SUFFIX:
+          // Double the last character of the stem
+          stem = stem + stem.substring(stem.length() - 1);
+          break;
+        default:
+          throw new RuntimeException("Unhandled AffixType");
+      }
     } else if (undoubling) {
-      // Remove the last character of the stem
-      stem = stem.substring(0, stem.length() - 1);
+      switch (affixType) {
+        case PREFIX:
+          // Remove the first character of the stem
+          stem = stem.substring(1);
+          break;
+        case SUFFIX:
+          // Remove the last character of the stem
+          stem = stem.substring(0, stem.length() - 1);
+          break;
+        default:
+          throw new RuntimeException("Unhandled AffixType");
+      }
     }
 
-    if (affix.getType() == AffixType.PREFIX) {
-      return affix.getText() + stem;
-    } else if (affix.getType() == AffixType.SUFFIX) {
-      return stem + affix.getText();
-    } else {
-      throw new RuntimeException("Unhandled Affix Type");
+    switch (affixType) {
+      case PREFIX:
+        return affix.getText() + stem;
+      case SUFFIX:
+        return stem + affix.getText();
+      default:
+        throw new RuntimeException("Unhandled AffixType");
     }
   }
 
