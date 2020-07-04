@@ -17,6 +17,7 @@ package org.lignos.morsel.compound;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.Set;
+
 import org.lignos.morsel.TransformInference;
 import org.lignos.morsel.lexicon.Lexicon;
 import org.lignos.morsel.lexicon.Word;
@@ -49,7 +51,7 @@ public class Compounding {
    * @param lex the learner's lexicon
    * @param set the WordSet to break compounds in
    * @param learnedTransforms the transforms learned so far, which should be null if transforms
-   *     should not be used.
+   * should not be used.
    * @param hypTransforms the transforms currently hypothesized by the learner
    * @param opt whether optimization is on
    * @param reEval whether transform reevaluation is on
@@ -82,7 +84,7 @@ public class Compounding {
     // Loop over each word in the appropriate set and try to break it
     for (Word word : lex.getSetWords(set)) {
       // Skip words that are already compounds, too short, or inferred (if not allowed)
-      if (word.isCompound() || word.length() < MIN_COMPOUND_LENGTH || (word.isInferred() && ! deriveInferredForms)) {
+      if (word.isCompound() || word.length() < MIN_COMPOUND_LENGTH || (word.isInferred() && !deriveInferredForms)) {
         continue;
       }
 
@@ -622,7 +624,7 @@ public class Compounding {
         if (TRANSFORM_RELATIONS
             && !derivingTransforms.isEmpty()
             && !transInf.isGoodRelation(
-                derivingTransforms.get(derivingTransforms.size() - 1), transform)) continue;
+            derivingTransforms.get(derivingTransforms.size() - 1), transform)) continue;
 
         String derived =
             Filler.makeFillerDerivedFromPrefix(

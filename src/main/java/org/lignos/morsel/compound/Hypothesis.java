@@ -18,6 +18,7 @@ package org.lignos.morsel.compound;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 import org.lignos.morsel.TransformInference;
 import org.lignos.morsel.lexicon.Lexicon;
 import org.lignos.morsel.lexicon.Word;

@@ -16,10 +16,12 @@
 package org.lignos.morsel.lexicon;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
 import org.lignos.morsel.Util;
 import org.lignos.morsel.transform.Affix;
 import org.lignos.morsel.transform.Transform;
@@ -54,6 +56,7 @@ public class Word {
 
   /**
    * Create a new word
+   *
    * @param text the text of the word
    * @param count its count in the input
    * @param shouldAnalyze whether it should be analyzed

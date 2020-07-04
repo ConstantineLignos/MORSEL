@@ -17,6 +17,7 @@ package org.lignos.morsel.lexicon;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.lignos.morsel.Util;
 import org.lignos.morsel.transform.Affix;
 import org.lignos.morsel.transform.Affix.WeightedUnmodTypeCountComparator;

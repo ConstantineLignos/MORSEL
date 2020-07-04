@@ -110,7 +110,7 @@ public class Transform {
    */
   @SuppressWarnings("ReferenceEquality")
   public static boolean scoreWord(
-          Transform trans, Word base, Lexicon lex, boolean reEval, boolean doubling, boolean deriveInferredForms) {
+      Transform trans, Word base, Lexicon lex, boolean reEval, boolean doubling, boolean deriveInferredForms) {
 
     // If the base is illegal, skip it
     if (!isLegalBaseSet(base.getSet(), reEval)) {
@@ -155,7 +155,7 @@ public class Transform {
         // If we got a word, the derived form is not the same as the base,
         // and the pair is legal, add it and move on
         if (derived != base  // Reference equality is correct here
-                && isLegalDerived(derived, baseWordSet, affix2, reEval, deriveInferredForms)) {
+            && isLegalDerived(derived, baseWordSet, affix2, reEval, deriveInferredForms)) {
           trans.addWordPair(base, derived, true);
           return true;
         }
@@ -165,23 +165,23 @@ public class Transform {
   }
 
   private static boolean isLegalDerived(
-          Word derived, WordSet baseWordSet, Affix affix2, boolean reEval, boolean deriveInferredForms) {
+      Word derived, WordSet baseWordSet, Affix affix2, boolean reEval, boolean deriveInferredForms) {
     return derived != null
-            // The derived form is not inferred or we're allowed to derive inferred forms
-            && (!derived.isInferred() || deriveInferredForms)
-            // Is the combination of word sets between base and derived allowed?
-            && isLegalPairSets(baseWordSet, derived.getSet(), reEval)
-            // Does the derived word actually have this affix? This is false in cases like "feed" for the affix "ed"
-            // if the minimum stem length is > 2, since although it appears to end in -ed it is not marked as having
-            // that affix.
-            && affix2.hasWord(derived);
+        // The derived form is not inferred or we're allowed to derive inferred forms
+        && (!derived.isInferred() || deriveInferredForms)
+        // Is the combination of word sets between base and derived allowed?
+        && isLegalPairSets(baseWordSet, derived.getSet(), reEval)
+        // Does the derived word actually have this affix? This is false in cases like "feed" for the affix "ed"
+        // if the minimum stem length is > 2, since although it appears to end in -ed it is not marked as having
+        // that affix.
+        && affix2.hasWord(derived);
   }
 
   /**
    * Determine whether the set of a word allows it to be a base. If reEval is true, anything can be
    * a base. Otherwise, derived forms are not allowed to be bases.
    *
-   * @param set    the word set
+   * @param set the word set
    * @param reEval whether to allow derived forms to serve as bases
    * @return whether the set allows for the word to be a base
    */
@@ -210,31 +210,31 @@ public class Transform {
     switch (baseSet) {
       case BASE:
         switch (derivedSet) {
-            // (B, U) always allowed
+          // (B, U) always allowed
           case UNMODELED:
             return true;
-            // (B, B) allowed if reEval
+          // (B, B) allowed if reEval
           case BASE:
             return reEval;
-            // All else illegal
+          // All else illegal
           default:
             return false;
         }
       case DERIVED:
         switch (derivedSet) {
-            // (D, U) is legal if reEval is
+          // (D, U) is legal if reEval is
           case UNMODELED:
             return reEval;
-            // All else illegal
+          // All else illegal
           default:
             return false;
         }
       case UNMODELED:
         switch (derivedSet) {
-            // (U, U) always allowed
+          // (U, U) always allowed
           case UNMODELED:
             return true;
-            // All else illegal
+          // All else illegal
           default:
             return false;
         }

@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
 import junit.framework.TestCase;
 import org.lignos.morsel.CorpusLoader;
 import org.lignos.morsel.lexicon.Lexicon;

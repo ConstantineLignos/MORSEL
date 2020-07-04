@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
 import org.lignos.morsel.lexicon.Lexicon;
 import org.lignos.morsel.lexicon.Word;
 
@@ -97,7 +98,7 @@ public class CorpusLoader {
    * the string could not be parsed.
    *
    * @param line The line to be parsed, which should be in the format of a word, any amount of
-   *     whitespace, and the count of the word.
+   * whitespace, and the count of the word.
    * @return A Word parsed from the line.
    */
   @SuppressWarnings("StringSplitter")

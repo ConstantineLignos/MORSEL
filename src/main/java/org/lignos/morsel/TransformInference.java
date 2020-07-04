@@ -17,8 +17,10 @@ package org.lignos.morsel;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.lignos.morsel.lexicon.Lexicon;
 import org.lignos.morsel.lexicon.Word;
 import org.lignos.morsel.lexicon.WordSet;

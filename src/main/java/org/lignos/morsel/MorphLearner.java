@@ -17,6 +17,7 @@ package org.lignos.morsel;
 
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -132,7 +134,7 @@ public class MorphLearner {
       this.setParams(paramPath);
     } catch (IOException e) {
       throw new IOException(String.format("Could not parse parameter file %s due to the following error: %s",
-              paramPath, e.getMessage()), e);
+          paramPath, e.getMessage()), e);
     }
 
     System.out.println("Loading wordlist from " + wordlistPath + " using charset " + charset);
@@ -831,7 +833,7 @@ public class MorphLearner {
   private void outputIterAnalysis(final String iter) throws IOException {
     // Output the analysis for the current iteration
     try (final Writer out =
-        Files.newBufferedWriter(Paths.get(analysisBase + "_" + iter + ".txt"), charset)) {
+             Files.newBufferedWriter(Paths.get(analysisBase + "_" + iter + ".txt"), charset)) {
       outputAnalysis(out);
     }
   }
@@ -839,7 +841,7 @@ public class MorphLearner {
   @SuppressWarnings("unused")
   private void outputTransforms(List<Transform> learnedTransforms) throws IOException {
     try (final Writer out =
-        Files.newBufferedWriter(Paths.get(analysisBase + "_transforms.txt"), charset)) {
+             Files.newBufferedWriter(Paths.get(analysisBase + "_transforms.txt"), charset)) {
       for (Transform t : learnedTransforms) {
         out.write(t.toDumpString());
         out.write('\n');
@@ -849,7 +851,7 @@ public class MorphLearner {
 
   private void outputConflationSets() throws IOException {
     try (final Writer out =
-        Files.newBufferedWriter(Paths.get(analysisBase + "_conflations.txt"), charset)) {
+             Files.newBufferedWriter(Paths.get(analysisBase + "_conflations.txt"), charset)) {
       for (Word w : lex.getSetWords(WordSet.BASE)) {
         out.write(w.toDerivedWordsString());
         out.write('\n');

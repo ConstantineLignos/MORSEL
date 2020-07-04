@@ -16,6 +16,7 @@
 package org.lignos.morsel.transform;
 
 import java.util.Comparator;
+
 import org.lignos.morsel.lexicon.Word;
 
 /** Represent two related words */

@@ -16,10 +16,12 @@
 package org.lignos.morsel;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
 import org.lignos.morsel.lexicon.Lexicon;
 import org.lignos.morsel.lexicon.Word;
 import org.lignos.morsel.lexicon.WordSet;

@@ -17,10 +17,12 @@
 package org.lignos.morsel.transform;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+
 import org.lignos.morsel.lexicon.Word;
 
 /**
@@ -338,7 +340,7 @@ public class Affix {
         case UNMODELED:
           unmodTypeCount++;
           break;
-          // Ignore all other word sets
+        // Ignore all other word sets
         default:
           break;
       }
