@@ -23,7 +23,7 @@ import org.lignos.morsel.lexicon.Word;
 public class WordPair {
   private final Word base;
   private final Word derived;
-  private final boolean accommodated;
+  private final Transform.Accommodation accommodation;
   private final int hash;
 
   /**
@@ -31,14 +31,14 @@ public class WordPair {
    *
    * @param base the base
    * @param derived the derived word
-   * @param accommodated whether orthographic accommodation was used to produce the pair
+   * @param accommodation what orthographic accommodation was used to produce the pair
    */
-  public WordPair(Word base, Word derived, boolean accommodated) {
+  public WordPair(Word base, Word derived, Transform.Accommodation accommodation) {
     this.base = base;
     this.derived = derived;
-    this.accommodated = accommodated;
+    this.accommodation = accommodation;
 
-    hash = (base.getText() + derived.getText() + (accommodated ? 'a' : 'n')).hashCode();
+    hash = (base.getText() + derived.getText() + accommodation.toString()).hashCode();
   }
 
   /** @return the base of the pair */
@@ -51,9 +51,14 @@ public class WordPair {
     return derived;
   }
 
+  /** @return the accommodation used to derive this pair */
+  public Transform.Accommodation getAccommodation() {
+    return accommodation;
+  }
+
   /** @return whether orthographic accommodation was used to create the pair */
   public boolean isAccommodated() {
-    return accommodated;
+    return accommodation != Transform.Accommodation.NONE;
   }
 
   @Override
@@ -64,7 +69,7 @@ public class WordPair {
     // Reference equality is correct here
     return otherWord.getBase() == base
         && otherWord.getDerived() == derived
-        && otherWord.isAccommodated() == accommodated;
+        && otherWord.accommodation == accommodation;
   }
 
   @Override

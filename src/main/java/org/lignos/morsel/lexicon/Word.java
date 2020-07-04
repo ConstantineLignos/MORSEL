@@ -17,13 +17,11 @@ package org.lignos.morsel.lexicon;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.lignos.morsel.Util;
 import org.lignos.morsel.transform.Affix;
+import org.lignos.morsel.transform.AffixType;
 import org.lignos.morsel.transform.Transform;
 import org.lignos.morsel.transform.TransformPair;
 
@@ -50,6 +48,7 @@ public class Word {
   private Word base;
   private Word root;
   private Transform derivation; // The transform that actually derives the word
+  private Transform.Accommodation derivationAccommodation; // The accomodation used in the derivation
   private boolean duplicate; // Used to mark temporary words generated in compounding
   private String externalAnalysis; // Analysis if set externally
   private boolean compound;
@@ -91,8 +90,8 @@ public class Word {
   public String analyze() {
     if (externalAnalysis != null) return externalAnalysis;
 
-    List<String> prefixes = new ArrayList<>();
-    List<String> suffixes = new ArrayList<>();
+    List<String> prefixes = new LinkedList<>();
+    List<String> suffixes = new LinkedList<>();
 
     String rootText = analyzeRoot();
 
@@ -130,6 +129,99 @@ public class Word {
 
     if (suffixes.size() > 0) {
       out.append(' ').append(Util.join(suffixes, " "));
+    }
+
+    return out.toString();
+  }
+
+  /**
+   * Generate the morphological segmentation of a word
+   *
+   * @return the segmentation
+   */
+  public String segmentation() {
+    if (externalAnalysis != null) {
+      throw new RuntimeException("Cannot generate segmentation from an external analysis");
+    }
+
+    final List<String> prefixes = new LinkedList<>();
+    final List<String> suffixes = new LinkedList<>();
+
+    final String rootText = segmentRoot();
+
+    // Traverse through the derivation chain
+    Word currentWord = this;
+    while (currentWord.getDerivation() != null) {
+      final Transform derivation = currentWord.derivation;
+      final AffixType affixType = derivation.getAffixType();
+      final String accommodationSegment = accommodationSegment(
+          currentWord.base, affixType, currentWord.derivationAccommodation);
+
+      // Place the affix and accommodation correctly based on affix type
+      switch (affixType) {
+        case PREFIX:
+          prefixes.add(derivation.segmentation());
+          // Add the accommodation after the prefix
+          if (accommodationSegment != null) {
+            prefixes.add(accommodationSegment);
+          }
+          break;
+        case SUFFIX:
+          suffixes.add(0, derivation.segmentation());
+          // Add the accommodation before the suffix
+          if (accommodationSegment != null) {
+            suffixes.add(0, accommodationSegment);
+          }
+          break;
+        default:
+          throw new RuntimeException("Unhandled AffixType");
+      }
+
+      currentWord = currentWord.getBase();
+    }
+
+    // Build up the segmentation string
+    final StringBuilder out = new StringBuilder();
+    if (prefixes.size() > 0) {
+      out.append(Util.join(prefixes, " ")).append(' ');
+    }
+
+    out.append(rootText);
+
+    if (suffixes.size() > 0) {
+      out.append(' ').append(Util.join(suffixes, " "));
+    }
+
+    return out.toString();
+  }
+
+  private static String accommodationSegment(Word word, AffixType affixType, Transform.Accommodation accommodation) {
+    if (accommodation == Transform.Accommodation.NONE) {
+      return null;
+    }
+
+    final StringBuilder out = new StringBuilder("?");
+    switch (accommodation) {
+      case DOUBLING:
+        out.append('+');
+        break;
+      case UNDOUBLING:
+        out.append('-');
+        break;
+      default:
+        throw new RuntimeException("Unhandled Accommodation");
+    }
+
+    switch (affixType) {
+      case PREFIX:
+        out.append(word.text, 0, 1);
+        break;
+      case SUFFIX:
+        final int length = word.text.length();
+        out.append(word.text, length - 1, length);
+        break;
+      default:
+        throw new RuntimeException("Unhandled AffixType");
     }
 
     return out.toString();
@@ -252,9 +344,11 @@ public class Word {
    * Set the deriving transform
    *
    * @param transform the new deriving transform
+   * @param accommodation the accommodation used in the derivation
    */
-  public void setTransform(Transform transform) {
+  public void setTransform(Transform transform, Transform.Accommodation accommodation) {
     this.derivation = transform;
+    this.derivationAccommodation = accommodation;
   }
 
   /**
@@ -382,6 +476,26 @@ public class Word {
       // Use the root text if there is a root, otherwise just use the word's
       // text as its root
       return root != null ? root.toString().toUpperCase() : toString().toUpperCase();
+    }
+  }
+
+  /**
+   * Generate the segmentation of the word's root
+   *
+   * @return the word's root's segmentation
+   */
+  public String segmentRoot() {
+    if (getSet() == WordSet.COMPOUND) {
+      // If it's a compound, return the segmentation of all roots
+      final List<String> segmentation = new ArrayList<>();
+      for (Word w : componentWords) {
+        segmentation.add(w.segmentation());
+      }
+      return Util.join(segmentation, " ");
+    } else {
+      // Use the root text if there is a root, otherwise just use the word's
+      // text as its root
+      return "_" + (root != null ? root.toString() : this.toString());
     }
   }
 

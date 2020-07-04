@@ -110,7 +110,7 @@ public class Compounding {
 
             // Mark up the lexWord appropriately
             lexWord.setBase(compoundElement.getBase());
-            lexWord.setTransform(compoundElement.getDerivation());
+            lexWord.setTransform(compoundElement.getDerivation(), Transform.Accommodation.NONE);
 
             // Now replace the compound element with the original
             // word
@@ -172,7 +172,7 @@ public class Compounding {
     }
 
     // Add a new pair
-    transformPairs.get(derivingTransform).add(new WordPair(base, derived, false));
+    transformPairs.get(derivingTransform).add(new WordPair(base, derived, Transform.Accommodation.NONE));
   }
 
   /**
@@ -330,7 +330,7 @@ public class Compounding {
           // here. This is later set correctly if this compounding is
           // used.
           prefixWord.setBase(result.baseWord);
-          prefixWord.setTransform(result.derivation);
+          prefixWord.setTransform(result.derivation, Transform.Accommodation.NONE);
         }
       }
     }

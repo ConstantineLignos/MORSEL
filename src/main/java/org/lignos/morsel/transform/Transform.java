@@ -130,7 +130,7 @@ public class Transform {
 
     // If we got a word and the pair is legal, add it and move on
     if (isLegalDerived(derived, baseWordSet, affix2, reEval, deriveInferredForms)) {
-      trans.addWordPair(base, derived, false);
+      trans.addWordPair(base, derived, Accommodation.NONE);
       return true;
     }
 
@@ -142,7 +142,7 @@ public class Transform {
 
       // If we got a word and the pair is legal, add it and move on
       if (isLegalDerived(derived, baseWordSet, affix2, reEval, deriveInferredForms)) {
-        trans.addWordPair(base, derived, true);
+        trans.addWordPair(base, derived, Accommodation.DOUBLING);
         return true;
       }
 
@@ -156,7 +156,7 @@ public class Transform {
         // and the pair is legal, add it and move on
         if (derived != base  // Reference equality is correct here
             && isLegalDerived(derived, baseWordSet, affix2, reEval, deriveInferredForms)) {
-          trans.addWordPair(base, derived, true);
+          trans.addWordPair(base, derived, Accommodation.UNDOUBLING);
           return true;
         }
       }
@@ -374,17 +374,17 @@ public class Transform {
    *
    * @param base the base form
    * @param derived the derived form
-   * @param isAccommodated whether the pair required orthographic accommodation
+   * @param accommodation the orthographic accommodation
    */
-  public void addWordPair(Word base, Word derived, boolean isAccommodated) {
-    WordPair pair = new WordPair(base, derived, isAccommodated);
+  public void addWordPair(Word base, Word derived, Accommodation accommodation) {
+    final WordPair pair = new WordPair(base, derived, accommodation);
 
     // Increment counts if both words in the pair are frequent enough
     if (base.isFrequent() && derived.isFrequent()) {
       typeCount++;
       tokenCount += base.getCount() + derived.getCount();
 
-      if (isAccommodated) {
+      if (pair.isAccommodated()) {
         accomPairCount++;
       } else {
         normalPairCount++;
@@ -677,6 +677,26 @@ public class Transform {
   }
 
   /**
+   * Generate the analysis string representation of the transform. These are of the form: +(affix2)
+   * if affix2 is not null -(affix1) if affix2 is null
+   *
+   * @return the segmentation string for the transform
+   */
+  public String segmentation() {
+    final List<String> segments = new ArrayList<>();
+
+    if (!affix1.isNull()) {
+      segments.add('-' + affix1.toString());
+    }
+
+    if (!affix2.isNull()) {
+      segments.add('+' + affix2.toString());
+    }
+
+    return Util.join(segments, " ");
+  }
+
+  /**
    * Generate the hash table key for this transform. It is of the form t:affix1,affix2 where t is
    * 'p' for prefix and 's' for suffix transforms.
    *
@@ -718,5 +738,11 @@ public class Transform {
         Comparator.comparing(Transform::getTypeCount).thenComparing(byTokenCount);
     public static final Comparator<Transform> byWeightedTypeCount =
         Comparator.comparing(Transform::getWeightedTypeCount).thenComparing(byTypeCount);
+  }
+
+  public static enum Accommodation {
+    NONE,
+    DOUBLING,
+    UNDOUBLING;
   }
 }

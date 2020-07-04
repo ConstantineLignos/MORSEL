@@ -456,7 +456,7 @@ public class Lexicon {
       // Create the base/derived relationship
       base.addDerived(derived);
       derived.setBase(base);
-      derived.setTransform(derivingTransform);
+      derived.setTransform(derivingTransform, pair.getAccommodation());
 
       // If the base has no root, set it to itself, which also sets the
       // derived word's root

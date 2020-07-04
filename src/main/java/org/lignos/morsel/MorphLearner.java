@@ -66,6 +66,7 @@ public class MorphLearner {
   private final boolean outputBaseInf;
   private final boolean outputConflation;
   private final boolean outputCompounds;
+  private final boolean outputSegmentation;
   /** Base path string for analysis */
   private final String analysisBase;
   /** Path for analysis output */
@@ -110,6 +111,7 @@ public class MorphLearner {
    * @param outputBaseInf Whether to output the examples of base inference
    * @param outputConflation Whether to output conflation sets
    * @param outputCompounds Whether to output an analysis before compounding
+   * @param outputSegmentation Whether to output segmentation in addition to analysis
    * @throws FileNotFoundException if the corpus or parameter files do not exist.
    * @throws IOException if there are other IO errors.
    */
@@ -120,7 +122,8 @@ public class MorphLearner {
       Charset charset,
       boolean outputBaseInf,
       boolean outputConflation,
-      boolean outputCompounds)
+      boolean outputCompounds,
+      boolean outputSegmentation)
       throws IOException {
     this.corpusPath = wordlistPath;
     this.outputPath = outputPath;
@@ -128,6 +131,7 @@ public class MorphLearner {
     this.outputBaseInf = outputBaseInf;
     this.outputConflation = outputConflation;
     this.outputCompounds = outputCompounds;
+    this.outputSegmentation = outputSegmentation;
 
     System.out.println("Setting parameters from " + paramPath);
     try {
@@ -201,13 +205,20 @@ public class MorphLearner {
             "output the examples of base inference. This does not change whether base inference"
                 + " is used; it simply outputs the examples that used it."));
     options.addOption(
-        new Option("s", "conflation-sets", false, "output the learner's conflation sets"));
+        new Option("f", "conflation-sets", false, "output the learner's conflation sets"));
     options.addOption(
         new Option(
             "c",
             "compounds",
             false,
-            "output the learner's analsyis before final compounding is used"));
+            "output the learner's analysis before final compounding is used"));
+    options.addOption(
+        new Option(
+            "s",
+            "segment",
+            false,
+            "write segmentation alongside analysis in the output"));
+
     HelpFormatter formatter = new HelpFormatter();
     String usage = "MorphLearner [options] wordlist paramfile output";
 
@@ -274,6 +285,7 @@ public class MorphLearner {
     final boolean outputBaseInf = line.hasOption("base-inf");
     final boolean outputConflation = line.hasOption("conflation-sets");
     final boolean outputCompounds = line.hasOption("compounds");
+    final boolean outputSegmentation = line.hasOption("segment");
 
     // Time initialization
     long start = System.currentTimeMillis();
@@ -289,7 +301,9 @@ public class MorphLearner {
               encoding,
               outputBaseInf,
               outputConflation,
-              outputCompounds);
+              outputCompounds,
+              outputSegmentation
+          );
     } catch (IOException e) {
       System.err.println(
           ERROR_PREFIX + "During initialization, the following error occurred: " + e.getMessage());
@@ -825,6 +839,10 @@ public class MorphLearner {
         output.write(wordKey);
         output.write('\t');
         output.write(w.analyze());
+        if (outputSegmentation) {
+          output.write('\t');
+          output.write(w.segmentation());
+        }
         output.write('\n');
       }
     }

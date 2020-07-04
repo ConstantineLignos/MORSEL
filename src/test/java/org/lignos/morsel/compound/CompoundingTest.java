@@ -142,7 +142,7 @@ public class CompoundingTest extends TestCase {
     // can have rules applied to it when splitting compounds
     Transform agentive =
         new Transform(new Affix("", AffixType.SUFFIX), new Affix("er", AffixType.SUFFIX));
-    agentive.addWordPair(lex.getWord("bake"), lex.getWord("baker"), true);
+    agentive.addWordPair(lex.getWord("bake"), lex.getWord("baker"), Transform.Accommodation.NONE);
     lex.moveTransformPairs(agentive, null, false, true, true, false);
 
     // Add an add -s rule
@@ -175,8 +175,8 @@ public class CompoundingTest extends TestCase {
     Transform plural =
         new Transform(new Affix("", AffixType.SUFFIX), new Affix("s", AffixType.SUFFIX));
     List<Transform> learnedTransforms = new ArrayList<>();
-    plural.addWordPair(lex.getWord("bake"), lex.getWord("bakes"), true);
-    plural.addWordPair(lex.getWord("smack"), lex.getWord("smacks"), true);
+    plural.addWordPair(lex.getWord("bake"), lex.getWord("bakes"), Transform.Accommodation.NONE);
+    plural.addWordPair(lex.getWord("smack"), lex.getWord("smacks"), Transform.Accommodation.NONE);
     lex.moveTransformPairs(plural, null, false, true, true, false);
     learnedTransforms.add(agentive);
     learnedTransforms.add(plural);
@@ -200,7 +200,7 @@ public class CompoundingTest extends TestCase {
         CorpusLoader.loadWordlist(Paths.get("data/test/compounding_test_ger.txt"), CHARSET, false);
     Transform en =
         new Transform(new Affix("", AffixType.SUFFIX), new Affix("en", AffixType.SUFFIX));
-    en.addWordPair(lex.getWord("haus"), lex.getWord("hausen"), false);
+    en.addWordPair(lex.getWord("haus"), lex.getWord("hausen"), Transform.Accommodation.NONE);
     lex.moveTransformPairs(en, null, false, true, true, false);
     List<Transform> learnedTransforms = new ArrayList<>();
     learnedTransforms.add(en);
