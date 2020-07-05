@@ -45,7 +45,7 @@ public class RuleInference {
    */
   private Collection<Word> inferBases(Lexicon lex, Transform transform) {
     // Go over each unmodeled word with affix2 of the transform. If
-    // its hypothesized base is not word, infer it
+    // its hypothesized base is not a word, infer it
     Set<Word> newWords = new ObjectOpenHashSet<>();
     for (Word w : transform.getAffix2().getWordSet()) {
       // Skip anything not unmodeled
@@ -99,8 +99,7 @@ public class RuleInference {
     int newBaseCount = 0;
     int newPairCount = 0;
 
-    // Get either a the latest transform from the learned list or for
-    // overlap get the one passed in
+    // Get the latest transform from the learned list
     Transform newestTransform = learnedTransforms.get(learnedTransforms.size() - 1);
     Collection<Word> newWords = inferBases(lex, newestTransform);
     for (Word newBase : newWords) {
@@ -112,9 +111,14 @@ public class RuleInference {
       // Score each new base for every learned transform that can apply
       // to it, counting new pairs
       for (Transform trans : learnedTransforms) {
-        if (newBase.hasAffix(trans.getAffix1())
-            && Transform.scoreWord(trans, newBase, lex, reEval, doubling, deriveInferredForms)) {
-          newPairCount++;
+        if (newBase.hasAffix(trans.getAffix1())) {
+          // Scoring the word has the side effect of adding it if appropriate
+          final boolean added = Transform.scoreWord(trans, newBase, lex, reEval, doubling, deriveInferredForms);
+          if (added) {
+            newPairCount++;
+            // Move right away so that we can't accidentally derive the word twice later
+            lex.moveTransformPairs(trans, hypTransforms, optimization, reEval, doubling, deriveInferredForms);
+          }
         }
       }
     }
@@ -122,13 +126,6 @@ public class RuleInference {
     // If we added words, update the frequencies
     if (newBaseCount > 0) {
       lex.updateFrequencies();
-    }
-
-    // Move all the words for each transform
-    if (newPairCount > 0) {
-      for (Transform trans : learnedTransforms) {
-        lex.moveTransformPairs(trans, hypTransforms, optimization, reEval, doubling, deriveInferredForms);
-      }
     }
 
     // If optimization is on, score for all hypothesized transforms other
@@ -146,9 +143,11 @@ public class RuleInference {
 
     // Put the new words out to the log if we're outputting
     if (out != null) {
+      out.println("# Learned transform " + newestTransform.toString());
       for (Word newBase : newWords) {
         out.println(newBase.toDerivedWordsString());
       }
+      out.println("");
     }
 
     // Output the results
