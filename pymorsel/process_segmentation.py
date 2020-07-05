@@ -3,20 +3,23 @@
 """
 Processes MORSEL's segmentation into a more usable format.
 
-The output file format consists of three tab-separated columns:
+The segmentation output file format consists of tab-separated columns:
 1. The original word form ("kicked");
-2. Space-delimited segments identified by MORSEL ("kick ed");
-3. BPE-formatted space-delimited segments identified by MORSEL ("kick@@ ed").
+2. Space-delimited segments identified by MORSEL, with roots prefixed by _ and affixes prefixed by + ("_kick +ed");
 """
 
 import argparse
+from collections import Counter
 from typing import List
 
 
-def process_segmentation(input_path: str, output_path: str) -> None:
+def process_segmentation(
+    analysis_path: str, wordlist_path: str, segmentation_path: str, dict_path: str
+) -> None:
     """Process MORSEL's segmentation output into a more usable format."""
-    with open(input_path, encoding="utf8") as input_file, open(
-        output_path, "w", encoding="utf8"
+    word_units = {}
+    with open(analysis_path, encoding="utf8") as input_file, open(
+        segmentation_path, "w", encoding="utf8"
     ) as output_file:
         for line_num, line in enumerate(input_file, 1):
             line = line.rstrip()
@@ -29,23 +32,41 @@ def process_segmentation(input_path: str, output_path: str) -> None:
 
             # Get a first segmentation
             seg_units = parse_segmentation(segmentation)
-            joined_word = "".join(seg_units)
+            joined_word = join_segmentation(seg_units)
             # Correct it if needed
             if joined_word != word:
                 seg_units = correct_segmentation(seg_units, word)
-                joined_word = "".join(seg_units)
+                joined_word = join_segmentation(seg_units)
                 assert (
                     joined_word == word
-                ), f"Joined word does not match original: {repr(word)}, {repr(joined_word)}, {repr(seg_units)}"
+                ), f"Joined word {repr(joined_word)} does not match original {repr(word)}, units: {repr(seg_units)}"
 
-            joined_units = " ".join(seg_units)
-            bpe_units = " ".join(
-                [
-                    (unit if idx == len(seg_units) - 1 else unit + "@@")
-                    for idx, unit in enumerate(seg_units)
-                ]
-            )
-            print(word, joined_units, bpe_units, sep="\t", file=output_file)
+            word_units[word] = seg_units
+            print(word, " ".join(seg_units), sep="\t", file=output_file)
+
+    # Get counts from the wordlist
+    word_counts = {}
+    with open(wordlist_path, encoding="utf8") as wordlist_file:
+        for line in wordlist_file:
+            count, word = line.rstrip("\n").split(" ")
+            word_counts[word] = int(count)
+
+    root_counts = Counter()
+    affix_counts = Counter()
+    for word, units in word_units.items():
+        for unit in units:
+            if unit.startswith("_"):
+                root_counts[unit] += word_counts[word]
+            else:
+                affix_counts[unit] += word_counts[word]
+
+    with open(dict_path, "w", encoding="utf8") as dict_file:
+        for root, count in root_counts.most_common():
+            # Strip root prefix
+            word = root[1:]
+            print(word, count, file=dict_file)
+
+    print("Number of unique affixes:", len(affix_counts))
 
 
 def parse_segmentation(segmentation: str) -> List[str]:
@@ -56,17 +77,19 @@ def parse_segmentation(segmentation: str) -> List[str]:
         segment_text = segment[1:]
         if operator == "_":
             # Root segment
-            segments.append(segment_text)
+            segments.append(segment)
         elif operator == "+":
             # Concatenative affix
-            segments.append(segment_text)
+            segments.append(segment)
         elif operator == "-":
             # Subtractive affix
             assert (
                 segments
             ), f"Segment {repr(segment)} removes without a prior segment: {repr(segmentation)}"
             # Remove from the last segment
-            assert segments[-1].endswith(segment_text)
+            assert segments[-1].endswith(
+                segment_text
+            ), f"Segment {repr(segments[-1])} should end with {segment_text} in segmentation {repr(segmentation)}"
             segments[-1] = segments[-1][: -len(segment_text)]
         elif operator == "?":
             assert (
@@ -85,6 +108,11 @@ def parse_segmentation(segmentation: str) -> List[str]:
     return segments
 
 
+def join_segmentation(units: List[str]) -> str:
+    """Join a segmentation created by parse_segmentation into a str."""
+    return "".join([unit[1:] for unit in units])
+
+
 def correct_segmentation(units: List[str], word: str) -> List[str]:
     """Correct a segmentation for missing hyphens.
 
@@ -93,20 +121,21 @@ def correct_segmentation(units: List[str], word: str) -> List[str]:
     new_units = []
     idx = 0
     for unit in units:
-        if not word.startswith(unit, idx):
+        unit_text = unit[1:]
+        if not word.startswith(unit_text, idx):
             if word[idx] == "-":
-                idx = _add_hyphens(units, new_units, word, idx)
+                idx = _add_hyphens(new_units, word, idx)
             else:
                 raise ValueError(
                     f"Cannot correct segmentation at index {idx} of word {repr(word)}: {units}"
                 )
         new_units.append(unit)
-        idx += len(unit)
+        idx += len(unit_text)
 
     if idx < len(word):
         # Address trailing hyphens
         if word[idx] == "-":
-            idx = _add_hyphens(units, new_units, word, idx)
+            idx = _add_hyphens(new_units, word, idx)
 
         # Check one more time
         if idx != len(word):
@@ -117,10 +146,10 @@ def correct_segmentation(units: List[str], word: str) -> List[str]:
     return new_units
 
 
-def _add_hyphens(units: List[str], new_units: List[str], word: str, idx: int) -> int:
+def _add_hyphens(new_units: List[str], word: str, idx: int) -> int:
     # Need a while loop to handle multiple hyphens
     while word[idx] == "-":
-        new_units.append("-")
+        new_units.append("_-")
         idx += 1
         if idx >= len(word):
             break
@@ -130,11 +159,25 @@ def _add_hyphens(units: List[str], new_units: List[str], word: str, idx: int) ->
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("input_file",
-                        help="path to a MORSEL analysis file with segmentations (make sure to enable segmentation)")
-    parser.add_argument("output_file", help="output file path")
+    parser.add_argument(
+        "analysis_file",
+        help="path to a MORSEL analysis file with segmentations (make sure to enable segmentation)",
+    )
+    parser.add_argument(
+        "word_list",
+        help="path to a Morpho Challenge format wordlist matching the analyses (for frequency information)",
+    )
+    parser.add_argument("output_segmentation", help="output segmentation file path")
+    parser.add_argument(
+        "output_root_dict", help="output root dictionary file path (for learn-BPE)"
+    )
     args = parser.parse_args()
-    process_segmentation(args.input_file, args.output_file)
+    process_segmentation(
+        args.analysis_file,
+        args.word_list,
+        args.output_segmentation,
+        args.output_root_dict,
+    )
 
 
 if __name__ == "__main__":
