@@ -26,3 +26,7 @@ out.txt
 
 # Mac OS
 .DS_Store
+
+# Python
+*.pyc
+__pycache__
