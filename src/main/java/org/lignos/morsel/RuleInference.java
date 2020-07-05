@@ -16,20 +16,20 @@
 package org.lignos.morsel;
 
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-
-import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-
 import org.lignos.morsel.lexicon.Lexicon;
 import org.lignos.morsel.lexicon.Word;
 import org.lignos.morsel.lexicon.WordSet;
 import org.lignos.morsel.transform.Transform;
 
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
 /** Allow inference of unseen forms using learned transforms. */
 public class RuleInference {
-  private final Set<String> inferredBases;
+  private Set<String> inferredBases;
 
   /** Create an new inference instance with an empty set of inferred bases. */
   public RuleInference() {
@@ -63,6 +63,8 @@ public class RuleInference {
           // Create a new word using the token count of the word
           // that ended up promoting it
           Word newWord = new Word(baseText, w.getCount(), false, true);
+          // Note that words are only compared by text, so if another word has been added with the same text (but
+          // perhaps different frequency) only the first one will be kept.
           newWords.add(newWord);
         } else {
           // Otherwise, infer it
@@ -83,6 +85,7 @@ public class RuleInference {
    * @param reEval as used by scoreWord
    * @param doubling as used by scoreWord
    * @param deriveInferredForms as used by scoreWord
+   * @param recomputeInferredBases whether to recompute inferred bases every call
    * @param optimization as used by moveTransformPairs
    * @param out the destination for any printing to the log
    */
@@ -94,6 +97,7 @@ public class RuleInference {
       boolean reEval,
       boolean doubling,
       boolean deriveInferredForms,
+      boolean recomputeInferredBases,
       boolean optimization,
       PrintWriter out) {
     int newBaseCount = 0;
@@ -101,7 +105,25 @@ public class RuleInference {
 
     // Get the latest transform from the learned list
     Transform newestTransform = learnedTransforms.get(learnedTransforms.size() - 1);
-    Collection<Word> newWords = inferBases(lex, newestTransform);
+
+    final List<Word> newWords;
+    if (recomputeInferredBases) {
+      // Clear the inferred bases and get the new words from scratch for each transform
+      inferredBases = new ObjectOpenHashSet<>();
+      // We use a set to eliminate any duplicates across transforms
+      final Set<Word> newWordsSet = new ObjectOpenHashSet<>();
+      for (final Transform trans : learnedTransforms) {
+        final Collection<Word> transNewWords = inferBases(lex, trans);
+        newWordsSet.addAll(transNewWords);
+      }
+      newWords = new ArrayList<>(newWordsSet);
+    } else {
+      // Only get new words from the latest transform
+      newWords = new ArrayList<>(inferBases(lex, newestTransform));
+    }
+    // Sort so we have a deterministic order
+    newWords.sort(Word::compareTo);
+
     for (Word newBase : newWords) {
       // Add each new base to the lexicon and let the lexicon move it
       lex.addWord(newBase);

@@ -92,6 +92,7 @@ public class MorphLearner {
   private boolean ITER_COMPOUNDING;
   private boolean AGGR_COMPOUNDING;
   private boolean BASE_INFERENCE;
+  private boolean BASE_INFERENCE_RECOMPUTE_BASES;
   private boolean DERIVE_INFERRED_FORMS;
   private boolean TRANSFORM_OPTIMIZATION;
   private boolean TRANSFORM_DEBUG;
@@ -495,6 +496,7 @@ public class MorphLearner {
             REEVAL_DERIVATION,
             USE_DOUBLING,
             DERIVE_INFERRED_FORMS,
+            BASE_INFERENCE_RECOMPUTE_BASES,
             TRANSFORM_OPTIMIZATION,
             baseLog);
       }
@@ -984,7 +986,8 @@ public class MorphLearner {
     AGGR_COMPOUNDING = props.getBooleanProperty("aggr_compounding");
 
     // Rule inference flags
-    BASE_INFERENCE = props.getBooleanProperty("rule_inference_conservative");
+    BASE_INFERENCE = props.getBooleanProperty("base_inference_conservative");
+    BASE_INFERENCE_RECOMPUTE_BASES = props.getBooleanProperty("base_inference_recompute_bases");
     DERIVE_INFERRED_FORMS = props.getBooleanProperty("allow_inferred_forms_as_derived");
 
     // Implementation details

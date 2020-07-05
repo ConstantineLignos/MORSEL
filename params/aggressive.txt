@@ -31,7 +31,8 @@ iter_compounding = true
 aggr_compounding = true
 
 # Inference flags
-rule_inference_conservative = true
+base_inference_conservative = true
+base_inference_recompute_bases = false
 transform_relations = false
 allow_unmod_simplex_word_analysis = false
 
