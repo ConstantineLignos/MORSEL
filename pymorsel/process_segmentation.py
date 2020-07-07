@@ -4,8 +4,9 @@
 Processes MORSEL's segmentation into a more usable format.
 
 The segmentation output file format consists of tab-separated columns:
-1. The original word form ("kicked");
-2. Space-delimited segments identified by MORSEL, with roots prefixed by _ and affixes prefixed by + ("_kick +ed");
+1. The original word form ("kicked")
+2. Space-delimited segments identified by MORSEL, with roots prefixed by _ and affixes
+   prefixed by + ("_kick +ed")
 """
 
 import argparse
@@ -37,9 +38,10 @@ def process_segmentation(
             if joined_word != word:
                 seg_units = correct_segmentation(seg_units, word)
                 joined_word = join_segmentation(seg_units)
-                assert (
-                    joined_word == word
-                ), f"Joined word {repr(joined_word)} does not match original {repr(word)}, units: {repr(seg_units)}"
+                assert joined_word == word, (
+                    f"Joined word {repr(joined_word)} does not match "
+                    f"original {repr(word)}, units: {repr(seg_units)}"
+                )
 
             word_units[word] = seg_units
             print(word, " ".join(seg_units), sep="\t", file=output_file)
@@ -47,9 +49,14 @@ def process_segmentation(
     # Get counts from the wordlist
     word_counts = {}
     with open(wordlist_path, encoding="utf8") as wordlist_file:
-        for line in wordlist_file:
-            count, word = line.rstrip("\n").split(" ")
-            word_counts[word] = int(count)
+        for line_num, line in enumerate(wordlist_file):
+            fields = line.rstrip("\n").split(" ")
+            if len(fields) != 2:
+                raise ValueError(
+                   f"Cannot parse line {line_num} of {wordlist_path} into two fields: "
+                   f"{repr(line)}"
+                )
+            word_counts[fields[1]] = int(fields[0])
 
     root_counts = Counter()
     affix_counts = Counter()
