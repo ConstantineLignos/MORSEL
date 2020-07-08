@@ -53,8 +53,8 @@ def process_segmentation(
             fields = line.rstrip("\n").split(" ")
             if len(fields) != 2:
                 raise ValueError(
-                   f"Cannot parse line {line_num} of {wordlist_path} into two fields: "
-                   f"{repr(line)}"
+                    f"Cannot parse line {line_num} of {wordlist_path} into two fields: "
+                    f"{repr(line)}"
                 )
             word_counts[fields[1]] = int(fields[0])
 
@@ -78,8 +78,9 @@ def process_segmentation(
 
 def parse_segmentation(segmentation: str) -> List[str]:
     """Parse MORSEL's segmentation string into a list of units."""
+    source = segmentation.split(" ")
     segments = []
-    for segment in segmentation.split(" "):
+    for idx, segment in enumerate(source):
         operator = segment[0]
         segment_text = segment[1:]
         if operator == "_":
@@ -93,12 +94,34 @@ def parse_segmentation(segmentation: str) -> List[str]:
             assert (
                 segments
             ), f"Segment {repr(segment)} removes without a prior segment: {repr(segmentation)}"
-            # Remove from the last segment
-            assert segments[-1].endswith(
-                segment_text
-            ), f"Segment {repr(segments[-1])} should end with {segment_text} in segmentation {repr(segmentation)}"
-            segments[-1] = segments[-1][: -len(segment_text)]
-        elif operator == "?":
+            # Remove from the last segments
+            last_segment = segments[-1]
+            if len(last_segment) > len(segment_text):
+                # Easy case: everything can be removed from the previous segment
+                assert segments[-1].endswith(segment_text), (
+                    f"Segment {repr(segments[-1])} should end with {segment_text} "
+                    f"in segmentation {repr(segmentation)}"
+                )
+                segments[-1] = segments[-1][: -len(segment_text)]
+            else:
+                # Hard case: remove segments as needed
+                to_delete = len(segment_text)
+                while to_delete:
+                    if not segments:
+                        raise ValueError(
+                            f"Ran out of prior segments trying to delete {repr(segment)}"
+                            f"in segmentation {repr(segmentation)}"
+                        )
+                    # Offset length by one since there's a prefix
+                    last_segment_len = len(segments[-1]) - 1
+                    if to_delete >= last_segment_len:
+                        deleted = segments.pop()
+                        to_delete -= last_segment_len
+                    else:
+                        segments[-1] = segments[-1][:-to_delete]
+                        to_delete = 0
+        elif operator == "$":
+            # Handle accommodation at end of previous string
             assert (
                 segments
             ), f"Segment {repr(segment)} accommodates without a prior segment: {repr(segmentation)}"
@@ -111,6 +134,29 @@ def parse_segmentation(segmentation: str) -> List[str]:
             elif operator == "+":
                 # Add to the last segment
                 segments[-1] = segments[-1] + segment_text
+        elif operator == "^":
+            # Handle accommodation at start of next string
+            target_idx = idx + 1
+            assert target_idx < len(
+                source
+            ), f"Segment {repr(segment)} accommodates without a following segment: {repr(segmentation)}"
+            operator = segment_text[0]
+            segment_text = segment_text[1:]
+            # Get the next segment from the source but skip the prefix
+            source_segment = source[target_idx]
+            assert source_segment.startswith(
+                "_"
+            ), f"Segment {repr(segment)} accommodates a non-root following segment: {repr(segmentation)}"
+            source_segment_text = source_segment[1:]
+            if operator == "-":
+                # Remove from the front of the next segment
+                assert source_segment_text.startswith(segment_text)
+                source[target_idx] = "_" + source_segment_text[len(segment_text) :]
+            elif operator == "+":
+                # Add to the front of the next segment
+                source[target_idx] = "_" + source_segment_text[0] + source_segment_text
+
+    assert segments, f"Empty segments for segmentation: {repr(segmentation)}"
 
     return segments
 
