@@ -30,3 +30,6 @@ out.txt
 # Python
 *.pyc
 __pycache__
+
+# Backups
+*.bak
