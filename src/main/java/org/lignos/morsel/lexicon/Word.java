@@ -200,7 +200,20 @@ public class Word {
       return null;
     }
 
-    final StringBuilder out = new StringBuilder("?");
+    final StringBuilder out = new StringBuilder();
+
+    // Mark the affix type so it's clear whether to apply it to the segment on the left or right
+    switch (affixType) {
+      case PREFIX:
+        out.append('^');
+        break;
+      case SUFFIX:
+        out.append('$');
+        break;
+      default:
+        throw new RuntimeException("Unhandled AffixType");
+    }
+
     switch (accommodation) {
       case DOUBLING:
         out.append('+');
