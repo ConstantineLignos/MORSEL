@@ -118,6 +118,7 @@ public class Transform {
     }
 
     // Extract fields
+    AffixType affixType = trans.getAffixType();
     Affix affix1 = trans.getAffix1();
     Affix affix2 = trans.getAffix2();
     WordSet baseWordSet = base.getSet();
@@ -146,9 +147,13 @@ public class Transform {
         return true;
       }
 
-      // If the last letter of the stem and the first of affix2 are
-      // the same, try undoubling.
-      if (stem.substring(stem.length() - 1).equals(affix2.getText().substring(0, 1))) {
+      // Try undoubling if:
+      // for prefixes, the first letter of the stem is the last letter of the affix, or
+      // for suffixes, the last letter of the stem is the first letter of the affix,
+      if ((affixType == AffixType.PREFIX
+          && stem.substring(0, 1).equals(affix2.getText().substring(affix2.length() - 1)))
+          || (affixType == AffixType.SUFFIX
+          && stem.substring(stem.length() - 1).equals(affix2.getText().substring(0, 1)))) {
         // Get undoubled stem and see if it's a word
         derived = lex.getWord(makeDerived(stem, affix2, false, true));
 

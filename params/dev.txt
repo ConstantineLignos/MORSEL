@@ -12,13 +12,13 @@ reeval = true
 score_reeval = false
 doubling = true
 allow_inferred_forms_as_derived = true
-transform_length_weighting_exponent = 1.0
+transform_length_weighting_exponent = 1.25
 
 # Transform selection parameters
 type_threshold = 10
 overlap_stem_length = 4
 overlap_threshold = 5.0
-precision_threshold = 0.1
+precision_threshold = 0.05
 
 # Weighting parameters
 weighted_transforms = true
