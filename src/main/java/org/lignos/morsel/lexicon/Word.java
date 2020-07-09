@@ -504,7 +504,7 @@ public class Word {
       for (Word w : componentWords) {
         segmentation.add(w.segmentation());
       }
-      return Util.join(segmentation, " ");
+      return Util.join(segmentation, " || ");
     } else {
       // Use the root text if there is a root, otherwise just use the word's
       // text as its root

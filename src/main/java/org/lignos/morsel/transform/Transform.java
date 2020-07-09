@@ -56,6 +56,10 @@ public class Transform {
    * @param affix2 the output affix
    */
   public Transform(Affix affix1, Affix affix2) {
+    if (affix1.isNull() && affix2.isNull()) {
+      throw new RuntimeException("Affixes cannot both be null");
+    }
+
     this.affix1 = affix1;
     this.affix2 = affix2;
     derivationPairs = new ObjectOpenHashSet<>();
@@ -682,23 +686,47 @@ public class Transform {
   }
 
   /**
-   * Generate the analysis string representation of the transform. These are of the form: +(affix2)
+   * Generate the segmentation string representation of the transform. These are of the form: +(affix2)
    * if affix2 is not null -(affix1) if affix2 is null
    *
    * @return the segmentation string for the transform
    */
   public String segmentation() {
-    final List<String> segments = new ArrayList<>();
-
+    String subtraction = null;
     if (!affix1.isNull()) {
-      segments.add('-' + affix1.toString());
+      switch (affixType) {
+        case PREFIX:
+          subtraction = "^";
+          break;
+        case SUFFIX:
+          subtraction = "$";
+          break;
+        default:
+          throw new RuntimeException("Unhandled AffixType");
+      }
+      subtraction += '-' + affix1.toString();
     }
 
+    String addition = null;
     if (!affix2.isNull()) {
-      segments.add('+' + affix2.toString());
+      addition = '+' + affix2.toString();
     }
 
-    return Util.join(segments, " ");
+    if (subtraction != null && addition != null) {
+      switch (affixType) {
+        case PREFIX:
+          return addition + " " + subtraction;
+        case SUFFIX:
+          return subtraction + " " + addition;
+        default:
+          throw new RuntimeException("Unhandled AffixType");
+      }
+    } else if (addition != null) {
+      return addition;
+    } else {
+      // It's impossible for both to be null, so we don't need to check subtraction
+      return subtraction;
+    }
   }
 
   /**

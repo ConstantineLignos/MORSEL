@@ -14,6 +14,10 @@ from collections import Counter
 from typing import List
 
 
+BASE_PREFIX = "_"
+DOUBLE_PLUS = "⧺"
+
+
 def process_segmentation(
     analysis_path: str, wordlist_path: str, segmentation_path: str, dict_path: str
 ) -> None:
@@ -29,10 +33,18 @@ def process_segmentation(
                 raise ValueError(
                     f"Expected 3 fields on line {line_num}, found {len(fields)}: {repr(line)}"
                 )
-            word, _, segmentation = fields
+            word, _, morsel_segmentation = fields
 
-            # Get a first segmentation
-            seg_units = parse_segmentation(segmentation)
+            # Split segmentation into individual compound words
+            compound_segmentations = morsel_segmentation.split(" || ")
+
+            # Join together segmentations across compounds
+            seg_units = []
+            for segmentation in compound_segmentations:
+                segments = parse_segmentation(segmentation)
+                clean_segments = _cleanup_prefixes(segments)
+                seg_units.extend(clean_segments)
+
             joined_word = join_segmentation(seg_units)
             # Correct it if needed
             if joined_word != word:
@@ -62,7 +74,7 @@ def process_segmentation(
     affix_counts = Counter()
     for word, units in word_units.items():
         for unit in units:
-            if unit.startswith("_"):
+            if unit.startswith(BASE_PREFIX):
                 root_counts[unit] += word_counts[word]
             else:
                 affix_counts[unit] += word_counts[word]
@@ -83,57 +95,24 @@ def parse_segmentation(segmentation: str) -> List[str]:
     for idx, segment in enumerate(source):
         operator = segment[0]
         segment_text = segment[1:]
-        if operator == "_":
+        if operator == BASE_PREFIX:
             # Root segment
             segments.append(segment)
         elif operator == "+":
             # Concatenative affix
             segments.append(segment)
-        elif operator == "-":
-            # Subtractive affix
-            assert (
-                segments
-            ), f"Segment {repr(segment)} removes without a prior segment: {repr(segmentation)}"
-            # Remove from the last segments
-            last_segment = segments[-1]
-            if len(last_segment) > len(segment_text):
-                # Easy case: everything can be removed from the previous segment
-                assert segments[-1].endswith(segment_text), (
-                    f"Segment {repr(segments[-1])} should end with {segment_text} "
-                    f"in segmentation {repr(segmentation)}"
-                )
-                segments[-1] = segments[-1][: -len(segment_text)]
-            else:
-                # Hard case: remove segments as needed
-                to_delete = len(segment_text)
-                while to_delete:
-                    if not segments:
-                        raise ValueError(
-                            f"Ran out of prior segments trying to delete {repr(segment)}"
-                            f"in segmentation {repr(segmentation)}"
-                        )
-                    # Offset length by one since there's a prefix
-                    last_segment_len = len(segments[-1]) - 1
-                    if to_delete >= last_segment_len:
-                        deleted = segments.pop()
-                        to_delete -= last_segment_len
-                    else:
-                        segments[-1] = segments[-1][:-to_delete]
-                        to_delete = 0
         elif operator == "$":
             # Handle accommodation at end of previous string
             assert (
                 segments
             ), f"Segment {repr(segment)} accommodates without a prior segment: {repr(segmentation)}"
-            operator = segment_text[0]
-            segment_text = segment_text[1:]
-            if operator == "-":
-                # Remove from the last segment
-                assert segments[-1].endswith(segment_text)
-                segments[-1] = segments[-1][: -len(segment_text)]
-            elif operator == "+":
+            inner_operator = segment_text[0]
+            inner_segment_text = segment_text[1:]
+            if inner_operator == "-":
+                _end_delete(inner_segment_text, segments, segmentation)
+            elif inner_operator == "+":
                 # Add to the last segment
-                segments[-1] = segments[-1] + segment_text
+                segments[-1] = segments[-1] + inner_segment_text
         elif operator == "^":
             # Handle accommodation at start of next string
             target_idx = idx + 1
@@ -144,21 +123,64 @@ def parse_segmentation(segmentation: str) -> List[str]:
             segment_text = segment_text[1:]
             # Get the next segment from the source but skip the prefix
             source_segment = source[target_idx]
-            assert source_segment.startswith(
-                "_"
+            assert source_segment.startswith(BASE_PREFIX) or source_segment.startswith(
+                "+"
             ), f"Segment {repr(segment)} accommodates a non-root following segment: {repr(segmentation)}"
             source_segment_text = source_segment[1:]
             if operator == "-":
+                if not len(segment_text) < len(source_segment_text):
+                    raise NotImplementedError(
+                        "Deletion of a full segment or more is not implemented for prefix accommodation"
+                    )
                 # Remove from the front of the next segment
                 assert source_segment_text.startswith(segment_text)
-                source[target_idx] = "_" + source_segment_text[len(segment_text) :]
+                source[target_idx] = (
+                    source_segment[0] + source_segment_text[len(segment_text) :]
+                )
             elif operator == "+":
                 # Add to the front of the next segment
-                source[target_idx] = "_" + source_segment_text[0] + source_segment_text
+                source[target_idx] = (
+                    source_segment[0] + source_segment_text[0] + source_segment_text
+                )
+        else:
+            raise ValueError(
+                f"Unknown operator {repr(operator)} in segmentation: {repr(segmentation)}"
+            )
 
     assert segments, f"Empty segments for segmentation: {repr(segmentation)}"
 
     return segments
+
+
+def _end_delete(segment_text: str, segments: List[str], segmentation: str) -> List[str]:
+    """Remove text from the preceding segments.
+
+    The segmentation is only provided to make errors more readable."""
+    last_segment = segments[-1]
+    if len(last_segment) > len(segment_text):
+        # Easy case: everything can be removed from the previous segment
+        assert segments[-1].endswith(segment_text), (
+            f"Segment {repr(segments[-1])} should end with {segment_text} "
+            f"in segmentation {repr(segmentation)}"
+        )
+        segments[-1] = segments[-1][: -len(segment_text)]
+    else:
+        # Hard case: remove segments as needed
+        to_delete = len(segment_text)
+        while to_delete:
+            if not segments:
+                raise ValueError(
+                    f"Ran out of prior segments trying to delete {repr(segment)}"
+                    f"in segmentation {repr(segmentation)}"
+                )
+            # Offset length by one since there's a prefix
+            last_segment_len = len(segments[-1]) - 1
+            if to_delete >= last_segment_len:
+                segments.pop()
+                to_delete -= last_segment_len
+            else:
+                segments[-1] = segments[-1][:-to_delete]
+                to_delete = 0
 
 
 def join_segmentation(units: List[str]) -> str:
@@ -202,12 +224,28 @@ def correct_segmentation(units: List[str], word: str) -> List[str]:
 def _add_hyphens(new_units: List[str], word: str, idx: int) -> int:
     # Need a while loop to handle multiple hyphens
     while word[idx] == "-":
-        new_units.append("_-")
+        new_units.append(BASE_PREFIX + "-")
         idx += 1
         if idx >= len(word):
             break
 
     return idx
+
+
+def _cleanup_prefixes(segments: List[str]) -> List[str]:
+    """Transform prefix segments from +foo to ⧺foo."""
+    out_segments = []
+    found_base = False
+    for segment in segments:
+        if segment.startswith(BASE_PREFIX):
+            found_base = True
+
+        if segment.startswith("+") and not found_base:
+            segment = DOUBLE_PLUS + segment[1:]
+
+        out_segments.append(segment)
+
+    return out_segments
 
 
 def main() -> None:
