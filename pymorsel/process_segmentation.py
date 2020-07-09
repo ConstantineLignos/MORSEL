@@ -152,35 +152,25 @@ def parse_segmentation(segmentation: str) -> List[str]:
     return segments
 
 
-def _end_delete(segment_text: str, segments: List[str], segmentation: str) -> List[str]:
+def _end_delete(segment_text: str, segments: List[str], segmentation: str) -> None:
     """Remove text from the preceding segments.
 
     The segmentation is only provided to make errors more readable."""
-    last_segment = segments[-1]
-    if len(last_segment) > len(segment_text):
-        # Easy case: everything can be removed from the previous segment
-        assert segments[-1].endswith(segment_text), (
-            f"Segment {repr(segments[-1])} should end with {segment_text} "
-            f"in segmentation {repr(segmentation)}"
-        )
-        segments[-1] = segments[-1][: -len(segment_text)]
-    else:
-        # Hard case: remove segments as needed
-        to_delete = len(segment_text)
-        while to_delete:
-            if not segments:
-                raise ValueError(
-                    f"Ran out of prior segments trying to delete {repr(segment)}"
-                    f"in segmentation {repr(segmentation)}"
-                )
-            # Offset length by one since there's a prefix
-            last_segment_len = len(segments[-1]) - 1
-            if to_delete >= last_segment_len:
-                segments.pop()
-                to_delete -= last_segment_len
-            else:
-                segments[-1] = segments[-1][:-to_delete]
-                to_delete = 0
+    to_delete = len(segment_text)
+    while to_delete:
+        if not segments:
+            raise ValueError(
+                f"Ran out of prior segments trying to delete {repr(segment_text)}"
+                f"in segmentation {repr(segmentation)}"
+            )
+        # Offset length by one since there's a prefix
+        last_segment_len = len(segments[-1]) - 1
+        if to_delete >= last_segment_len:
+            segments.pop()
+            to_delete -= last_segment_len
+        else:
+            segments[-1] = segments[-1][:-to_delete]
+            to_delete = 0
 
 
 def join_segmentation(units: List[str]) -> str:

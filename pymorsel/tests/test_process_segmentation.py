@@ -1,6 +1,6 @@
 import pytest
 
-from pymorsel.process_segmentation import parse_segmentation
+from ..process_segmentation import parse_segmentation
 
 
 def test_basic():
@@ -13,6 +13,8 @@ def test_suffix_subtraction():
     assert parse_segmentation("_foo $-o +er") == ["_fo", "+er"]
     # Subtract more than the previous segment
     assert parse_segmentation("_gravity $-y +ate $-tate +s") == ["_gravi", "+s"]
+    # Subtract exactly the previous segment
+    assert parse_segmentation("_alb +a $-a +an") == ["_alb", "+an"]
 
 
 def test_prefix_subtraction():
@@ -39,5 +41,6 @@ def test_prefix_accommodation():
 
 
 def test_crazy():
+    # Crazy segmentations seen in real output (with intentionally extreme parameters)
     assert parse_segmentation("+a ^+c +c _ess") == ["+a", "+cc", "_ess"]
     assert parse_segmentation("+a ^+b +b _ast $-t") == ["+a", "+bb", "_as"]

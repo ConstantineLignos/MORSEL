@@ -1,11 +1,13 @@
 #! /usr/bin/env python
 
 """
-Combine the BPE segmentation of stems with MORSEL's analyis of affixes.
+Combine the BPE segmentation of stems with MORSEL's analysis of affixes.
 """
 
 import argparse
 from typing import List, Dict
+
+DOUBLE_PLUS = "⧺"
 
 
 def apply_bpe_to_segmentation(
@@ -17,6 +19,9 @@ def apply_bpe_to_segmentation(
     with open(stem_path, encoding="utf8") as stem_file:
         for line in stem_file:
             units = line.rstrip("\n").split(" ")
+            # It's unlikely to be necessary, but we make sure that the stem
+            # BPE is properly formed (all non-final units end in @@)
+            units = _format_bpe(units)
             # Add stem prefix
             stem_units["_" + _remove_bpe(units)] = units
 
@@ -26,10 +31,21 @@ def apply_bpe_to_segmentation(
         for line in input_file:
             word, segmentation = line.rstrip("\n").split("\t")
             orig_units = segmentation.split(" ")
-            stem_bpe_units = _apply_bpe_to_stems(orig_units, stem_units)
-            final_bpe_units = _format_bpe(stem_bpe_units)
+            final_units = _apply_bpe_to_stems(orig_units, stem_units)
+            _check_final_segmentation(final_units, word)
+            print(word, " ".join(final_units), sep="\t", file=output_file)
 
-            print(word, " ".join(final_bpe_units), sep="\t", file=output_file)
+
+def _check_final_segmentation(units: List[str], word: str) -> None:
+    joined = " ".join(units)
+    joined = (
+        joined.replace("@@ ", "")
+        .replace(DOUBLE_PLUS + " ", "")
+        .replace(" " + DOUBLE_PLUS, "")
+    )
+    assert (
+        joined == word
+    ), f"Word {word} is not correctly segmented; got {joined} from {units}"
 
 
 def _remove_bpe(units: List[str]) -> str:
@@ -46,6 +62,7 @@ def _apply_bpe_to_stems(
     """Replace stems with their BPE-applied forms and strip affix prefixes."""
     new_units = []
     for unit in units:
+        assert len(unit) > 1, f"Unit {repr(unit)} is too short in units {units}"
         if unit.startswith("_"):
             if unit in stem_units:
                 new_units.extend(stem_units[unit])
@@ -53,11 +70,28 @@ def _apply_bpe_to_stems(
                 print(f"Missing unit: {unit}")
                 new_units.append(unit[1:])
         elif unit.startswith("+"):
-            new_units.append(unit[1:])
+            # Suffix
+            new_units.append(DOUBLE_PLUS + unit[1:])
+        elif unit.startswith(DOUBLE_PLUS):
+            # Prefix
+            new_units.append(unit[1:] + DOUBLE_PLUS)
         else:
             raise ValueError(f"Unrecognized unit: {repr(unit)}")
 
+    # Do a final pass to add @@ where needed to make the segmentation work. This
+    # is usually in a case of compounding
+    max_idx = len(new_units) - 1
+    for idx, unit in enumerate(new_units):
+        if not _can_concatenate_right(unit) and (
+            idx < max_idx and not new_units[idx + 1].startswith(DOUBLE_PLUS)
+        ):
+            new_units[idx] += "@@"
+
     return new_units
+
+
+def _can_concatenate_right(unit: str) -> bool:
+    return unit.endswith(DOUBLE_PLUS) or unit.endswith("@@")
 
 
 def _format_bpe(units: List[str]) -> List[str]:
